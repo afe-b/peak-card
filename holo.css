@@ -1,0 +1,225 @@
+/* =============================================================
+   时刻卡全息效果
+   ---------------------------------------------------------------
+   实体卡里的 "holo / refractor" 大致是这几种：
+     · 彩虹折射（彩虹随角度流动）
+     · 星点闪粉（细密白点随机闪烁）
+     · 棱镜线（细平行线，随角度变色）
+   这里把它们做成四层叠加，并用每张卡的 id 派生一个种子，
+   让 --holo-hue 和花样编号都不同 —— 所以每张时刻卡看着都不一样。
+
+   层次（从下到上）：
+     0  卡面底色（cards.css）
+     7  全息彩虹层
+     8  星点闪粉
+     9  棱镜线
+    10  扫光（cards.css 的 ::before）
+    11  金属框 / 角标 / 名牌
+   ============================================================= */
+
+/* ---------- 彩虹折射层 ---------- */
+.card.moment .holo-foil,
+.cardback.moment .holo-foil{
+  position:absolute;inset:0;z-index:7;pointer-events:none;border-radius:inherit;
+  /* 用 overlay 而不是 color-dodge：dodge 会把卡面直接烧成白色 */
+  opacity:.26;mix-blend-mode:overlay;
+  filter:hue-rotate(var(--holo-hue, 0deg)) saturate(1.5);
+  background-repeat:repeat;
+  animation:holoFlow 7s linear infinite;
+}
+@keyframes holoFlow{
+  0%{background-position:0% 50%}
+  100%{background-position:200% 50%}
+}
+
+/* 花样 0：斜向彩虹细带 */
+.card.moment[data-holo="0"] .holo-foil,
+.cardback.moment[data-holo="0"] .holo-foil{
+  background-image:repeating-linear-gradient(112deg,
+    rgba(255,0,128,.85) 0 1.1%, rgba(255,190,0,.85) 2.2%, rgba(60,255,180,.85) 3.6%,
+    rgba(0,150,255,.85) 5%, rgba(190,60,255,.85) 6.4%, rgba(255,0,128,.85) 7.5%);
+  background-size:220% 220%;
+}
+/* 花样 1：放射光束（像棱镜炸开） */
+.card.moment[data-holo="1"] .holo-foil,
+.cardback.moment[data-holo="1"] .holo-foil{
+  background-image:repeating-conic-gradient(from 0deg at 50% 42%,
+    rgba(255,0,128,.8) 0deg 4deg, rgba(255,200,0,.8) 4deg 8deg,
+    rgba(60,255,180,.8) 8deg 12deg, rgba(0,150,255,.8) 12deg 16deg,
+    rgba(190,60,255,.8) 16deg 20deg, rgba(255,0,128,.8) 20deg 24deg);
+  background-size:100% 100%;
+  animation:holoSpin 18s linear infinite;
+}
+@keyframes holoSpin{to{transform:rotate(360deg)}}
+/* 花样 2：横向波段 */
+.card.moment[data-holo="2"] .holo-foil,
+.cardback.moment[data-holo="2"] .holo-foil{
+  background-image:repeating-linear-gradient(0deg,
+    rgba(255,0,128,.8) 0 1.6%, rgba(255,200,0,.8) 3.2%, rgba(60,255,180,.8) 5%,
+    rgba(0,150,255,.8) 6.8%, rgba(190,60,255,.8) 8.4%, rgba(255,0,128,.8) 10%);
+  background-size:100% 240%;
+  animation:holoRise 6s linear infinite;
+}
+@keyframes holoRise{
+  0%{background-position:50% 0%}
+  100%{background-position:50% 240%}
+}
+/* 花样 3：菱形网格（Prizm 那种折射面） */
+.card.moment[data-holo="3"] .holo-foil,
+.cardback.moment[data-holo="3"] .holo-foil{
+  background-image:
+    repeating-linear-gradient(58deg,
+      rgba(255,0,128,.7) 0 1.4%, transparent 1.4% 5.2%),
+    repeating-linear-gradient(-58deg,
+      rgba(0,180,255,.7) 0 1.4%, transparent 1.4% 5.2%),
+    repeating-linear-gradient(0deg,
+      rgba(255,210,0,.55) 0 1%, transparent 1% 7%);
+  background-size:180% 180%, 180% 180%, 100% 100%;
+  animation:holoShift 9s ease-in-out infinite;
+}
+@keyframes holoShift{
+  0%,100%{background-position:0% 0%, 100% 100%, 0 0}
+  50%{background-position:60% 40%, 40% 60%, 0 30%}
+}
+
+/* ---------- 星点闪粉 ---------- */
+.card.moment .holo-sparkle,
+.cardback.moment .holo-sparkle{
+  position:absolute;inset:0;z-index:8;pointer-events:none;border-radius:inherit;
+  mix-blend-mode:screen;opacity:.34;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.9) 0 .7px, transparent 1.3px),
+    radial-gradient(circle, rgba(255,255,255,.75) 0 1px, transparent 1.7px),
+    radial-gradient(circle, rgba(200,240,255,.85) 0 .7px, transparent 1.2px);
+  background-size:31px 37px, 47px 43px, 23px 29px;
+  background-position:0 0, 13px 19px, 7px 11px;
+  animation:sparkleTwinkle 2.6s ease-in-out infinite alternate;
+}
+@keyframes sparkleTwinkle{
+  0%{opacity:.16}
+  40%{opacity:.42}
+  100%{opacity:.24}
+}
+/* 每个种子错开闪烁节奏，一整排卡不会同步闪 */
+.card.moment[data-holo="1"] .holo-sparkle{animation-duration:3.1s;animation-delay:-.6s}
+.card.moment[data-holo="2"] .holo-sparkle{animation-duration:2.2s;animation-delay:-1.2s}
+.card.moment[data-holo="3"] .holo-sparkle{animation-duration:2.8s;animation-delay:-1.9s}
+
+/* ---------- 棱镜细线 ---------- */
+.card.moment .holo-lines,
+.cardback.moment .holo-lines{
+  position:absolute;inset:0;z-index:9;pointer-events:none;border-radius:inherit;
+  opacity:.16;mix-blend-mode:overlay;
+  background:repeating-linear-gradient(96deg,
+    rgba(255,255,255,.9) 0 .5px, transparent .5px 4px);
+  filter:hue-rotate(calc(var(--holo-hue, 0deg) + 120deg));
+  animation:lineSlide 12s linear infinite;
+}
+@keyframes lineSlide{
+  0%{background-position:0 0}
+  100%{background-position:120px 0}
+}
+
+/* ---------- 英文烫印 MOMENT ---------- */
+.card .moment-stamp{
+  /* 竖排烫印放在卡面右下角，字号压小，贴着信息栏右边 */
+  position:absolute;z-index:12;right:1.5cqi;bottom:1.7cqi;
+  writing-mode:vertical-rl;
+  font-size:1.9cqi;font-weight:900;letter-spacing:.18em;line-height:1;
+  padding:1.1cqi .45cqi 1.1cqi .6cqi;
+  border-radius:999px;
+  color:rgba(255,255,255,.88);
+  background:linear-gradient(180deg,
+    rgba(255,255,255,.18), rgba(8,12,22,.5) 40%, rgba(8,12,22,.5) 60%, rgba(255,255,255,.18));
+  border:.35px solid rgba(255,255,255,.28);
+  text-shadow:0 0 .5cqi rgba(255,255,255,.75), 0 0 1.2cqi var(--tglow);
+  backdrop-filter:blur(2px);
+}
+/* 金/紫两种烫印色调 */
+.card.moment[data-holo="0"] .moment-stamp,
+.card.moment[data-holo="2"] .moment-stamp{ color:#fff3cf }
+.card.moment[data-holo="1"] .moment-stamp,
+.card.moment[data-holo="3"] .moment-stamp{ color:#eeddff }
+/* 时刻卡的信息栏右侧留出烫印的位置，别让名字/标签压上去 */
+.card.moment .plate{padding-right:8cqi}
+.card.moment .plate .row{max-width:88%}
+/* 时刻金卡用暖金烫印，时刻紫卡用冷紫烫印 */
+.card.moment[data-holo="0"] .moment-stamp,
+.card.moment[data-holo="2"] .moment-stamp{ color:#fff6d8 }
+.card.moment[data-holo="1"] .moment-stamp,
+.card.moment[data-holo="3"] .moment-stamp{ color:#f0e0ff }
+
+/* ---------- 时刻卡专属：彩虹描边 ----------
+   普通卡的框是单色金属，时刻卡的框会流动彩虹，一眼就能区分 */
+.card.moment .frame,
+.cardback.moment .cb-frame,
+.mini.moment .frame{
+  background:linear-gradient(100deg,
+    #ff5f8f 0%, #ffc93c 14%, #7dffa0 30%, #4fd1ff 46%,
+    #b06aff 62%, #ff5f8f 78%, #ffc93c 92%, #ff5f8f 100%);
+  background-size:300% 100%;
+  animation:holoBorder 5.5s linear infinite;
+  opacity:1;
+  padding:1.25cqi;
+}
+.mini.moment .frame{padding:.95cqi}
+@keyframes holoBorder{
+  0%{background-position:0% 50%}
+  100%{background-position:300% 50%}
+}
+/* 框外再加一圈柔光，卡牌从列表里"跳"出来 */
+.card.moment{
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.9),
+    0 0 6cqi -2cqi color-mix(in srgb, var(--tglow) 80%, transparent),
+    0 1cqi 0 rgba(0,0,0,.3),
+    0 3cqi 7cqi -2cqi rgba(0,0,0,.7);
+}
+.mini.moment{
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.85),
+    0 0 4cqi -1.4cqi color-mix(in srgb, var(--tglow) 85%, transparent),
+    0 2px 6px rgba(0,0,0,.55);
+}
+
+/* ---------- 立体感：给抠像和多层加深度 ---------- */
+.card.moment .shot img{
+  filter:drop-shadow(0 .8cqi 1.4cqi rgba(0,0,0,.6))
+         drop-shadow(0 2.4cqi 4.4cqi rgba(0,0,0,.45))
+         drop-shadow(0 0 2.6cqi color-mix(in srgb, var(--tglow) 55%, transparent))
+         saturate(1.08) contrast(1.05);
+}
+/* 顶部一道受光的高光带，让卡面"鼓"起来 */
+.card.moment .holo-gloss{
+  position:absolute;inset:0;z-index:10;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(178deg,
+    rgba(255,255,255,.2) 0%, rgba(255,255,255,.04) 13%, transparent 28%,
+    transparent 74%, rgba(0,0,0,.24) 100%);
+  mix-blend-mode:soft-light;
+}
+
+/* ---------- 查看器里的 3D 倾斜 ---------- */
+#cardViewer .cv-wrap{transform-style:preserve-3d}
+#cardViewer .cv-face{transform-style:preserve-3d;will-change:transform}
+/* 只在查看器里做跟随指针的倾斜，列表里不做（会溢出网格） */
+.cv-wrap.tilt .cv-front .card,
+.cv-wrap.tilt .cv-back .cardback{
+  transform:perspective(900px)
+            rotateY(var(--ry, 0deg)) rotateX(var(--rx, 0deg))
+            translateZ(0);
+  transition:transform .08s linear;
+}
+/* 全息层跟着指针移动，制造"角度变了、彩虹也跟着变"的错觉 */
+.cv-wrap.tilt .holo-foil{
+  background-position:calc(50% + var(--hx, 0px)) calc(50% + var(--hy, 0px));
+  animation-play-state:paused;
+}
+.cv-wrap.tilt .holo-lines{ background-position:var(--hx, 0px) 0 }
+
+/* 低性能设备 / 用户开了减弱动效时全部关掉 */
+@media (prefers-reduced-motion: reduce){
+  .card.moment .holo-foil,
+  .card.moment .holo-sparkle,
+  .card.moment .holo-lines{ animation:none }
+  .card.holo::before{ animation:none; opacity:0 }
+}

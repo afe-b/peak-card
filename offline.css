@@ -1,0 +1,78 @@
+/* =============================================================
+   📱 离线单文件版专用样式
+   -------------------------------------------------------------
+   包含两块：
+     ① 存档状态警告条（save-portal.js 用）
+     ② 首次打开的操作说明弹层
+   iPhone 横屏只有 440px 高，所以都做得很扁，且不挡底部操作条。
+   ============================================================= */
+
+/* ---------------- 存档状态警告 ---------------- */
+#saveWarn{
+  position:fixed;left:50%;top:0;transform:translateX(-50%);
+  z-index:99990;
+  max-width:96vw;
+  padding:5px 14px;
+  font-size:11px;line-height:1.45;font-weight:700;
+  color:#ffd9c0;background:rgba(140,40,20,.95);
+  border:1px solid rgba(255,120,80,.6);border-top:none;
+  border-radius:0 0 11px 11px;
+  box-shadow:0 8px 22px rgba(0,0,0,.5);
+  text-align:center;pointer-events:none;
+}
+#saveWarn b{color:#fff}
+#saveWarn.soft{
+  color:#ffe8b0;background:rgba(120,80,0,.95);
+  border-color:rgba(255,190,60,.6);
+}
+
+/* ---------------- 首次打开说明弹层 ---------------- */
+#offlineHelp{
+  position:fixed;inset:0;z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(3,6,14,.82);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  padding:12px;
+}
+#offlineHelp .oh-card{
+  width:min(560px,94vw);max-height:92vh;overflow:auto;
+  padding:16px 20px;border-radius:16px;
+  background:linear-gradient(180deg,#151f36,#0a1120);
+  border:1px solid rgba(120,160,255,.3);
+  box-shadow:0 24px 60px rgba(0,0,0,.7);
+  text-align:left;
+}
+#offlineHelp .oh-title{
+  font-size:17px;font-weight:900;color:#fff;margin-bottom:10px;
+  letter-spacing:.02em;
+}
+#offlineHelp .oh-body{font-size:12.5px;line-height:1.75;color:#b9c8e4}
+#offlineHelp .oh-body p{margin:0 0 8px}
+#offlineHelp .oh-body b{color:#8fd0ff;font-weight:800}
+#offlineHelp .oh-body .oh-warn{
+  color:#ffd08a;background:rgba(255,176,32,.1);
+  border-left:3px solid rgba(255,176,32,.7);
+  border-radius:0 8px 8px 0;padding:7px 10px;margin-top:10px;
+}
+#offlineHelp .oh-ok{
+  display:block;width:100%;margin-top:14px;
+  padding:11px;border-radius:11px;border:none;cursor:pointer;
+  font-size:14px;font-weight:900;color:#04223a;letter-spacing:.02em;
+  background:linear-gradient(180deg,#9fd8ff,#5fb4f0);
+  box-shadow:0 8px 22px rgba(27,127,208,.4);
+}
+#offlineHelp .oh-ok:active{transform:scale(.985)}
+
+/* 矮屏（iPhone 横屏 440 高）压缩一下，保证能一屏看完 */
+@media (max-height: 520px){
+  #offlineHelp .oh-card{padding:12px 16px;border-radius:13px}
+  #offlineHelp .oh-title{font-size:14.5px;margin-bottom:7px}
+  #offlineHelp .oh-body{font-size:11px;line-height:1.6}
+  #offlineHelp .oh-body p{margin-bottom:5px}
+  #offlineHelp .oh-ok{padding:8px;font-size:12.5px;margin-top:10px}
+}
+
+/* 已装到主屏幕（独立运行）时，说明弹层依然有用，不隐藏 */
+@media (display-mode: standalone){
+  #pwaTip{display:none}
+}

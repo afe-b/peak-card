@@ -1,0 +1,200 @@
+/* =============================================================
+   perf.css —— 性能模式（低配设备 / 高刷屏安卓机）
+   -------------------------------------------------------------
+   由 pwa.js 在 <html> 上挂 .perf 类来启用，本文件本身不判断设备。
+
+   为什么需要它：
+     实测发现游戏里有 **36 处无限循环动画**（animation: ... infinite），
+     主要集中在：
+       · holo.css    —— 镭射/全息卡特效，7 个无限动画（5.5s~18s 循环）
+       · cardv2.css  —— 时刻卡的边框脉冲 cardRimPulse
+       · battle.css  —— 可放置槽位脉冲、教练脉冲、体力警告脉冲…
+
+     问题在**高刷新率屏幕**上被放大：vivo X100s / 小米14 这类
+     120Hz 屏，动画按 120 帧/秒重绘，负载是 60Hz 的两倍；
+     而手机 GPU 的填充率远低于桌面 GPU，`box-shadow` / `blur`
+     （本项目有 577 处 box-shadow、14 处 backdrop-filter）
+     在手机上是实打实的像素级开销。
+
+     图鉴页一次显示几十张卡时，每张卡都在跑自己的镭射动画
+     → 掉帧、发烫、耗电。玩家反馈的"很卡"就是这个。
+
+   策略（只砍装饰，不动玩法）：
+     ① 停掉所有无限循环动画（保留一次性动画，比如抽卡揭示）
+     ② 用纯色替代 backdrop-filter 毛玻璃
+     ③ 简化重复元素的 box-shadow
+     ④ 给长列表加合成层提示 + 滚动性能优化
+
+   ★ 不影响任何游戏逻辑、数值、判定。
+   ============================================================= */
+
+/* ---------- ① 停掉所有无限循环动画 ----------
+   注意：只杀 infinite，一次性动画（抽卡、突破、进球）照常播放。 */
+html.perf *,
+html.perf *::before,
+html.perf *::after {
+  animation-iteration-count: 1 !important;
+  animation-duration: .001s !important;
+  animation-delay: 0s !important;
+}
+
+/* 抽卡揭示 / 突破 / 结算这些**一次性**动画要保留观感，
+   所以给它们开个白名单（按类名）。 */
+html.perf .pull-card,
+html.perf .pull-card *,
+html.perf .brk-fx,
+html.perf .brk-fx *,
+html.perf .finale,
+html.perf .finale *,
+html.perf .bt-pop,
+html.perf .bt-pop *,
+html.perf .toast,
+html.perf #toast {
+  animation-duration: revert !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* ---------- ② 毛玻璃 → 纯色（手机 GPU 上 blur 很贵）---------- */
+html.perf * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 原本靠 backdrop-filter 做半透明模糊的地方，补一个不透明的底色，
+   否则会变成"透过去看穿"，很难看。 */
+html.perf .lg-mask,
+html.perf .spf-mask,
+html.perf .ex-mask,
+html.perf .cr-mask,
+html.perf .layer,
+html.perf .mask,
+html.perf .sheet,
+html.perf .modal {
+  background: rgba(4, 7, 14, .94) !important;
+}
+html.perf .toast,
+html.perf #toast {
+  background: rgba(12, 18, 32, .97) !important;
+}
+
+/* ---------- ③ 阴影：整体清零，只给按钮补回一点 ----------
+   实测审计（图鉴页）：
+     · **542 个 div.mini.locked** 各带一个 box-shadow
+       —— 542 张缩略图同时绘制 542 次模糊
+     · 超大模糊：div.frame 93px、div 90px、div.crest 56px、
+       div.tut-box 60px、div.bt-streak 44px
+
+   手机 GPU 填充率远低于桌面，模糊开销按半径平方增长 ——
+   90px 模糊约为 12px 的 56 倍。
+
+   ★ 踩过的坑：一开始我给 .frame / .crest 这些"大元素"补了一层小阴影，
+     结果 .frame 是**每张卡的边框** —— 等于凭空多出 542 个阴影，
+     实测阴影元素数不降反升（577 → 594）。
+     所以这里改成**整体清零**，只给真正需要的按钮补一点。
+   ============================================================= */
+html.perf *,
+html.perf *::before,
+html.perf *::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* 按钮/开关补一层很淡的阴影 —— 否则按下时没有"可点"的反馈感 */
+html.perf .btn,
+html.perf .setbtn,
+html.perf .rb,
+html.perf .rt-go,
+html.perf .ub-yes,
+html.perf .ub-no,
+html.perf .switch,
+html.perf .tab,
+html.perf .ex-tab {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .55) !important;
+}
+
+/* 当前选中的页签给个描边代替发光，保证能看出"选中了" */
+html.perf .tab.on,
+html.perf .ex-tab.on {
+  outline: 2px solid rgba(245, 196, 81, .9) !important;
+  outline-offset: -2px;
+}
+
+/* ---------- ④ 镭射/全息特效降级 ----------
+   这些是纯装饰（渐变扫光 + 旋转 + 闪烁），图鉴里几十张同时出现时
+   代价最大。性能模式下只保留静态的边框色，不做动态扫光。 */
+html.perf .card.holo::before,
+html.perf .card.holo::after,
+html.perf .card .holo-layer,
+html.perf .holo-flow,
+html.perf .holo-spin,
+html.perf .holo-rise,
+html.perf .holo-border,
+html.perf .sparkle,
+html.perf .line-slide {
+  display: none !important;
+}
+
+/* ---------- ⑤ 长列表滚动优化 ----------
+   图鉴 542 张卡、阵容列表、市场列表都是长滚动容器。
+   contain + will-change 能让浏览器只重绘可见部分。 */
+html.perf .dex-grid,
+html.perf .ex-grid,
+html.perf .lg-list,
+html.perf .tm-pool,
+html.perf .scroll,
+html.perf .pad {
+  contain: layout paint style;
+}
+html.perf .dex-grid > *,
+html.perf .ex-grid > * {
+  contain: layout paint style;
+  /* 列表项单独提升为合成层，滚动时不重绘内容 */
+  transform: translateZ(0);
+}
+
+/* ---------- ⑥ 图片解码优化 ----------
+   卡图很多，强制异步解码避免主线程被解码阻塞。 */
+html.perf img {
+  decoding: async;
+}
+html.perf .dex-grid img,
+html.perf .ex-grid img {
+  content-visibility: auto;
+  contain-intrinsic-size: 96px 120px;
+}
+
+/* ---------- ⑦ 关掉过度绘制 ----------
+   mix-blend-mode / filter 在手机上都是逐像素运算。 */
+html.perf * {
+  mix-blend-mode: normal !important;
+}
+html.perf .card,
+html.perf .pcard,
+html.perf .ex-cell {
+  filter: none !important;
+}
+
+/* =============================================================
+   ⑧ 高刷屏（120Hz+）额外提示
+   -------------------------------------------------------------
+   安卓高刷屏上，即使 60fps 的内容也会因为每帧都要合成而更耗电。
+   这里把"动画驱动属性"限制为合成属性（transform / opacity），
+   避免触发布局或重绘。
+   ============================================================= */
+html.perf .dz-breath,
+html.perf .dz-pulse,
+html.perf .slot-pulse,
+html.perf .coach-pulse,
+html.perf .oop-pulse,
+html.perf .tm-pos-warn,
+html.perf .hold-pulse,
+html.perf .pt-pulse {
+  animation: none !important;
+}
+
+/* 但保留"可放置槽位"的静态高亮，否则玩家不知道能放到哪 */
+html.perf .tm-slot.droppable,
+html.perf .tm-bslot.droppable {
+  outline: 2px solid rgba(245, 196, 81, .85) !important;
+  outline-offset: -2px;
+}

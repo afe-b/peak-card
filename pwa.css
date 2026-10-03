@@ -1,0 +1,166 @@
+/* =============================================================
+   📲 PWA 界面（安装进度 / 存储警告 / 离线状态 / 安装引导）
+   -------------------------------------------------------------
+   设计约束：iPhone 横屏只有 440px 高，
+   所以这些浮层必须**极扁**，而且不能挡住底部操作条。
+   全部用 fixed + 高 z-index，且 pointer-events 只在需要时可点。
+   ============================================================= */
+
+/* ---------------- 顶部状态提示条（离线/联网） ---------------- */
+#pwaBar{
+  position:fixed;left:50%;top:calc(6px + env(safe-area-inset-top,0px));
+  transform:translate(-50%,-160%);
+  z-index:9999;
+  padding:4px 14px;border-radius:999px;
+  font-size:12px;font-weight:800;letter-spacing:.02em;
+  color:#dfe8ff;background:rgba(8,14,26,.94);
+  border:1px solid rgba(120,160,255,.35);
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+  white-space:nowrap;pointer-events:none;
+  transition:transform .28s cubic-bezier(.2,1.3,.4,1);
+}
+#pwaBar.show{transform:translate(-50%,0)}
+#pwaBar.off{border-color:rgba(255,176,32,.5);color:#ffd98a}
+#pwaBar.on{border-color:rgba(94,224,138,.5);color:#a8f0c0}
+
+/* ---------------- 安装进度浮层 ---------------- */
+#pwaInstall{
+  position:fixed;inset:0;z-index:9998;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(3,6,14,.72);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+#pwaInstall.show{opacity:1;pointer-events:auto}
+#pwaInstall .pi-card{
+  min-width:280px;max-width:88vw;
+  padding:14px 18px;border-radius:14px;text-align:center;
+  background:linear-gradient(180deg,#141d33,#0b1220);
+  border:1px solid rgba(120,160,255,.28);
+  box-shadow:0 18px 50px rgba(0,0,0,.6);
+}
+#pwaInstall .pi-title{font-size:15px;font-weight:900;color:#fff;margin-bottom:3px}
+#pwaInstall .pi-sub{font-size:11px;color:#93a3c0;line-height:1.5;margin-bottom:10px}
+#pwaInstall .pi-track{
+  height:7px;border-radius:99px;overflow:hidden;
+  background:rgba(255,255,255,.09);
+}
+#pwaInstall .pi-track i{
+  display:block;height:100%;width:0;
+  border-radius:99px;
+  background:linear-gradient(90deg,#4d97ff,#7fd4ff);
+  transition:width .2s ease;
+}
+#pwaInstall .pi-num{
+  margin-top:6px;font-size:10.5px;font-weight:800;color:#8fa6cc;
+  font-variant-numeric:tabular-nums;
+}
+#pwaInstall.ok .pi-track i{background:linear-gradient(90deg,#3fc46a,#8df0b0)}
+#pwaInstall.ok .pi-title{color:#8df0b0}
+
+/* ---------------- 添加主屏幕引导（可点掉） ---------------- */
+#pwaTip{
+  position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom,0px));
+  transform:translate(-50%,200%);
+  z-index:9997;cursor:pointer;
+  padding:5px 14px;border-radius:999px;
+  font-size:11.5px;font-weight:800;color:#04223a;
+  background:linear-gradient(180deg,#9fd8ff,#5fb4f0);
+  box-shadow:0 8px 24px rgba(27,127,208,.45);
+  white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis;
+  transition:transform .3s cubic-bezier(.2,1.3,.4,1);
+}
+#pwaTip.show{transform:translate(-50%,0)}
+
+/* ---------------- 存储不可用警告（离线单文件场景） ---------------- */
+#pwaWarn{
+  position:fixed;left:50%;top:0;transform:translateX(-50%);
+  z-index:9996;
+  max-width:96vw;
+  padding:6px 14px calc(6px);
+  font-size:11.5px;line-height:1.5;font-weight:700;
+  color:#ffe0b0;background:rgba(120,60,0,.94);
+  border:1px solid rgba(255,176,32,.55);border-top:none;
+  border-radius:0 0 12px 12px;
+  box-shadow:0 8px 22px rgba(0,0,0,.5);
+  text-align:center;
+}
+#pwaWarn b{color:#fff}
+
+/* ---------------- 独立运行（已添加到主屏幕）时收掉多余留白 ---------------- */
+@media (display-mode: standalone){
+  /* 独立模式下没有 Safari 的地址栏，安全区已经够用 */
+  #pwaTip{display:none}
+}
+
+/* =============================================================
+   📴 设置页「离线缓存」进度条
+   ============================================================= */
+.cachebar{
+  height:7px;border-radius:99px;overflow:hidden;
+  background:rgba(255,255,255,.09);
+  margin:4px 0 10px;
+}
+.cachebar i{
+  display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#4d97ff,#7fd4ff);
+  transition:width .25s ease;
+}
+/* 高度不足时压一压，别把设置页撑太长 */
+@media (max-height: 560px){
+  .cachebar{height:5px;margin:3px 0 7px}
+}
+
+/* =============================================================
+   🎉 更新提醒横幅（v9.45 用户要求）
+   -------------------------------------------------------------
+   发现新版本时从顶部滑下，带「立即更新 / 稍后」两个按钮。
+   iPhone 横屏只有 440px 高，所以做得极扁，且不挡底部操作条。
+   ============================================================= */
+#updateBar{
+  position:fixed;
+  left:50%;
+  top:calc(6px + env(safe-area-inset-top,0px));
+  transform:translate(-50%,-220%);
+  z-index:99995;
+  display:flex;align-items:center;gap:8px;
+  padding:6px 10px 6px 12px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#1b2a4a,#111a2e);
+  border:1px solid rgba(120,200,255,.55);
+  box-shadow:0 10px 30px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04) inset;
+  max-width:96vw;
+  transition:transform .32s cubic-bezier(.2,1.3,.4,1);
+  white-space:nowrap;
+}
+#updateBar.show{transform:translate(-50%,0)}
+#updateBar .ub-ic{font-size:15px;line-height:1;flex:0 0 auto}
+#updateBar .ub-txt{
+  font-size:12px;font-weight:800;color:#dfe8ff;
+  overflow:hidden;text-overflow:ellipsis;
+}
+#updateBar button{
+  flex:0 0 auto;border:none;cursor:pointer;
+  font-size:12px;font-weight:900;letter-spacing:.02em;
+  padding:6px 13px;border-radius:999px;
+  min-height:30px;
+}
+#updateBar .ub-yes{
+  color:#04223a;
+  background:linear-gradient(180deg,#9fd8ff,#5fb4f0);
+  box-shadow:0 4px 14px rgba(27,127,208,.45);
+}
+#updateBar .ub-yes:disabled{opacity:.6;cursor:default}
+#updateBar .ub-no{
+  color:#a9b8d0;background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.16);
+}
+#updateBar .ub-no:disabled{opacity:.5;cursor:default}
+#updateBar button:active{transform:scale(.97)}
+
+/* 矮屏（iPhone 横屏 440 高）再压一压 */
+@media (max-height: 520px){
+  #updateBar{padding:4px 8px 4px 10px;gap:6px}
+  #updateBar .ub-txt{font-size:11px}
+  #updateBar button{font-size:11px;padding:4px 10px;min-height:26px}
+}
