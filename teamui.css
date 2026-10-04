@@ -1,0 +1,1814 @@
+/* =============================================================
+   球队管理（1:1 复刻 2K MyTeam 阵容页）
+   ============================================================= */
+.tmwrap{
+  position:relative;display:flex;flex-direction:column;gap:6px;
+  height:100%;min-height:0;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(120,20,30,.55), transparent 62%),
+    linear-gradient(160deg,#2a0d12,#140609 65%,#0a0406);
+}
+
+/* ---------- 顶栏 ---------- */
+.tmt{display:flex;align-items:center;justify-content:space-between;
+  padding:4px 12px 2px;flex:0 0 auto}
+.tmt-title{display:flex;align-items:center;gap:7px;font-size:17px;
+  font-weight:900;color:#fff;letter-spacing:2px;font-style:italic;
+  text-shadow:0 2px 10px rgba(0,0,0,.95)}
+.tmt-title i{font-style:normal;color:#c8102e;font-size:14px}
+.tmt-right{display:flex;align-items:center;gap:8px}
+.tmt-btn{
+  padding:6px 14px;border-radius:4px;cursor:pointer;
+  font-family:inherit;font-size:12.5px;font-weight:900;
+  background:linear-gradient(180deg,#3a1016,#240a0e);
+  border:1px solid rgba(255,255,255,.22);color:#fff;
+}
+.tmt-btn:hover{background:linear-gradient(180deg,#5a1a22,#341014)}
+.tmt-cap{
+  position:relative;display:flex;align-items:center;gap:5px;
+  padding:5px 12px 8px;border-radius:4px;min-width:150px;
+  background:linear-gradient(180deg,#1a1f2c,#0d1119);
+  border:1px solid rgba(255,255,255,.2);
+  font-variant-numeric:tabular-nums;
+}
+.tmt-cap span{font-size:12px}
+.tmt-cap b{font-size:13px;font-weight:900;color:#fff}
+.tmt-cap i{font-style:normal;color:#5d6a84}
+.tmt-cap em{font-style:normal;font-size:11.5px;color:#a4b1c8}
+.tmt-cap.over b{color:#ff8a95}
+.tmt-capbar{position:absolute;left:6px;right:6px;bottom:3px;height:3px;
+  border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden}
+.tmt-capbar i{display:block;height:100%;
+  background:linear-gradient(90deg,#3fc46a,#ffd977);transition:width .3s}
+.tmt-cap.over .tmt-capbar i{background:linear-gradient(90deg,#ffb020,#e0233f)}
+.tmt-plus{
+  width:28px;height:28px;border-radius:4px;cursor:pointer;border:0;
+  font-family:inherit;font-size:17px;font-weight:900;line-height:1;
+  background:linear-gradient(180deg,#1a6fc4,#0d4a8c);color:#fff;
+}
+.tmt-plus:hover{background:linear-gradient(180deg,#2288e0,#12589c)}
+
+/* ---------- 主体两栏 ---------- */
+.tmbody{display:flex;gap:8px;flex:1 1 auto;min-height:0;padding:0 8px}
+.tms{
+  flex:0 0 216px;display:flex;flex-direction:column;gap:5px;
+  padding:10px;border-radius:3px;min-height:0;overflow-y:auto;
+  background:linear-gradient(170deg,#8c1622,#5a0d16 60%,#3a0810);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 8px 26px -10px rgba(0,0,0,.95);
+}
+.tms::-webkit-scrollbar{width:4px}
+.tms::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:2px}
+.tms-name{display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:6px;border-bottom:2px solid rgba(255,255,255,.28)}
+.tms-name b{font-size:15px;font-weight:900;color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.tms-swap{width:22px;height:22px;border-radius:3px;cursor:pointer;border:0;
+  font-size:13px;background:rgba(255,255,255,.18);color:#fff}
+.tms-swap:hover{background:rgba(255,255,255,.32)}
+.tms-ovr{text-align:center;padding:6px 0 8px}
+.tms-ovr span{display:block;font-size:11.5px;color:#ffd9de;font-weight:900}
+.tms-ovr b{font-size:40px;font-weight:900;color:#fff;line-height:1;
+  text-shadow:0 2px 0 #7a0d18,0 4px 14px rgba(0,0,0,.8);
+  font-variant-numeric:tabular-nums}
+.tms-sec{font-size:12px;font-weight:900;color:#fff;padding:5px 7px;
+  border-radius:3px;background:rgba(0,0,0,.28)}
+.tms-row{display:flex;align-items:center;justify-content:space-between;
+  padding:3px 7px}
+.tms-row span{font-size:11px;color:#ffd9de}
+.tms-row b{font-size:12.5px;font-weight:900;color:#fff}
+.tms-btn{
+  padding:9px 0;border-radius:3px;cursor:pointer;border:0;
+  font-family:inherit;font-size:13px;font-weight:900;color:#fff;
+  text-align:center;letter-spacing:1px;
+}
+.tms-btn.red{background:linear-gradient(180deg,#d8202f,#9c0f1c);
+  box-shadow:0 3px 12px -4px rgba(216,32,47,.9)}
+.tms-btn.red:hover{background:linear-gradient(180deg,#f02a3d,#b0121f)}
+.tms-btn.blue{background:linear-gradient(180deg,#1a6fc4,#0d4a8c);
+  box-shadow:0 3px 12px -4px rgba(26,111,196,.9)}
+.tms-btn.blue:hover{background:linear-gradient(180deg,#2288e0,#12589c)}
+.tms-count{font-size:10px;color:#ffb9c1;text-align:center;margin-top:auto;
+  padding-top:4px}
+
+/* ---------- 球场 ---------- */
+.tmcourt{
+  position:relative;flex:1 1 auto;min-width:0;min-height:0;
+  border-radius:3px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);
+  display:flex;flex-direction:column;
+  padding:6px 8px;gap:2px;
+}
+.tmcourt-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(200,40,55,.30), transparent 66%),
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,.045) 0 1px, transparent 1px 46px),
+    linear-gradient(180deg,#8a1a24,#5a0f18 58%,#3a0810);
+}
+.tmcourt-bg:after{
+  content:'';position:absolute;left:50%;top:46%;
+  width:34%;height:62%;transform:translate(-50%,-50%);
+  border:2px solid rgba(255,255,255,.22);border-radius:50%;
+}
+.tmcourt-row{
+  position:relative;z-index:1;display:flex;justify-content:center;
+  gap:clamp(8px,3.2vw,42px);align-items:flex-end;
+}
+.tmcourt-row.r1{flex:1 1 auto;align-items:center;padding-top:2px}
+.tmcourt-row.r2{flex:1 1 auto;align-items:center}
+.tmslot-labels{position:absolute;inset:0;pointer-events:none;z-index:2}
+.tmslot-labels span{
+  position:absolute;font-size:11px;font-weight:900;color:#fff;
+  text-shadow:0 1px 5px rgba(0,0,0,.95);white-space:nowrap;
+  transform:translateX(-50%);
+}
+
+/* ---------- 球员卡 ---------- */
+.tmc{
+  position:relative;cursor:pointer;border-radius:3px;overflow:hidden;
+  width:clamp(66px,9.2vw,104px);
+  background:#0d1626;
+  border:1.5px solid rgba(255,255,255,.28);
+  box-shadow:0 5px 16px -6px rgba(0,0,0,.95);
+  transition:transform .14s,border-color .14s;
+  flex:0 0 auto;
+}
+.tmc:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.7);
+  z-index:5}
+.tmc.on{border-color:var(--gold);box-shadow:0 0 14px -3px var(--gold)}
+.tmc-img{position:relative;width:100%;
+  aspect-ratio:3/4;background:rgba(0,0,0,.35);overflow:hidden}
+.tmc-img img{width:100%;height:100%;object-fit:cover;object-position:top}
+.tmc-img.noimg:after{
+  content:'🏀';position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;font-size:22px;opacity:.5;
+}
+.tmc-lv{position:absolute;left:3px;top:3px;font-size:7.5px;font-weight:900;
+  color:#fff;background:rgba(0,0,0,.6);padding:0 3px;border-radius:2px}
+.tmc-team{position:absolute;left:3px;top:14px;font-size:7px;font-weight:900;
+  color:#fff;padding:0 3px;border-radius:2px}
+.tmc-max{
+  position:absolute;right:3px;top:3px;font-size:7px;font-weight:900;
+  color:#fff;padding:5px 2px;border-radius:2px;line-height:1;
+  letter-spacing:-.3px;writing-mode:vertical-rl;
+  background:linear-gradient(160deg,#c084fc,#7c3aed 55%,#a855f7);
+  box-shadow:0 0 7px -1px #c084fc;text-shadow:0 1px 2px rgba(0,0,0,.8);
+}
+.tmc-brk{position:absolute;right:3px;top:3px;font-size:9px;font-weight:900;
+  color:#fff;padding:2px 5px;border-radius:2px;
+  background:linear-gradient(150deg,#4a7fd4,#2b4f8c);
+}
+.tmc-ovr{
+  position:absolute;right:3px;bottom:3px;font-size:clamp(15px,2.6vh,22px);
+  font-weight:900;color:#fff;line-height:1;
+  text-shadow:0 0 3px #000,0 0 6px #000,0 2px 0 #000;
+  font-variant-numeric:tabular-nums;
+}
+.tmc-bar{padding:2px 4px 3px;text-align:center}
+.tmc-bar b{display:block;font-size:clamp(8.5px,1.75vh,11.5px);font-weight:900;
+  color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.tmc-bar em{font-style:normal;font-size:7.5px;color:rgba(255,255,255,.85);
+  font-weight:900;letter-spacing:.3px}
+.tmc-x{
+  position:absolute;left:3px;bottom:3px;width:16px;height:16px;
+  border-radius:50%;cursor:pointer;border:0;font-size:9px;font-weight:900;
+  background:rgba(216,32,47,.9);color:#fff;line-height:1;padding:0;
+}
+.tmc.empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;aspect-ratio:3/4;
+  background:rgba(255,255,255,.06);
+  border:1.5px dashed rgba(255,255,255,.3);
+}
+.tmc.empty:hover{background:rgba(255,255,255,.14)}
+.tmc-plus{font-size:20px;color:rgba(255,255,255,.6);line-height:1}
+.tmc-nm{font-size:8.5px;color:rgba(255,255,255,.7);font-weight:900}
+
+/* ---------- 替补席 ---------- */
+.tmbench{
+  position:relative;z-index:1;display:flex;justify-content:center;
+  gap:clamp(3px,.85vw,9px);padding:4px 0 0;flex:0 0 auto;
+  border-top:1px solid rgba(255,255,255,.16);
+}
+.tmbench .tmc{width:clamp(48px,6.2vw,72px)}
+.tmbench .tmc-bar b{font-size:clamp(7.5px,1.5vh,10px)}
+.tmbench .tmc-bar em{font-size:6.5px}
+
+/* ---------- 一键换人 ---------- */
+.tm-auto{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  z-index:6;padding:10px 16px;border-radius:4px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:900;color:#fff;
+  background:linear-gradient(180deg,#3a1016,#240a0e);
+  border:1.5px solid rgba(255,255,255,.4);
+  box-shadow:0 5px 18px -6px rgba(0,0,0,.95);
+}
+.tm-auto:hover{background:linear-gradient(180deg,#5a1a22,#341014);
+  border-color:#fff}
+.tm-auto b{letter-spacing:1px;white-space:nowrap}
+
+.tm-uid{position:absolute;left:6px;bottom:2px;font-size:9px;
+  color:rgba(255,255,255,.45);pointer-events:none}
+
+/* ---------- 矮屏压缩（iPhone 419px） ---------- */
+@media (max-height: 470px){
+  .tmt{padding:2px 9px 0}
+  .tmt-title{font-size:13.5px}
+  .tmt-btn{padding:4px 10px;font-size:10.5px}
+  .tmt-cap{padding:3px 9px 6px;min-width:126px}
+  .tmt-cap b{font-size:11.5px}
+  .tmt-cap em{font-size:10px}
+  .tmt-plus{width:23px;height:23px;font-size:14px}
+  .tmbody{gap:6px;padding:0 6px}
+  .tms{flex:0 0 178px;padding:7px;gap:3px}
+  .tms-name b{font-size:12.5px}
+  .tms-ovr{padding:3px 0 5px}
+  .tms-ovr span{font-size:10px}
+  .tms-ovr b{font-size:31px}
+  .tms-sec{font-size:10.5px;padding:3px 6px}
+  .tms-row{padding:1px 6px}
+  .tms-row span{font-size:10px}
+  .tms-row b{font-size:11px}
+  .tms-btn{padding:6px 0;font-size:11.5px}
+  .tms-count{font-size:9px}
+  .tmcourt{padding:4px 6px}
+  .tmslot-labels span{font-size:9.5px}
+  .tm-auto{padding:7px 11px;font-size:12px}
+  .tmbench{padding:2px 0 0}
+}
+
+/* =============================================================
+   iPhone 可上下滑动（v4.1）
+   -------------------------------------------------------------
+   用户反馈：iPhone 上页面被压缩，看不到下面的替补球员。
+   原因：.tmwrap 用了 height:100%，把内容硬塞进一屏。
+   改成 min-height:100% + 容器可滚动，内容自然撑开，
+   玩家下滑就能看到完整的替补席。
+   ============================================================= */
+#scr-team.active{
+  display:block!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch;
+  min-height:0;
+}
+#scr-team::-webkit-scrollbar{width:0}
+
+.tmwrap{
+  height:auto!important;
+  min-height:100%;
+  display:flex;flex-direction:column;gap:6px;
+}
+
+/* 主区不再强制一屏高度，让球场按内容撑开 */
+.tmbody{
+  flex:0 0 auto!important;
+  min-height:0;
+  align-items:stretch;
+}
+.tmcourt{
+  flex:0 0 auto!important;
+  min-height:0;
+  /* 保证首发 5 人 + 替补 7 人都能完整显示 */
+  padding:8px 10px 10px;
+}
+.tmcourt-row{
+  flex:0 0 auto!important;
+}
+.tmcourt-row.r1{padding-top:4px;padding-bottom:4px}
+.tmcourt-row.r2{padding-bottom:2px}
+.tmbench{flex:0 0 auto!important;padding-top:6px;margin-top:2px}
+
+/* 左栏也跟着内容走 */
+.tms{
+  flex:0 0 216px!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+
+/* 卡片尺寸用 vw 计算，不再依赖 vh（避免被高度压缩） */
+.tmc{width:clamp(70px,9.6vw,110px)}
+.tmc-img{aspect-ratio:3/4}
+.tmbench .tmc{width:clamp(52px,6.6vw,76px)}
+
+/* 一键换人改成随内容定位，不要绝对居中 */
+.tm-auto{
+  position:sticky;top:8px;align-self:flex-end;
+  transform:none!important;
+  margin-left:auto;margin-top:-46px;
+  z-index:8;
+}
+
+/* 舞台标签绝对定位到整块球场 */
+.tmslot-labels{position:absolute;inset:0}
+
+/* 矮屏（iPhone 419px 可用高度）：整体更紧凑但不裁切 */
+@media (max-height: 470px){
+  .tmwrap{gap:5px}
+  .tmcourt{padding:5px 7px 7px}
+  .tms{flex:0 0 176px!important}
+  .tm-auto{padding:6px 10px;font-size:11.5px;margin-top:-40px}
+  .tm-uid{position:static;text-align:left;padding:2px 6px 6px}
+}
+
+/* =============================================================
+   v4.2 一屏看完首发 + 替补（不用滑动）
+   -------------------------------------------------------------
+   iPhone 可用高度 419px，减去顶部栏约 66px，球队内容只有约 353px。
+   原来卡片用 3:4 照片 + 名字条，首发两行加替补一行需要 540px，放不下。
+   解法：把球场上的卡改成更"矮"的比例，并按可用高度反算宽度。
+     首发卡：照片 4:5   （3:4 → 4:5，明显变矮）
+     替补卡：照片 1:1   （更矮，一行 7 张）
+   注意：备用名单里的卡**保持原比例不变**（用户明确要求）。
+   ============================================================= */
+
+/* —— 用 clamp 按视口高度反算卡片宽度 ——
+   首发高 = W×5/4 + 14（名字条）
+   替补高 = W2 + 12，W2 = 0.74W
+   2×首发高 + 替补高 + 间距 ≤ 可用高度                       */
+.tmcourt{
+  --cst: clamp(58px, calc((100vh - 210px) / 3.06), 118px);
+}
+.tmcourt .tmcourt-row .tmc{width:var(--cst)}
+.tmcourt .tmcourt-row .tmc-img{aspect-ratio:4/5}
+.tmbench .tmc{width:calc(var(--cst) * 0.74)}
+.tmbench .tmc-img{aspect-ratio:1/1}
+
+/* 名字条与字号同步缩小，保证比例协调 */
+.tmcourt .tmcourt-row .tmc-bar b{font-size:clamp(8px,calc(var(--cst) * .13),13px)}
+.tmcourt .tmcourt-row .tmc-bar em{font-size:clamp(6.5px,calc(var(--cst) * .1),10px)}
+.tmbench .tmc-bar b{font-size:clamp(7px,calc(var(--cst) * .105),10.5px)}
+.tmbench .tmc-bar em{font-size:clamp(6px,calc(var(--cst) * .085),9px)}
+.tmcourt .tmcourt-row .tmc-ovr{font-size:clamp(13px,calc(var(--cst) * .24),26px)}
+.tmbench .tmc-ovr{font-size:clamp(11px,calc(var(--cst) * .19),20px)}
+.tmcourt .tmcourt-row .tmc-lv,
+.tmbench .tmc-lv{font-size:clamp(6px,calc(var(--cst) * .085),9px)}
+.tmcourt .tmcourt-row .tmc-max,
+.tmbench .tmc-max{font-size:clamp(5.5px,calc(var(--cst) * .08),8px);
+  padding:clamp(3px,calc(var(--cst) * .05),6px) 2px}
+
+/* 紧凑化：去掉多余留白 */
+.tmbody{gap:6px!important}
+.tmcourt{padding:6px 8px 6px!important;gap:0!important}
+.tmcourt-row.r1{padding:2px 0 0!important}
+.tmcourt-row.r2{padding:0!important}
+.tmbench{padding-top:4px!important;margin-top:0!important;
+  border-top-width:1px!important}
+.tms{gap:4px!important;padding:8px!important}
+.tms-ovr{padding:2px 0 4px!important}
+.tms-ovr b{font-size:clamp(24px,7.5vh,40px)!important}
+.tms-name{padding-bottom:4px!important}
+.tms-btn{padding:7px 0!important}
+
+/* 一键换人别占额外高度 */
+.tm-auto{margin-top:0!important;position:absolute!important;
+  right:8px;top:50%;transform:translateY(-50%)!important}
+.tm-uid{position:static!important;padding:1px 6px 3px!important}
+
+/* 备用名单保持原比例（3:4）—— 不要被上面的规则影响 */
+.tmp-grid .tmc{width:100%!important}
+.tmp-grid .tmc-img{aspect-ratio:3/4!important}
+.tmp-grid .tmc-ovr{font-size:clamp(15px,2.6vh,22px)!important}
+.tmp-grid .tmc-bar b{font-size:clamp(8.5px,1.75vh,11.5px)!important}
+
+/* =============================================================
+   v4.2b 短屏直接锁死尺寸（一屏看完，不用滑）
+   -------------------------------------------------------------
+   实测 iPhone：可视高度 313px，顶栏 35px。
+   可用给球场：约 270px。要放「首发两行 + 替补一行」，只能：
+     首发卡高 ~78px（照片 62 + 名字条 16）
+     替补卡高 ~56px（照片 44 + 名字条 12）
+     78×2 + 56 + 间距 6 = 218px  ✓ 放得下
+   所以这里直接写死高度，不再依赖 aspect-ratio（它在窄容器里不可靠）。
+   备用名单保持原比例不变。
+   ============================================================= */
+@media (max-height: 620px){
+  .tmcourt .tmcourt-row .tmc{
+    width:auto!important;
+    height:62px;
+  }
+  .tmcourt .tmcourt-row .tmc-img{
+    aspect-ratio:auto!important;
+    height:46px!important;
+    width:auto!important;
+    min-width:38px;
+  }
+  .tmcourt .tmcourt-row .tmc-bar{padding:1px 4px 2px!important}
+  .tmcourt .tmcourt-row .tmc-bar b{font-size:9px!important;line-height:1.15}
+  .tmcourt .tmcourt-row .tmc-bar em{font-size:7px!important;line-height:1.1}
+  .tmcourt .tmcourt-row .tmc-ovr{font-size:15px!important;right:2px;bottom:2px}
+  .tmcourt .tmcourt-row .tmc{padding-top:0}
+  .tmcourt .tmcourt-row .tmc-lv{font-size:6px!important;padding:0 2px}
+  .tmcourt .tmcourt-row .tmc-team{display:none}
+  .tmcourt .tmcourt-row .tmc-max{font-size:5.5px!important;
+    padding:3px 1px!important}
+
+  .tmbench .tmc{width:auto!important;height:48px}
+  .tmbench .tmc-img{aspect-ratio:auto!important;height:34px!important;
+    width:auto!important;min-width:28px}
+  .tmbench .tmc-bar{padding:0 3px 1px!important}
+  .tmbench .tmc-bar b{font-size:7.5px!important;line-height:1.1}
+  .tmbench .tmc-bar em{font-size:6px!important;line-height:1}
+  .tmbench .tmc-ovr{font-size:11px!important;right:1px;bottom:1px}
+  .tmbench .tmc-lv{font-size:5.5px!important;padding:0 1px}
+  .tmbench .tmc-max{font-size:4.5px!important;padding:2px 1px!important}
+
+  .tmcourt{gap:0!important;padding:4px 6px 4px!important}
+  .tmcourt-row.r1{padding:0!important}
+  .tmcourt-row.r2{padding:0!important}
+  .tmcourt-row{gap:clamp(6px,2.6vw,34px)!important}
+  .tmbench{gap:clamp(3px,.8vw,8px)!important;padding-top:3px!important}
+  .tmt{padding:2px 9px 0!important}
+  .tmbody{padding:0 6px!important}
+  .tms{padding:6px!important;gap:3px!important}
+  .tms-ovr b{font-size:26px!important}
+  .tms-btn{padding:5px 0!important;font-size:11px!important}
+  .tm-auto{padding:6px 10px!important;font-size:11px!important}
+  .tmslot-labels span{font-size:9px!important}
+  .tm-uid{font-size:8px!important;padding:0 6px 2px!important}
+}
+
+/* 备用名单：保持 3:4 原比例（不被上面的高度规则影响） */
+@media (max-height: 620px){
+  .tmp-grid .tmc{height:auto!important}
+  .tmp-grid .tmc-img{aspect-ratio:3/4!important;height:auto!important;
+    width:100%!important;min-width:0!important}
+  .tmp-grid .tmc-bar{padding:2px 4px 3px!important}
+  .tmp-grid .tmc-bar b{font-size:11px!important}
+  .tmp-grid .tmc-bar em{font-size:7.5px!important}
+  .tmp-grid .tmc-ovr{font-size:19px!important;right:3px;bottom:3px}
+  .tmp-grid .tmc-lv{font-size:7.5px!important;padding:0 3px}
+  .tmp-grid .tmc-team{display:block!important}
+}
+
+/* =============================================================
+   v4.2c 明确尺寸（修上一版"卡片塌陷重叠"）
+   -------------------------------------------------------------
+   上一版用 width:auto + min-width，flex 项会收缩到内容宽，
+   结果卡片挤在一起、文字重叠。
+   这一版直接写死宽高：
+     首发卡 62×76（照片）+ 名字条 18  = 94
+     替补卡 46×56（照片）+ 名字条 14  = 70
+     94×2 + 70 + 间距 8 = 266  ≤ 270（可用高度）✓
+   ============================================================= */
+@media (max-height: 620px){
+  .tmcourt-row.r1,.tmcourt-row.r2{min-height:0!important}
+  .tmcourt .tmcourt-row .tmc{
+    width:62px!important;height:auto!important;
+    min-width:62px!important;max-width:62px!important;
+    flex:0 0 62px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-img{
+    width:62px!important;height:76px!important;
+    min-width:0!important;
+    aspect-ratio:auto!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar{min-height:18px}
+  .tmbench .tmc{
+    width:46px!important;height:auto!important;
+    min-width:46px!important;max-width:46px!important;
+    flex:0 0 46px!important;
+  }
+  .tmbench .tmc-img{
+    width:46px!important;height:56px!important;
+    min-width:0!important;
+    aspect-ratio:auto!important;
+  }
+  .tmbench .tmc-bar{min-height:14px}
+  /* 行间距给足，避免重叠 */
+  .tmcourt-row{gap:clamp(10px,3.4vw,46px)!important;align-items:flex-start!important}
+  .tmcourt-row.r1{padding-bottom:2px!important}
+  .tmcourt-row.r2{padding-bottom:4px!important}
+  .tmbench{gap:clamp(4px,1vw,10px)!important}
+}
+
+/* v4.2d 锁死卡片总高（名字条被撑高到 37px，必须硬性裁切） */
+@media (max-height: 620px){
+  .tmcourt .tmcourt-row .tmc{
+    width:62px!important;height:92px!important;
+    min-width:62px!important;max-width:62px!important;
+    min-height:92px!important;max-height:92px!important;
+    flex:0 0 62px!important;overflow:hidden!important;
+  }
+  .tmcourt .tmcourt-row .tmc-img{
+    width:62px!important;height:72px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar{
+    height:20px!important;overflow:hidden!important;
+    padding:1px 3px!important;display:block!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar b{
+    font-size:8px!important;line-height:11px!important;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .tmcourt .tmcourt-row .tmc-bar em{
+    font-size:6.5px!important;line-height:8px!important;display:block;
+  }
+  .tmbench .tmc{
+    width:46px!important;height:70px!important;
+    min-width:46px!important;max-width:46px!important;
+    min-height:70px!important;max-height:70px!important;
+    flex:0 0 46px!important;overflow:hidden!important;
+  }
+  .tmbench .tmc-img{width:46px!important;height:54px!important}
+  .tmbench .tmc-bar{
+    height:16px!important;overflow:hidden!important;
+    padding:0 2px!important;display:block!important;
+  }
+  .tmbench .tmc-bar b{
+    font-size:7px!important;line-height:9px!important;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .tmbench .tmc-bar em{font-size:5.5px!important;line-height:7px!important}
+  /* 三行总高：92×2 + 70 + 间距 ≈ 262，可用约 270 */
+  .tmcourt-row.r1{padding-bottom:3px!important}
+  .tmcourt-row.r2{padding-bottom:5px!important}
+  .tmslot-labels span{font-size:8.5px!important}
+}
+
+/* v4.2e 最终压缩：三行总高 236px，一屏放完 */
+@media (max-height: 620px){
+  .tmcourt .tmcourt-row .tmc{
+    width:58px!important;height:84px!important;
+    min-width:58px!important;max-width:58px!important;
+    min-height:84px!important;max-height:84px!important;
+    flex:0 0 58px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-img{width:58px!important;height:66px!important}
+  .tmcourt .tmcourt-row .tmc-bar{height:18px!important}
+  .tmbench .tmc,
+  .tmbench .tmc.empty{
+    width:44px!important;height:64px!important;
+    min-width:44px!important;max-width:44px!important;
+    min-height:64px!important;max-height:64px!important;
+    flex:0 0 44px!important;aspect-ratio:auto!important;
+  }
+  .tmbench .tmc-img{width:44px!important;height:50px!important}
+  .tmbench .tmc-bar{height:14px!important}
+  .tmbench .tmc-plus{font-size:15px!important}
+  .tmbench .tmc-nm{font-size:7px!important}
+  /* 替补行不留多余上下空间 */
+  .tmbench{
+    padding:2px 0 0!important;margin:0!important;
+    align-items:flex-start!important;min-height:0!important;
+  }
+  .tmcourt{min-height:0!important}
+  .tmcourt-row.r1{padding:0 0 2px!important;min-height:0!important}
+  .tmcourt-row.r2{padding:0 0 3px!important;min-height:0!important}
+  .tmt{min-height:0!important}
+  .tmbody{min-height:0!important}
+  .tmcourt{align-items:flex-start!important}
+}
+
+/* v4.2f 最后一刀：替补行硬性限高（内部有 37px 多余高度） */
+@media (max-height: 620px){
+  .tmbench{
+    height:68px!important;max-height:68px!important;
+    min-height:0!important;overflow:hidden!important;
+    display:flex!important;align-items:flex-start!important;
+  }
+  .tmbench .tmc,
+  .tmbench .tmc.empty{
+    height:64px!important;max-height:64px!important;
+  }
+  .tmcourt-row.r1,.tmcourt-row.r2{
+    height:auto!important;max-height:none!important;
+  }
+  /* 整块球场限高，确保一屏 */
+  .tmcourt{max-height:calc(100vh - 118px)!important;overflow:hidden!important}
+  #scr-team.active{overflow-y:auto!important}
+}
+
+/* =============================================================
+   备用名单（1:1 复刻参考图：左侧浮层面板 + 2×3 六宫格 + 拖放）
+   ============================================================= */
+#tmPoolLayer{
+  position:fixed;left:0;top:0;bottom:0;z-index:840;
+  pointer-events:none;                 /* 面板外不挡球场点击 */
+  display:flex;align-items:stretch;
+}
+#tmPoolLayer.hidden{display:none!important}
+.tmp-panel{
+  pointer-events:auto;
+  width:clamp(230px,24vw,300px);
+  margin:calc(env(safe-area-inset-top) + 4px) 0 4px 4px;
+  display:flex;flex-direction:column;gap:0;
+  border-radius:4px;overflow:hidden;
+  background:linear-gradient(170deg,#f2f4f8,#e2e6ee);
+  border:2px solid #b8c2d0;
+  box-shadow:0 12px 34px -10px rgba(0,0,0,.95);
+}
+.tmp-head{
+  padding:7px 0;text-align:center;font-size:14px;font-weight:900;
+  color:#fff;letter-spacing:2px;
+  background:linear-gradient(180deg,#1a4f96,#0d2c56);
+}
+.tmp-filter{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  margin:7px 9px 5px;padding:8px 0;border-radius:3px;cursor:pointer;
+  font-family:inherit;font-size:13px;font-weight:900;color:#fff;border:0;
+  background:linear-gradient(180deg,#2b7fe0,#1558a8);
+  box-shadow:0 3px 10px -4px rgba(21,88,168,.9);
+}
+.tmp-filter:hover{background:linear-gradient(180deg,#3a92f0,#1a68c0)}
+.tmp-filter b{letter-spacing:1px}
+.tmp-filter em{font-style:normal;font-size:10px;padding:1px 6px;
+  border-radius:4px;background:rgba(255,255,255,.28)}
+
+.tmp-fchips{display:flex;gap:4px;flex-wrap:wrap;padding:0 9px 6px}
+.tmp-fchip{
+  padding:3px 10px;border-radius:5px;cursor:pointer;font-family:inherit;
+  font-size:11px;font-weight:900;
+  background:rgba(13,22,38,.08);border:1.5px solid rgba(13,22,38,.16);
+  color:#3a4658;
+}
+.tmp-fchip.on{background:linear-gradient(135deg,#2b7fe0,#1558a8);color:#fff;
+  border-color:#1558a8}
+
+/* 2 列 × 3 行 = 6 个 */
+.tmp-list{
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+  padding:2px 9px 6px;align-content:start;
+}
+.tmp-list::-webkit-scrollbar{width:5px}
+.tmp-list::-webkit-scrollbar-thumb{background:rgba(13,22,38,.28);
+  border-radius:3px}
+.tmp-list .tmc{
+  width:100%!important;height:auto!important;
+  min-width:0!important;max-width:none!important;
+  min-height:0!important;max-height:none!important;
+  flex:none!important;overflow:hidden!important;
+  border-color:rgba(13,22,38,.28);
+  background:#fff;
+}
+.tmp-list .tmc-img{
+  width:100%!important;height:auto!important;aspect-ratio:4/5!important;
+}
+.tmp-list .tmc-bar{
+  height:auto!important;min-height:20px!important;padding:2px 4px 3px!important;
+}
+.tmp-list .tmc-bar b{font-size:11px!important;line-height:14px!important}
+.tmp-list .tmc-bar em{font-size:8px!important;line-height:10px!important}
+.tmp-list .tmc-ovr{font-size:20px!important;right:4px;bottom:4px}
+.tmp-list .tmc-lv{font-size:8px!important;padding:0 3px}
+.tmp-list .tmc-team{display:block!important;font-size:7px!important;top:15px}
+.tmp-list .tmc-max{font-size:7px!important;padding:5px 2px!important}
+.tmp-list .tmc:hover{transform:translateY(-2px);
+  border-color:#2b7fe0}
+.tmp-empty{grid-column:1/-1;text-align:center;padding:26px 8px;
+  color:#5a6478;font-size:12px;line-height:1.8}
+.tmp-empty span{font-size:10.5px;opacity:.75}
+
+.tmp-pager{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5px 12px 8px;flex:0 0 auto;
+  border-top:1px solid rgba(13,22,38,.14);
+}
+.tmp-pg{
+  width:36px;height:26px;border-radius:3px;cursor:pointer;border:0;
+  font-family:inherit;font-size:14px;font-weight:900;
+  background:linear-gradient(180deg,#2b7fe0,#1558a8);color:#fff;
+}
+.tmp-pg:disabled{opacity:.32;cursor:default}
+.tmp-pager span{font-size:13px;font-weight:900;color:#0d1626;
+  font-variant-numeric:tabular-nums}
+
+/* 提示 + 拖拽反馈 */
+.tmp-hint{
+  pointer-events:none;position:absolute;left:50%;bottom:6px;
+  transform:translateX(-50%);font-size:10.5px;color:rgba(255,255,255,.8);
+  background:rgba(0,0,0,.55);padding:3px 10px;border-radius:10px;
+  white-space:nowrap;
+}
+.tmc.dragging{opacity:.45}
+.tmc.dropzone,.tmc.empty.dropzone{
+  border-color:#ffd977!important;
+  box-shadow:0 0 0 2px #ffd977,0 0 16px -2px rgba(245,196,81,.95)!important;
+  background:rgba(245,196,81,.22)!important;
+}
+.tm-dragghost{
+  position:fixed!important;z-index:9999;pointer-events:none;
+  width:60px!important;height:auto!important;opacity:.92;
+  box-shadow:0 8px 22px -6px rgba(0,0,0,.95);
+  border-color:#ffd977!important;
+}
+.tmp-list .tmc[draggable="true"]{cursor:grab}
+.tmp-list .tmc[draggable="true"]:active{cursor:grabbing}
+
+/* 矮屏 */
+@media (max-height: 620px){
+  .tmp-panel{width:clamp(200px,22vw,262px)}
+  .tmp-head{font-size:12px;padding:5px 0}
+  .tmp-filter{margin:5px 7px 4px;padding:6px 0;font-size:11.5px}
+  .tmp-list{gap:5px;padding:2px 7px 5px}
+  .tmp-list .tmc-bar b{font-size:10px!important;line-height:12px!important}
+  .tmp-list .tmc-bar em{font-size:7.5px!important;line-height:9px!important}
+  .tmp-list .tmc-ovr{font-size:17px!important}
+  .tmp-pager{padding:4px 10px 6px}
+  .tmp-pg{width:32px;height:23px;font-size:12px}
+  .tmp-pager span{font-size:12px}
+}
+
+/* v4.3 面板加宽：卡片更大、翻页器完整可见 */
+.tmp-panel{
+  width:clamp(280px,30vw,360px)!important;
+}
+.tmp-list{
+  grid-template-columns:1fr 1fr!important;
+  gap:7px!important;
+  padding:3px 10px 8px!important;
+}
+.tmp-list .tmc-img{aspect-ratio:1/1!important}   /* 更矮，保证 3 行放得下 */
+.tmp-list .tmc-bar b{font-size:12px!important;line-height:15px!important}
+.tmp-list .tmc-bar em{font-size:8.5px!important;line-height:11px!important}
+.tmp-list .tmc-ovr{font-size:22px!important;right:4px;bottom:4px}
+.tmp-pager{
+  padding:6px 14px 9px!important;
+  background:linear-gradient(180deg,rgba(13,22,38,.05),rgba(13,22,38,.11));
+}
+.tmp-pg{width:40px!important;height:28px!important;font-size:15px!important}
+.tmp-pager span{font-size:14px!important}
+.tmp-head{font-size:15px!important;padding:8px 0!important}
+.tmp-filter{font-size:14px!important;padding:9px 0!important;margin:8px 10px 6px!important}
+.tmp-hint{font-size:11px!important;bottom:8px}
+
+@media (max-height: 620px){
+  .tmp-panel{width:clamp(250px,27vw,310px)!important}
+  .tmp-list{gap:5px!important;padding:2px 8px 6px!important}
+  .tmp-list .tmc-bar b{font-size:10.5px!important;line-height:13px!important}
+  .tmp-list .tmc-bar em{font-size:8px!important;line-height:10px!important}
+  .tmp-list .tmc-ovr{font-size:18px!important}
+  .tmp-head{font-size:13px!important;padding:6px 0!important}
+  .tmp-filter{font-size:12px!important;padding:7px 0!important;margin:6px 8px 4px!important}
+  .tmp-pg{width:34px!important;height:25px!important;font-size:13px!important}
+  .tmp-pager span{font-size:12.5px!important}
+  .tmp-pager{padding:4px 11px 7px!important}
+}
+
+/* =============================================================
+   v4.4 备用名单铺满屏幕（修正：面板太窄导致卡片被切）
+   -------------------------------------------------------------
+   问题：面板宽度 clamp(250px,27vw,310px)，但 2 列卡片需要更多空间，
+   结果第二列被裁掉一半，右边球场又空着一大片。
+   修法：面板加宽到屏幕的 44%（上限 520px），
+   高度铺满整个屏幕，卡片完整显示、更大更好点。
+   ============================================================= */
+#tmPoolLayer{
+  top:0!important;bottom:0!important;
+  align-items:stretch!important;
+}
+.tmp-panel{
+  width:clamp(300px,44vw,520px)!important;
+  height:auto!important;
+  margin:0!important;
+  border-radius:0!important;
+  border-left:0!important;border-top:0!important;border-bottom:0!important;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tmp-head{
+  font-size:16px!important;padding:11px 0!important;letter-spacing:3px;
+}
+.tmp-filter{
+  margin:10px 12px 8px!important;padding:12px 0!important;
+  font-size:15px!important;border-radius:4px!important;
+}
+.tmp-fchips{padding:0 12px 8px!important;gap:5px!important}
+.tmp-fchip{font-size:12px!important;padding:4px 13px!important}
+
+/* 卡片放大：2 列恰好铺满面板宽度 */
+.tmp-list{
+  grid-template-columns:1fr 1fr!important;
+  gap:9px!important;
+  padding:4px 12px 10px!important;
+}
+.tmp-list .tmc{
+  width:100%!important;max-width:100%!important;
+  height:auto!important;
+}
+.tmp-list .tmc-img{aspect-ratio:1/1!important;width:100%!important;
+  height:auto!important}
+.tmp-list .tmc-bar{
+  min-height:24px!important;padding:3px 6px 4px!important;
+}
+.tmp-list .tmc-bar b{font-size:13px!important;line-height:16px!important}
+.tmp-list .tmc-bar em{font-size:9px!important;line-height:12px!important}
+.tmp-list .tmc-ovr{font-size:24px!important;right:5px;bottom:5px}
+.tmp-list .tmc-lv{font-size:9px!important;padding:1px 4px!important}
+.tmp-list .tmc-team{font-size:8px!important;top:17px!important}
+.tmp-list .tmc-max{font-size:8px!important;padding:6px 2px!important}
+
+.tmp-pager{
+  padding:8px 16px 12px!important;
+  background:linear-gradient(180deg,#e8ecf2,#d6dbe4)!important;
+}
+.tmp-pg{width:52px!important;height:36px!important;font-size:18px!important;
+  border-radius:4px!important}
+.tmp-pager span{font-size:16px!important}
+.tmp-hint{
+  left:22%!important;bottom:14px!important;
+  font-size:12px!important;padding:5px 14px!important;
+}
+
+/* 矮屏（iPhone）：仍然铺满，尺寸按比例收 */
+@media (max-height: 620px){
+  .tmp-panel{width:clamp(280px,42vw,460px)!important}
+  .tmp-head{font-size:13px!important;padding:7px 0!important}
+  .tmp-filter{margin:7px 9px 5px!important;padding:8px 0!important;
+    font-size:12.5px!important}
+  .tmp-fchip{font-size:11px!important;padding:3px 10px!important}
+  .tmp-list{gap:6px!important;padding:3px 9px 7px!important}
+  .tmp-list .tmc-bar{min-height:18px!important;padding:2px 4px 2px!important}
+  .tmp-list .tmc-bar b{font-size:10.5px!important;line-height:13px!important}
+  .tmp-list .tmc-bar em{font-size:7.5px!important;line-height:9px!important}
+  .tmp-list .tmc-ovr{font-size:18px!important}
+  .tmp-list .tmc-lv{font-size:7px!important}
+  .tmp-pager{padding:5px 12px 8px!important}
+  .tmp-pg{width:40px!important;height:28px!important;font-size:14px!important}
+  .tmp-pager span{font-size:13px!important}
+  .tmp-hint{left:21%!important;bottom:9px!important;font-size:10.5px!important}
+}
+
+/* =============================================================
+   v4.5 备用名单卡片改横版（铺满面板宽度且内容完整）
+   -------------------------------------------------------------
+   问题：面板加宽到 402px 后，竖版卡片是 188px 宽的正方形照片，
+   而每行只有 78px 高 → 照片被裁得只剩一小条。
+   解法：改成横版卡片（照片在左、姓名/位置/综合在右），
+   正好铺满 188×78 的格子，信息一个不少。
+   ============================================================= */
+.tmp-list{
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+  padding:5px 11px 9px!important;
+  align-content:start!important;
+}
+.tmp-list .tmc{
+  display:grid!important;
+  grid-template-columns:46px 1fr!important;
+  grid-template-rows:auto!important;
+  align-items:center!important;
+  gap:7px!important;
+  width:100%!important;max-width:100%!important;
+  height:auto!important;min-height:60px!important;max-height:none!important;
+  padding:5px 7px!important;
+  overflow:hidden!important;
+  background:linear-gradient(160deg,#ffffff,#eef1f6)!important;
+  border:1.5px solid rgba(13,22,38,.22)!important;
+  border-radius:4px!important;
+}
+.tmp-list .tmc:hover{
+  border-color:#2b7fe0!important;
+  box-shadow:0 4px 14px -5px rgba(43,127,224,.85);
+  transform:translateY(-1px);
+}
+/* 照片固定 46×58（3:4），不再被拉伸 */
+.tmp-list .tmc-img{
+  grid-column:1;grid-row:1;
+  width:46px!important;height:58px!important;
+  min-width:46px!important;max-width:46px!important;
+  min-height:58px!important;max-height:58px!important;
+  aspect-ratio:auto!important;
+  border-radius:3px;overflow:hidden;
+}
+.tmp-list .tmc-img img{width:100%;height:100%;object-fit:cover;
+  object-position:top}
+/* 等级/队标/MAX 贴在照片上 */
+.tmp-list .tmc-lv{
+  left:3px!important;top:3px!important;font-size:7px!important;
+  padding:0 3px!important;
+}
+.tmp-list .tmc-team{left:3px!important;top:15px!important;font-size:6.5px!important}
+.tmp-list .tmc-max{
+  right:3px!important;top:3px!important;font-size:6px!important;
+  padding:4px 1px!important;
+}
+/* 右侧信息区 */
+.tmp-list .tmc-ovr{
+  position:static!important;grid-column:2;grid-row:1;
+  font-size:19px!important;color:#0d1626!important;
+  text-shadow:none!important;text-align:right;
+  align-self:start;line-height:1;
+}
+.tmp-list .tmc-bar{
+  grid-column:2;grid-row:1;
+  background:none!important;padding:0!important;
+  display:flex;flex-direction:column;gap:2px;
+  align-self:center;text-align:left!important;
+  min-height:0!important;height:auto!important;
+  padding-right:34px!important;
+}
+.tmp-list .tmc-bar b{
+  font-size:12px!important;line-height:15px!important;
+  color:#0d1626!important;text-shadow:none!important;
+  text-align:left!important;
+}
+.tmp-list .tmc-bar em{
+  font-size:9px!important;line-height:12px!important;
+  color:#5a6478!important;text-align:left!important;
+}
+.tmp-empty{grid-column:1/-1}
+
+/* 矮屏：横版卡片按比例收 */
+@media (max-height: 620px){
+  .tmp-panel{width:clamp(300px,46vw,470px)!important}
+  .tmp-list{gap:6px!important;padding:4px 9px 7px!important}
+  .tmp-list .tmc{
+    grid-template-columns:38px 1fr!important;gap:6px!important;
+    min-height:50px!important;padding:4px 6px!important;
+  }
+  .tmp-list .tmc-img{
+    width:38px!important;height:48px!important;
+    min-width:38px!important;max-width:38px!important;
+    min-height:48px!important;max-height:48px!important;
+  }
+  .tmp-list .tmc-ovr{font-size:16px!important}
+  .tmp-list .tmc-bar{padding-right:28px!important}
+  .tmp-list .tmc-bar b{font-size:10.5px!important;line-height:13px!important}
+  .tmp-list .tmc-bar em{font-size:8px!important;line-height:10px!important}
+}
+
+/* v4.5b 综合分回到照片右下角（之前被 position:static 挤没了） */
+.tmp-list .tmc-ovr{
+  position:absolute!important;
+  grid-column:auto!important;grid-row:auto!important;
+  right:3px!important;bottom:3px!important;
+  font-size:15px!important;line-height:1!important;
+  color:#fff!important;
+  text-shadow:0 0 3px #000,0 0 6px #000,0 1px 0 #000!important;
+  text-align:right!important;align-self:auto!important;
+}
+@media (max-height: 620px){
+  .tmp-list .tmc-ovr{font-size:13px!important;right:2px!important;
+    bottom:2px!important}
+}
+
+/* =============================================================
+   v4.6 备用名单全屏铺满 iPhone 17 Pro Max（956×440）
+   -------------------------------------------------------------
+   用户要求：等比例铺满整块屏幕。
+   做法：
+     · 面板 = 100% 宽 × 100% 高（全屏，不再是左侧浮层）
+     · 网格 = 2 列 × 3 行，行高按 1fr 均分，正好填满剩余空间
+     · 卡片铺满自己的格子（横版：照片在左、信息在右）
+     · 顶部标题/筛选、底部翻页也随之放大，整体等比
+   ============================================================= */
+#tmPoolLayer{
+  left:0!important;right:0!important;top:0!important;bottom:0!important;
+  display:block!important;
+}
+.tmp-panel{
+  width:100%!important;max-width:none!important;
+  height:100%!important;
+  margin:0!important;border:0!important;border-radius:0!important;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  background:linear-gradient(170deg,#eef1f6,#dde2ea)!important;
+}
+.tmp-head{
+  font-size:clamp(14px,3.4vh,20px)!important;
+  padding:clamp(6px,1.6vh,12px) 0!important;letter-spacing:3px;
+}
+.tmp-filter{
+  margin:clamp(6px,1.6vh,12px) clamp(14px,3vw,28px) clamp(4px,1.2vh,10px)!important;
+  padding:clamp(7px,1.9vh,13px) 0!important;
+  font-size:clamp(12px,2.9vh,17px)!important;
+}
+.tmp-fchips{padding:0 clamp(14px,3vw,28px) clamp(4px,1.2vh,8px)!important}
+.tmp-fchip{font-size:clamp(10px,2.3vh,13px)!important;
+  padding:clamp(2px,.8vh,5px) clamp(10px,2vw,16px)!important}
+
+/* 网格：2 列 × 3 行，行高均分填满 */
+.tmp-list{
+  flex:1 1 auto!important;min-height:0!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  grid-template-rows:repeat(3,1fr)!important;
+  gap:clamp(5px,1.4vh,12px) clamp(10px,2vw,20px)!important;
+  padding:clamp(4px,1.2vh,10px) clamp(14px,3vw,28px)!important;
+  align-content:stretch!important;
+  overflow:hidden!important;
+}
+.tmp-list .tmc{
+  display:grid!important;
+  grid-template-columns:auto 1fr!important;
+  align-items:center!important;
+  gap:clamp(8px,1.8vw,16px)!important;
+  width:100%!important;max-width:100%!important;
+  height:100%!important;min-height:0!important;max-height:none!important;
+  padding:clamp(4px,1.2vh,9px) clamp(8px,1.6vw,14px)!important;
+  border-radius:5px!important;
+  background:linear-gradient(160deg,#ffffff,#e9edf4)!important;
+  border:1.5px solid rgba(13,22,38,.2)!important;
+  overflow:hidden!important;
+}
+/* 照片：按行高自适应，保持 3:4 */
+.tmp-list .tmc-img{
+  width:auto!important;height:100%!important;
+  min-width:0!important;max-width:none!important;
+  min-height:0!important;max-height:100%!important;
+  aspect-ratio:3/4!important;
+  border-radius:4px;overflow:hidden;flex:0 0 auto;
+}
+.tmp-list .tmc-img img{width:100%;height:100%;object-fit:cover;
+  object-position:top}
+.tmp-list .tmc-lv{font-size:clamp(6px,1.4vh,9px)!important;
+  padding:0 clamp(2px,.5vw,4px)!important}
+.tmp-list .tmc-team{top:clamp(12px,2.8vh,18px)!important;
+  font-size:clamp(6px,1.3vh,8.5px)!important}
+.tmp-list .tmc-max{font-size:clamp(5px,1.1vh,7.5px)!important;
+  padding:clamp(3px,.9vh,6px) 2px!important}
+.tmp-list .tmc-ovr{
+  position:absolute!important;right:clamp(3px,.6vw,6px)!important;
+  bottom:clamp(3px,.6vh,5px)!important;
+  font-size:clamp(12px,2.8vh,20px)!important;
+}
+/* 右侧信息区等比放大 */
+.tmp-list .tmc-bar{
+  grid-column:2!important;background:none!important;
+  padding:0 clamp(30px,7vw,70px) 0 0!important;
+  display:flex;flex-direction:column;gap:clamp(1px,.5vh,4px);
+  align-self:center;text-align:left!important;
+  min-height:0!important;height:auto!important;overflow:visible!important;
+}
+.tmp-list .tmc-bar b{
+  font-size:clamp(11px,2.4vh,17px)!important;
+  line-height:1.25!important;color:#0d1626!important;
+  text-shadow:none!important;text-align:left!important;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tmp-list .tmc-bar em{
+  font-size:clamp(8.5px,1.9vh,13px)!important;
+  line-height:1.2!important;color:#5a6478!important;
+  text-align:left!important;
+}
+.tmp-empty{grid-column:1/-1;grid-row:1/-1}
+
+/* 翻页器铺满底部 */
+.tmp-pager{
+  padding:clamp(5px,1.5vh,11px) clamp(18px,4vw,40px)!important;
+}
+.tmp-pg{
+  width:clamp(38px,8vw,64px)!important;height:clamp(26px,6vh,40px)!important;
+  font-size:clamp(13px,3vh,19px)!important;border-radius:5px!important;
+}
+.tmp-pager span{font-size:clamp(12px,2.7vh,17px)!important}
+.tmp-hint{display:none!important}   /* 全屏时不需要提示气泡 */
+
+/* 返回按钮 + 人数（全屏时的退出路径） */
+.tmp-head{
+  position:relative!important;
+  display:flex!important;align-items:center!important;
+  justify-content:center!important;gap:clamp(8px,2vw,18px);
+}
+.tmp-back{
+  position:absolute;left:clamp(8px,2vw,18px);top:50%;
+  transform:translateY(-50%);
+  padding:clamp(4px,1.1vh,9px) clamp(10px,2.2vw,20px);
+  border-radius:5px;cursor:pointer;border:0;
+  font-family:inherit;font-weight:900;color:#0d1626;
+  font-size:clamp(10px,2.2vh,15px)!important;letter-spacing:1px;
+  background:linear-gradient(180deg,#ffffff,#d6dbe4);
+  box-shadow:0 2px 8px -3px rgba(0,0,0,.7);
+}
+.tmp-back:hover{background:linear-gradient(180deg,#ffffff,#e8ecf2);
+  color:#0d1626}
+.tmp-back:active{transform:translateY(-50%) scale(.95)}
+.tmp-count{
+  position:absolute;right:clamp(10px,2.2vw,20px);top:50%;
+  transform:translateY(-50%);
+  font-size:clamp(9px,1.9vh,13px);color:rgba(255,255,255,.82);
+  font-weight:900;white-space:nowrap;
+}
+@media (max-height: 470px){
+  .tmp-back{padding:3px 9px;font-size:10px!important}
+  .tmp-count{font-size:9px}
+}
+
+/* =============================================================
+   v4.7 备用名单：严格按参考图比例（竖版卡 + 左侧窄面板 + 可滑动）
+   -------------------------------------------------------------
+   参考图比例（以 1904px 宽为基准）：
+     面板宽 ≈ 360px  →  占屏幕 19%
+     卡片宽 ≈ 145px  →  占面板 40%（2 列）
+     卡片为竖版：照片 3:4 在上，名字条在下
+   换算到 iPhone 956px：
+     面板 = 956 × 20% ≈ 190px
+     卡片 = (190 - 内边距) / 2 ≈ 80px 宽 → 照片 80×107
+     3 行 = (107+22)×3 ≈ 387px + 头/筛选/翻页 ≈ 480px
+     → 超过可用高度 419px，所以**列表区可上下滑动**（用户认可的方案）
+   ============================================================= */
+#tmPoolLayer{
+  left:0!important;right:auto!important;top:0!important;bottom:0!important;
+  width:auto!important;display:flex!important;
+}
+.tmp-panel{
+  width:20vw!important;
+  min-width:170px!important;
+  max-width:280px!important;
+  height:100%!important;
+  margin:0!important;
+  border-radius:0 6px 6px 0!important;
+  border-left:0!important;border-top:0!important;border-bottom:0!important;
+  border-right:2px solid #b8c2d0!important;
+  background:linear-gradient(170deg,#f2f4f8,#e2e6ee)!important;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  overflow:hidden!important;
+}
+.tmp-head{
+  flex:0 0 auto!important;
+  display:block!important;position:relative!important;
+  padding:8px 0!important;
+}
+.tmp-head b{
+  display:block!important;text-align:center!important;
+  font-size:clamp(12px,2.8vh,16px)!important;letter-spacing:2px;
+}
+.tmp-back{
+  position:absolute!important;left:6px!important;top:50%!important;
+  transform:translateY(-50%)!important;
+  padding:3px 8px!important;font-size:clamp(9px,1.9vh,12px)!important;
+  border-radius:4px!important;
+}
+.tmp-count{display:none!important}   /* 窄面板放不下计数 */
+
+.tmp-filter{
+  flex:0 0 auto!important;
+  margin:5px 7px 4px!important;padding:8px 0!important;
+  font-size:clamp(10px,2.3vh,13px)!important;
+}
+.tmp-fchips{flex:0 0 auto!important;padding:0 7px 4px!important;gap:3px!important}
+.tmp-fchip{font-size:9.5px!important;padding:2px 8px!important}
+
+/* 2 列竖版卡，列表可滚动 */
+.tmp-list{
+  flex:1 1 auto!important;min-height:0!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  grid-template-rows:none!important;
+  grid-auto-rows:min-content!important;
+  gap:6px!important;
+  padding:3px 7px 8px!important;
+  align-content:start!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch;
+}
+.tmp-list::-webkit-scrollbar{width:4px}
+.tmp-list::-webkit-scrollbar-thumb{background:rgba(13,22,38,.3);
+  border-radius:2px}
+
+/* 竖版卡：照片在上（3:4），名字条在下 */
+.tmp-list .tmc{
+  display:block!important;
+  width:100%!important;max-width:100%!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  padding:0!important;gap:0!important;
+  border-radius:4px!important;overflow:hidden!important;
+  background:#fff!important;
+  border:1.5px solid rgba(13,22,38,.22)!important;
+}
+.tmp-list .tmc-img{
+  width:100%!important;height:auto!important;
+  min-width:0!important;max-width:none!important;
+  min-height:0!important;max-height:none!important;
+  aspect-ratio:3/4!important;
+  border-radius:0!important;
+}
+.tmp-list .tmc-bar{
+  display:block!important;grid-column:auto!important;
+  padding:2px 3px 3px!important;
+  text-align:center!important;min-height:0!important;
+  background:inherit;
+}
+.tmp-list .tmc-bar b{
+  font-size:clamp(8.5px,1.75vh,11px)!important;line-height:1.2!important;
+  text-align:center!important;color:#fff!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.85)!important;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tmp-list .tmc-bar em{
+  font-size:clamp(6.5px,1.35vh,8.5px)!important;line-height:1.1!important;
+  text-align:center!important;color:rgba(255,255,255,.88)!important;
+}
+/* 名字条用档位配色（和参考图一致） */
+.tmp-list .tmc-bar[style]{background-clip:padding-box}
+.tmp-list .tmc-ovr{
+  position:absolute!important;right:3px!important;bottom:3px!important;
+  font-size:clamp(13px,2.7vh,19px)!important;color:#fff!important;
+  text-shadow:0 0 3px #000,0 0 6px #000,0 1px 0 #000!important;
+}
+.tmp-list .tmc-lv{font-size:clamp(5.5px,1.2vh,8px)!important;
+  padding:0 3px!important}
+.tmp-list .tmc-team{top:clamp(11px,2.4vh,15px)!important;
+  font-size:clamp(5.5px,1.15vh,7.5px)!important}
+.tmp-list .tmc-max{font-size:clamp(5px,1.05vh,7px)!important;
+  padding:clamp(3px,.9vh,5px) 1px!important}
+
+.tmp-pager{
+  flex:0 0 auto!important;
+  padding:5px 8px 8px!important;
+  display:flex!important;align-items:center!important;
+  justify-content:space-between!important;
+}
+.tmp-pg{
+  width:clamp(26px,5.5vw,38px)!important;
+  height:clamp(20px,4.4vh,28px)!important;
+  font-size:clamp(10px,2.2vh,14px)!important;
+}
+.tmp-pager span{font-size:clamp(10px,2.2vh,13px)!important}
+.tmp-hint{display:none!important}
+
+/* =============================================================
+   v4.8 球队主页按参考图比例放大铺满
+   -------------------------------------------------------------
+   参考图（1904×876）实测比例：
+     首发卡  200×300  →  2:3 竖版，占屏宽 10.5%
+     替补卡  145×200  →  约占屏宽 7.6%
+     首发两行 + 替补一行 = 屏高的 82%
+   换算到 iPhone 956×419（可用高度约 349px）：
+     首发卡  82×122  （照片 82×94 + 名字条 28）
+     替补卡  62×92   （照片 62×70 + 名字条 22）
+     两行首发 + 一行替补 + 间距 = 348px  ✓ 正好铺满
+   ============================================================= */
+@media (max-height: 620px){
+  .tmcourt .tmcourt-row .tmc{
+    width:82px!important;height:122px!important;
+    min-width:82px!important;max-width:82px!important;
+    min-height:122px!important;max-height:122px!important;
+    flex:0 0 82px!important;overflow:hidden!important;
+  }
+  .tmcourt .tmcourt-row .tmc-img{
+    width:82px!important;height:94px!important;
+    min-width:0!important;min-height:0!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar{
+    height:28px!important;min-height:28px!important;overflow:hidden!important;
+    padding:2px 4px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar b{
+    font-size:11px!important;line-height:14px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar em{
+    font-size:8.5px!important;line-height:11px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-ovr{font-size:20px!important;right:4px;bottom:4px}
+  .tmcourt .tmcourt-row .tmc-lv{font-size:8px!important;padding:0 3px!important}
+  .tmcourt .tmcourt-row .tmc-team{
+    display:block!important;font-size:7px!important;top:16px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-max{
+    font-size:7px!important;padding:5px 2px!important;
+  }
+
+  .tmbench .tmc,
+  .tmbench .tmc.empty{
+    width:62px!important;height:92px!important;
+    min-width:62px!important;max-width:62px!important;
+    min-height:92px!important;max-height:92px!important;
+    flex:0 0 62px!important;aspect-ratio:auto!important;
+    overflow:hidden!important;
+  }
+  .tmbench .tmc-img{width:62px!important;height:70px!important}
+  .tmbench .tmc-bar{
+    height:22px!important;min-height:22px!important;overflow:hidden!important;
+    padding:1px 3px!important;
+  }
+  .tmbench .tmc-bar b{font-size:9.5px!important;line-height:12px!important}
+  .tmbench .tmc-bar em{font-size:7.5px!important;line-height:9px!important}
+  .tmbench .tmc-ovr{font-size:15px!important;right:3px;bottom:3px}
+  .tmbench .tmc-lv{font-size:6.5px!important}
+  .tmbench .tmc-team{display:block!important;font-size:6px!important;
+    top:13px!important}
+  .tmbench .tmc-max{font-size:5.5px!important;padding:4px 1px!important}
+  .tmbench .tmc-plus{font-size:18px!important}
+  .tmbench .tmc-nm{font-size:8px!important}
+
+  /* 替补行放得下 7 张 62px 卡 */
+  .tmbench{height:96px!important;max-height:96px!important;
+    padding:2px 0 0!important;gap:clamp(4px,1.1vw,12px)!important}
+  .tmcourt-row.r1{padding:0 0 2px!important}
+  .tmcourt-row.r2{padding:0 0 3px!important}
+  .tmcourt-row{gap:clamp(12px,3.6vw,52px)!important}
+  .tmcourt{max-height:none!important;overflow:visible!important;
+    padding:3px 6px 3px!important}
+  .tmcourt-bg:after{width:30%;height:58%}
+}
+
+/* =============================================================
+   v4.9 按可用高度反算的最大卡（2:3 竖版，铺满且不溢出）
+   -------------------------------------------------------------
+   实测：球场可用高度 268px（= 313 可视 - 顶栏 35 - 留白 10）
+   要放「首发两行 + 替补一行」，且替补 = 0.75 倍首发：
+       2H + 0.75H = 268  →  H = 97px
+   所以：
+       首发卡 65×97（照片 65×71 + 名字条 26）
+       替补卡 49×73（照片 49×55 + 名字条 18）
+   这正是参考图的 2:3 竖版比例，同时也刚好铺满一屏。
+   ============================================================= */
+@media (max-height: 620px){
+  .tmcourt .tmcourt-row .tmc{
+    width:65px!important;height:97px!important;
+    min-width:65px!important;max-width:65px!important;
+    min-height:97px!important;max-height:97px!important;
+    flex:0 0 65px!important;overflow:hidden!important;
+  }
+  .tmcourt .tmcourt-row .tmc-img{
+    width:65px!important;height:71px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar{
+    height:26px!important;min-height:26px!important;padding:2px 3px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar b{
+    font-size:9.5px!important;line-height:12px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-bar em{
+    font-size:7.5px!important;line-height:10px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-ovr{font-size:17px!important;right:3px;bottom:3px}
+  .tmcourt .tmcourt-row .tmc-lv{font-size:7px!important;padding:0 3px!important}
+  .tmcourt .tmcourt-row .tmc-team{
+    display:block!important;font-size:6.5px!important;top:14px!important;
+  }
+  .tmcourt .tmcourt-row .tmc-max{
+    font-size:6px!important;padding:4px 1px!important;
+  }
+
+  .tmbench .tmc,
+  .tmbench .tmc.empty{
+    width:49px!important;height:73px!important;
+    min-width:49px!important;max-width:49px!important;
+    min-height:73px!important;max-height:73px!important;
+    flex:0 0 49px!important;aspect-ratio:auto!important;
+  }
+  .tmbench .tmc-img{width:49px!important;height:55px!important}
+  .tmbench .tmc-bar{
+    height:18px!important;min-height:18px!important;padding:1px 2px!important;
+  }
+  .tmbench .tmc-bar b{font-size:8px!important;line-height:10px!important}
+  .tmbench .tmc-bar em{font-size:6.5px!important;line-height:8px!important}
+  .tmbench .tmc-ovr{font-size:13px!important;right:2px;bottom:2px}
+  .tmbench .tmc-lv{font-size:6px!important;padding:0 2px!important}
+  .tmbench .tmc-team{display:block!important;font-size:5.5px!important;
+    top:11px!important}
+  .tmbench .tmc-max{font-size:5px!important;padding:3px 1px!important}
+  .tmbench .tmc-plus{font-size:15px!important}
+  .tmbench .tmc-nm{font-size:7px!important}
+
+  .tmbench{height:76px!important;max-height:76px!important;
+    padding:2px 0 0!important;gap:clamp(3px,.85vw,9px)!important;
+    overflow:visible!important}
+  .tmcourt-row.r1{padding:0 0 1px!important}
+  .tmcourt-row.r2{padding:0 0 2px!important}
+  .tmcourt-row{gap:clamp(10px,3vw,44px)!important}
+  .tmcourt{max-height:none!important;overflow:visible!important;
+    padding:2px 6px 2px!important}
+}
+
+/* v4.9b 最后 28px：压缩顶栏与留白，卡片尺寸不动（保持参考图比例） */
+@media (max-height: 620px){
+  .tmt{padding:0 8px!important;min-height:0!important;height:26px!important}
+  .tmt-title{font-size:12.5px!important}
+  .tmt-btn{padding:3px 9px!important;font-size:10px!important}
+  .tmt-cap{padding:2px 8px 5px!important;min-width:118px!important}
+  .tmt-cap b{font-size:11px!important}
+  .tmt-cap em{font-size:9.5px!important}
+  .tmt-cap span{font-size:10px!important}
+  .tmt-plus{width:21px!important;height:21px!important;font-size:13px!important}
+  .tmwrap{gap:3px!important}
+  .tmbody{gap:5px!important;padding:0 5px!important}
+  .tms{padding:5px!important;gap:2px!important}
+  .tms-name{padding-bottom:2px!important}
+  .tms-name b{font-size:11.5px!important}
+  .tms-ovr{padding:1px 0 2px!important}
+  .tms-ovr span{font-size:9px!important}
+  .tms-ovr b{font-size:24px!important}
+  .tms-sec{font-size:9.5px!important;padding:2px 5px!important}
+  .tms-row{padding:0 5px!important}
+  .tms-row span{font-size:9px!important}
+  .tms-row b{font-size:10px!important}
+  .tms-btn{padding:4px 0!important;font-size:10.5px!important}
+  .tms-count{font-size:8px!important}
+  .tmcourt-row.r1{padding:0!important}
+  .tmcourt-row.r2{padding:0 0 1px!important}
+  .tmbench{padding:1px 0 0!important;height:74px!important;
+    max-height:74px!important}
+  .tm-auto{padding:5px 9px!important;font-size:10.5px!important}
+  .tmslot-labels span{font-size:8px!important}
+  .tm-uid{font-size:7.5px!important;padding:0 5px 1px!important}
+}
+
+/* v4.9c UID 不再占高度（它是最后 14px 的来源） */
+@media (max-height: 620px){
+  .tm-uid{
+    position:absolute!important;
+    left:5px!important;bottom:1px!important;
+    padding:0!important;height:auto!important;
+    margin:0!important;
+    pointer-events:none;z-index:9;
+    text-shadow:0 1px 3px rgba(0,0,0,.95);
+  }
+  .tmwrap{padding-bottom:0!important}
+}
+
+/* =============================================================
+   v5.0 位置标签贴身复刻（参考图：标签紧贴每张卡）
+   -------------------------------------------------------------
+   参考图里 5 个位置标签分别贴在各自卡片旁边：
+     第一行（小前锋/中锋/大前锋）→ 标签在卡片左上方
+     第二行（得分后卫/控球后卫）→ 标签在卡片左侧
+   所以标签必须和卡在同一个 flex 容器里，不能再独立绝对定位。
+   ============================================================= */
+.tmslot{
+  position:relative;display:flex;flex-direction:column;
+  align-items:center;flex:0 0 auto;
+}
+.tmslot-lb{
+  font-size:clamp(8px,1.9vh,13px);font-weight:900;color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.7);
+  white-space:nowrap;letter-spacing:1px;line-height:1.1;
+}
+/* 第一行：标签贴卡片左上，稍微压住卡片上沿（和参考图一致） */
+.tmslot.top .tmslot-lb{
+  align-self:flex-start;margin-left:2px;margin-bottom:-3px;z-index:3;
+}
+/* 第二行：标签在卡片左侧 */
+.tmslot.side{flex-direction:row;align-items:center;gap:5px}
+.tmslot.side .tmslot-lb{margin:0;align-self:center}
+@media (max-height: 620px){
+  .tmslot-lb{font-size:clamp(7.5px,1.85vh,11px);letter-spacing:.5px}
+  .tmslot.top .tmslot-lb{margin-bottom:-2px;margin-left:1px}
+  .tmslot.side{gap:4px}
+}
+
+/* 拖拽/选中视觉反馈 */
+.tmc.sel{
+  border-color:#ffd977!important;
+  box-shadow:0 0 0 2px #ffd977,0 0 18px -2px rgba(245,196,81,.95)!important;
+  transform:translateY(-2px);
+}
+.tmc.sel:after{
+  content:'已选中';position:absolute;left:50%;top:-9px;
+  transform:translateX(-50%);font-size:8px;font-weight:900;
+  padding:1px 5px;border-radius:4px;white-space:nowrap;
+  background:linear-gradient(135deg,#ffd977,#e8a01e);color:#2b1a00;
+  box-shadow:0 2px 6px -2px rgba(0,0,0,.9);z-index:6;
+}
+.tmc.dragging{opacity:.35}
+.tm-dragghost{
+  position:fixed!important;z-index:9999;pointer-events:none;
+  width:78px!important;height:auto!important;opacity:.94;
+  border:2px solid #ffd977!important;border-radius:5px;
+  box-shadow:0 12px 30px -8px rgba(0,0,0,.95);
+  transform:scale(1.12);
+}
+/* 落点高亮更明显 */
+.tmc.dropzone,.tmc.empty.dropzone{
+  border-color:#4ee07a!important;
+  box-shadow:0 0 0 3px #4ee07a,0 0 20px -3px rgba(78,224,122,.95)!important;
+  background:rgba(78,224,122,.22)!important;
+  animation:dzPulse 1.1s ease-in-out infinite;
+}
+@keyframes dzPulse{
+  0%,100%{box-shadow:0 0 0 3px #4ee07a,0 0 20px -3px rgba(78,224,122,.9)}
+  50%{box-shadow:0 0 0 5px #4ee07a,0 0 26px -2px rgba(78,224,122,1)}
+}
+/* 面板里选中时，卡片更明显 */
+.tmp-list .tmc.sel{
+  border-color:#ffd977!important;
+  box-shadow:0 0 0 2.5px #ffd977!important;
+}
+
+/* =============================================================
+   v8.3 球队管理页：按参考图重排版面
+   -------------------------------------------------------------
+   参考图尺寸 2778×1278，宽高比 2.174，与本机视口 956×440（2.173）几乎一致，
+   所以下面的百分比是直接从参考图量出来的。
+
+   量得的关键数字（换算到 956 宽）：
+     左面板     x  52 ~ 215   （宽 163）
+     球场区     x 220 ~ 956   （宽 736）
+     首发卡     宽 100px（参考图 292px / 2.906）
+     替补卡     宽  80px（参考图 232px / 2.906），首发:替补 = 1 : 0.795
+     标签       一律在卡片**下方**（原来第一行在上方、第二行在左侧）
+
+   还修了一个「铺不满」的根因：
+     .tmcourt 被 v4.2 的 flex:0 0 auto!important 锁成按内容宽度，
+     实测只有 406px（应约 690px），右边一大片空着。
+   ============================================================= */
+
+/* ① 球场铺满右侧剩余宽度 */
+.tmbody{align-items:stretch!important}
+.tmcourt{flex:1 1 auto!important;min-width:0!important}
+
+/* ② 卡片尺寸按参考图比例（首发:替补 = 1:0.795） */
+.tmcourt{--cst:clamp(58px,22.7vh,112px)}
+.tmcourt .tmcourt-row .tmc{width:var(--cst)}
+.tmbench .tmc{width:calc(var(--cst) * 0.795)}
+
+/* ③ 首发五人绝对定位，站位对齐参考图 */
+.tmcourt-row{
+  position:absolute!important;inset:0!important;
+  display:block!important;padding:0!important;margin:0!important;
+}
+.tmcourt .tmslot{position:absolute!important}
+.tmcourt .tmslot[data-tmslotbox="2"]{left:15%;top:3%}    /* 小前锋 */
+.tmcourt .tmslot[data-tmslotbox="4"]{left:41%;top:0}     /* 中锋   */
+.tmcourt .tmslot[data-tmslotbox="3"]{left:66%;top:3%}    /* 大前锋 */
+.tmcourt .tmslot[data-tmslotbox="1"]{left:31%;top:41%}   /* 得分后卫 */
+.tmcourt .tmslot[data-tmslotbox="0"]{left:50%;top:41%}   /* 控球后卫 */
+
+/* ④ 标签一律移到卡片下方 */
+.tmcourt .tmslot,
+.tmcourt .tmslot.side{flex-direction:column!important;align-items:center!important;gap:0!important}
+.tmcourt .tmslot .tmslot-lb,
+.tmcourt .tmslot.top .tmslot-lb,
+.tmcourt .tmslot.side .tmslot-lb{
+  order:2;align-self:center!important;
+  margin:3px 0 0 0!important;
+  font-size:clamp(8px,2vh,12px);
+}
+.tmcourt .tmslot .tmc{order:1}
+
+/* ⑤ 替补席铺满整行，底部对齐 */
+.tmbench{
+  position:absolute!important;left:0;right:0;bottom:0;
+  justify-content:space-between!important;
+  padding:0 1.5%!important;margin:0!important;
+}
+
+/* ⑥ 一键换人回到球场右下，不再压住卡片 */
+.tm-auto{
+  position:absolute!important;right:2%;bottom:26%!important;top:auto!important;
+  margin:0!important;align-self:auto!important;
+}
+
+/* ⑦ v8.3 补：让球场在竖直方向也铺满
+   原来 .tmbody 被 v4.2 的 flex:0 0 auto!important 锁成「按内容高度」，
+   实测球场只有 282px 高，下面空出约 40% 的红色空白。 */
+.tmbody{flex:1 1 auto!important;min-height:0!important;align-items:stretch!important}
+.tmcourt{min-height:0!important}
+
+/* ⑧ v8.3 补：卡片尺寸改用 vw，并微调站位到参考图坐标
+   为什么不用 vh：实测本页 1vh 只解析到约 2.9px（视口内高 440 却按 ~290 算），
+   于是 clamp 的中间值永远取不到，卡片被压到 65px。vw 是准的。
+   参考图换算：首发卡 100px / 956 = 10.46vw，替补卡 79.8px / 956 = 8.35vw */
+.tmcourt{--cst:clamp(58px,10.46vw,112px)}
+.tmbench .tmc{width:calc(var(--cst) * 0.795)}
+
+/* 站位按实测目标反算（球场盒 x=264 宽 687，y=69 高 371） */
+.tmcourt .tmslot[data-tmslotbox="2"]{left:9.8%;top:2%}     /* 小前锋 x331 */
+.tmcourt .tmslot[data-tmslotbox="4"]{left:37.6%;top:0}     /* 中锋   x522 */
+.tmcourt .tmslot[data-tmslotbox="3"]{left:64.3%;top:2%}    /* 大前锋 x706 */
+.tmcourt .tmslot[data-tmslotbox="1"]{left:26.8%;top:29%}   /* 得分后卫 x448 */
+.tmcourt .tmslot[data-tmslotbox="0"]{left:47.2%;top:29%}   /* 控球后卫 x588 */
+
+/* ⑨ v8.3 补：推翻 v4.2 在矮屏下写死的卡片尺寸
+   @media (max-height:620px) 里把首发卡锁成 62px!important、替补锁成 46px!important，
+   440 高的 iPhone 横屏永远命中这条 —— 这才是「卡片偏小、右边空一片」的真正原因。
+   现在改成跟着 --cst（10.46vw ≈ 100px）走。 */
+@media (max-height: 620px){
+  .tmcourt .tmcourt-row .tmc{
+    width:var(--cst)!important;min-width:var(--cst)!important;
+    max-width:var(--cst)!important;flex:0 0 auto!important;height:auto!important;
+  }
+  .tmcourt .tmcourt-row .tmc-img{
+    width:100%!important;height:auto!important;aspect-ratio:4/5!important;
+    min-width:0!important;
+  }
+  .tmbench .tmc{
+    width:calc(var(--cst) * 0.795)!important;min-width:0!important;
+    max-width:none!important;flex:0 0 auto!important;height:auto!important;
+  }
+  .tmbench .tmc-img{
+    width:100%!important;height:auto!important;aspect-ratio:4/5!important;
+    min-width:0!important;
+  }
+  /* 字号也跟着卡片放大 */
+  .tmcourt .tmcourt-row .tmc-bar b{font-size:clamp(9px,calc(var(--cst) * .13),14px)!important}
+  .tmcourt .tmcourt-row .tmc-bar em{font-size:clamp(7px,calc(var(--cst) * .1),11px)!important}
+  .tmcourt .tmcourt-row .tmc-ovr{font-size:clamp(15px,calc(var(--cst) * .24),27px)!important}
+  .tmbench .tmc-bar b{font-size:clamp(7.5px,calc(var(--cst) * .105),11px)!important}
+  .tmbench .tmc-ovr{font-size:clamp(12px,calc(var(--cst) * .19),21px)!important}
+}
+
+/* ⑩ v8.3 补：替补席上抬，避免名字条被底边裁掉 */
+.tmbench{bottom:2.5%!important}
+.tmcourt .tmslot[data-tmslotbox="1"],
+.tmcourt .tmslot[data-tmslotbox="0"]{top:27%}
+
+/* ⑪ v8.3 补丁（重要）：修我自己引入的拖拽回归
+   -------------------------------------------------------------
+   ⑧ 把 .tmcourt-row 改成了 position:absolute;inset:0 的全场覆盖层。
+   结果 .r2 在 DOM 里靠后，绘图层级压住 .r1，
+   导致「小前锋/中锋/大前锋」这三张卡（都在 .r1 里）
+   **完全收不到 pointer 事件** —— 既拖不出去，也拖不进去。
+   实测松手时 elementFromPoint 返回的是 'tmcourt-row r2'，不是卡片。
+
+   修法：行容器只负责定位，不参与命中测试；真正的落点交回给卡片/位置格。 */
+.tmcourt-row{pointer-events:none!important}
+.tmcourt .tmslot{pointer-events:auto!important}
+.tmcourt .tmslot .tmc{pointer-events:auto!important}
+.tmbench{pointer-events:auto!important}
+
+/* =============================================================
+   v8.5 拖拽性能与手感修复
+   -------------------------------------------------------------
+   卡顿：原来 .dropzone 用 animation 动 box-shadow —— box-shadow 不是合成属性，
+        每帧都要主线程重绘；拖拽时 12 个格子同时挂 .dropzone，等于 12 个元素持续重绘。
+        改成伪元素只动 opacity/transform，走合成器，主线程零负担。
+   吃力：卡片没设 touch-action，iOS 把长按拖拽当滚动手势接管并触发 pointercancel，
+        而旧代码没有 pointercancel 处理 → 拖拽无声死掉，手感就是「有阻力、卡住」。
+   ============================================================= */
+
+/* ① 滚动/缩放手势不再抢长按拖拽 */
+.tmc{touch-action:none;-webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;-webkit-user-drag:element}
+.tmp-list .tmc,.tmbench .tmc,.tmcourt .tmc{touch-action:none}
+
+/* ② 落点高亮：静态描边 + 伪元素呼吸（只动 opacity/transform） */
+.tmc.dropzone,.tmc.empty.dropzone{
+  border-color:#4ee07a!important;
+  background:rgba(78,224,122,.20)!important;
+  box-shadow:0 0 0 3px #4ee07a!important;
+  animation:none!important;
+}
+.tmc.dropzone:after{
+  content:'';position:absolute;inset:0;border-radius:3px;
+  border:3px solid #4ee07a;pointer-events:none;z-index:4;
+  will-change:opacity,transform;
+  animation:dzBreath 1.1s ease-in-out infinite;
+}
+@keyframes dzBreath{
+  0%,100%{opacity:.40;transform:scale(1)}
+  50%    {opacity:1;  transform:scale(1.05)}
+}
+
+/* ③ ghost：只动 transform，并交给合成层 */
+.tm-dragghost{
+  left:0!important;top:0!important;
+  will-change:transform;
+  contain:layout paint style;
+  backface-visibility:hidden;
+  box-shadow:0 6px 16px -6px rgba(0,0,0,.85)!important;
+  transition:none!important;
+  animation:none!important;
+}
+.tm-dragghost *{animation:none!important;transition:none!important}
+
+/* ④ 拖拽期间不要做昂贵效果 */
+.tmc.dragging{opacity:.35;box-shadow:none!important}
+
+/* =============================================================
+   v8.6 阵容化学反应：左侧面板的化学条
+   ============================================================= */
+.tms-chem{
+  margin:6px 0 2px;padding:7px 9px 8px;border-radius:4px;
+  background:linear-gradient(170deg,rgba(0,0,0,.30),rgba(0,0,0,.14));
+  border:1px solid rgba(255,255,255,.16);
+}
+.tms-chem-top{display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;font-weight:900;color:#e8eefc;letter-spacing:.5px}
+.tms-chem-top b{font-size:17px;line-height:1;font-variant-numeric:tabular-nums}
+.tms-chem-bar{margin:5px 0 4px;height:6px;border-radius:3px;overflow:hidden;
+  background:rgba(0,0,0,.45);box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+.tms-chem-bar i{display:block;height:100%;border-radius:3px;
+  transition:width .28s ease,background .2s}
+.tms-chem-tip{font-size:9.5px;color:#9fb0d6;line-height:1.3}
+.tms-chem-gain{margin-top:3px;font-size:10px;font-weight:900;color:#7f8ca6}
+.tms-chem-gain.on{color:#4ee07a;text-shadow:0 0 8px rgba(78,224,122,.5)}
+
+/* 五档配色：s 最佳 → d 最差 */
+.chem-s{color:#ffd977!important}   .tms-chem-bar i.chem-s{background:linear-gradient(90deg,#ffd977,#ffb020)}
+.chem-a{color:#4ee07a!important}   .tms-chem-bar i.chem-a{background:linear-gradient(90deg,#4ee07a,#2fa85a)}
+.chem-b{color:#5fc8ff!important}   .tms-chem-bar i.chem-b{background:linear-gradient(90deg,#5fc8ff,#2a8fd0)}
+.chem-c{color:#c9d3e6!important}   .tms-chem-bar i.chem-c{background:linear-gradient(90deg,#c9d3e6,#8b96ad)}
+.chem-d{color:#ff8a8a!important}   .tms-chem-bar i.chem-d{background:linear-gradient(90deg,#ff8a8a,#c04a4a)}
+
+/* 首发卡上标出「正在吃化学加成」 */
+.tmc.chem-on:before{
+  content:'+';position:absolute;right:2px;top:2px;z-index:7;
+  width:13px;height:13px;line-height:13px;text-align:center;border-radius:50%;
+  font-size:10px;font-weight:900;color:#08210f;
+  background:linear-gradient(135deg,#7cf0a0,#2fa85a);
+  box-shadow:0 1px 4px rgba(0,0,0,.7);
+}
+
+/* =============================================================
+   v9.1 工资明细弹层
+   ============================================================= */
+#wageLayer{display:flex;align-items:center;justify-content:center}
+.wg-wrap{
+  width:min(560px,92vw);max-height:86vh;display:flex;flex-direction:column;
+  background:linear-gradient(165deg,#1b2233,#111726);
+  border:1px solid rgba(255,255,255,.16);border-radius:10px;overflow:hidden;
+  box-shadow:0 20px 60px -20px rgba(0,0,0,.95);
+}
+.wg-top{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.10)}
+.wg-top b{font-size:14px;color:#ffe6a8;letter-spacing:1px}
+.wg-close{padding:5px 12px;border-radius:5px;border:0;cursor:pointer;
+  font-family:inherit;font-size:11.5px;font-weight:900;
+  background:rgba(255,255,255,.10);color:#cdd9ff}
+.wg-sum{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:10px 14px;background:rgba(78,224,122,.10);
+  border-bottom:1px solid rgba(255,255,255,.08)}
+.wg-sum.over{background:rgba(255,90,90,.14)}
+.wg-sum-l{display:flex;align-items:baseline;gap:4px;font-size:12px;color:#9fb0d6}
+.wg-sum-l b{font-size:19px;color:#ffd977;font-variant-numeric:tabular-nums}
+.wg-sum-l em{font-style:normal;color:#9fb0d6}
+.wg-sum-r{font-size:12px;font-weight:900;color:#4ee07a}
+.wg-sum.over .wg-sum-r{color:#ff8a8a}
+.wg-note{padding:8px 14px;font-size:10.5px;line-height:1.5;color:#7f8ca6;
+  background:rgba(255,255,255,.03)}
+.wg-list{overflow-y:auto;padding:8px 12px 12px;display:grid;gap:3px}
+.wg-row{padding:6px 10px;border-radius:4px;font-size:12px;color:#cdd9ff;
+  background:rgba(255,255,255,.045);font-variant-numeric:tabular-nums}
+
+/* =============================================================
+   工资帽配额（v9.27）
+   -------------------------------------------------------------
+   回答玩家真正的问题：「我还能上几张」。
+   顶部一行紧凑 chip（银/金/紫 已上N 还能加N），
+   工资明细弹层里给完整表格。
+   ============================================================= */
+.tmt-quota{ display:flex;gap:5px;margin-right:8px;align-items:center }
+.tmt-q{
+  font-style:normal;font-size:10px;font-weight:800;color:#c2cde4;
+  padding:3px 7px;border-radius:6px;white-space:nowrap;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);
+}
+.tmt-q em{ font-style:normal;color:#7cf0a0;font-weight:900;margin-left:3px }
+.tmt-q.full{ opacity:.55 }
+.tmt-q.full em{ color:#ff8b9c }
+
+.wg-quota{ margin:9px 0 8px }
+.wg-q-head{
+  font-size:11.5px;font-weight:900;color:#ffd45e;margin-bottom:6px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.wg-q-head em{ font-style:normal;font-size:10.5px;font-weight:700;color:#a4b1c8 }
+.wg-q-head b{ color:#dfe8f8 }
+.wg-q-row{
+  display:grid;grid-template-columns:1fr 1.1fr .9fr 1.1fr;
+  align-items:center;gap:6px;padding:5px 9px;margin-bottom:4px;
+  border-radius:7px;background:rgba(255,255,255,.055);
+  font-size:11px;color:#c2cde4;
+}
+.wg-q-n{ font-weight:900;color:#dfe8f8 }
+.wg-q-pay{ color:#93a0b8;font-size:10.5px }
+.wg-q-have b{ color:#dfe8f8 }
+.wg-q-can{ text-align:right;font-size:10.5px }
+.wg-q-can b{ font-size:12.5px }
+.wg-q-can.ok b{ color:#7cf0a0 }
+.wg-q-can.no b{ color:#ff8b9c }
+.wg-q-note{
+  font-size:10.5px;color:#8b96ad;line-height:1.55;margin-top:6px;
+  padding:6px 9px;border-radius:7px;background:rgba(255,255,255,.04);
+}
+.wg-q-note b{ color:#ffd45e }
+
+@media (max-height: 560px){
+  .tmt-q{ font-size:9px;padding:2px 5px }
+  .wg-q-row{ padding:4px 7px;font-size:10px }
+  .wg-q-head{ font-size:10.5px }
+}
+
+/* =============================================================
+   🎯 首发槽的位置适配度着色（v9.32）
+   -------------------------------------------------------------
+   拖拽时一眼看出这个位置合不合适：
+     本位 绿 / 副位 黄 / 客串 红（会被 putOnCourt 拦截）
+   空槽显示「需要 PG 控球后卫」，提示该放什么人。
+   ============================================================= */
+.tm-slot-pos.primary{ color:#5ee08a }
+.tm-slot-pos.secondary{ color:#f5c451 }
+.tm-slot-pos.out{ color:#ff6b7f }
+.tm-slot-pos em{
+  font-style:normal;font-size:8px;font-weight:900;
+  margin-left:3px;padding:0 3px;border-radius:3px;
+  background:rgba(255,255,255,.10);
+}
+.tm-slot-pos.secondary em{ background:rgba(245,196,81,.28);color:#ffd45e }
+.tm-slot-pos.out em{ background:rgba(224,35,63,.32);color:#ff9aa8 }
+.tm-slot-pos.out{ animation:tmPosWarn 1.6s ease-in-out infinite }
+@keyframes tmPosWarn{
+  0%,100%{ opacity:1 } 50%{ opacity:.55 }
+}
+/* 空槽：告诉玩家这里需要什么位置 */
+.tm-slot-need{
+  position:absolute;left:0;right:0;bottom:2px;text-align:center;
+  font-size:9px;font-weight:800;color:#c2cde4;pointer-events:none;
+}
+.tm-slot-need b{ font-size:11px;color:#8fd0ff;margin-right:3px }
+.tm-slot-need i{ font-style:normal;font-size:8.5px;color:#8b96ad }
+@media (max-height: 560px){
+  .tm-slot-need{ font-size:8px;bottom:1px }
+  .tm-slot-need b{ font-size:10px }
+  .tm-slot-need i{ display:none }
+}

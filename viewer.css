@@ -1,0 +1,132 @@
+/* =============================================================
+   卡片查看器（点卡放大 / 翻转看背面）
+   ============================================================= */
+#cardViewer{
+  position:fixed;inset:0;z-index:190;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;
+  background:radial-gradient(760px 620px at 50% 42%,#1b2440 0%,#05070f 74%);
+  perspective:1400px;
+}
+#cardViewer::before{               /* 背后的档位辉光 */
+  content:'';position:absolute;width:88vmin;height:88vmin;border-radius:50%;
+  background:radial-gradient(circle,var(--gc) 0%,transparent 62%);
+  opacity:.24;pointer-events:none;animation:haloPulse 2.6s ease-in-out infinite alternate;
+}
+.cv-wrap{
+  position:relative;width:min(74vw,300px);aspect-ratio:5/7;z-index:2;
+  transform-style:preserve-3d;
+  transition:transform .78s cubic-bezier(.3,1.15,.4,1);
+  cursor:pointer;
+}
+.cv-wrap.flipped{transform:rotateY(180deg)}
+.cv-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:12px;overflow:hidden;
+}
+.cv-front{transform:rotateY(0deg)}
+.cv-back{transform:rotateY(180deg)}
+.cv-front .card{width:100%}
+/* 正面额外加一层随档位呼吸的外辉光 */
+.cv-front::after{
+  content:'';position:absolute;inset:-2px;border-radius:14px;pointer-events:none;
+  box-shadow:0 0 26px -4px var(--gc), 0 22px 54px -12px rgba(0,0,0,.85);
+}
+
+/* ---------- 卡背 ---------- */
+.cardback{
+  position:absolute;inset:0;border-radius:12px;overflow:hidden;
+  container-type:inline-size;
+  display:flex;flex-direction:column;
+  /* 深色卡背：实体卡背面基本都是深底浅字，读起来清楚也更高级 */
+  background:
+    linear-gradient(118deg, rgba(255,255,255,.07) 0 34%, transparent 34.3%),
+    radial-gradient(130% 74% at 20% 0%,
+      color-mix(in srgb, var(--t1) 55%, transparent) 0%, transparent 54%),
+    radial-gradient(100% 60% at 84% 100%,
+      color-mix(in srgb, var(--t3) 70%, transparent) 0%, transparent 58%),
+    linear-gradient(168deg, #1c2439 0%, #121829 48%, #0a0e1b 100%);
+  box-shadow:0 0 0 1px rgba(0,0,0,.9), 0 20px 48px -12px rgba(0,0,0,.85);
+}
+.cardback .cb-frame{
+  position:absolute;inset:0;z-index:9;pointer-events:none;border-radius:inherit;
+  padding:1.1cqi;
+  background:linear-gradient(158deg,
+    rgba(255,255,255,.95) 0%, var(--tc1) 24%, rgba(0,0,0,.5) 50%,
+    var(--tc1) 74%, rgba(255,255,255,.9) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:.9;
+}
+.cardback .cb-grid{
+  position:absolute;inset:0;opacity:.1;pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.6) 0 .4px, transparent .4px 5px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.6) 0 .4px, transparent .4px 5px);
+  mix-blend-mode:soft-light;
+}
+.cardback .cb-in{position:relative;z-index:2;display:flex;flex-direction:column;
+  height:100%;padding:4.5cqi 4cqi 3.5cqi;gap:2cqi}
+
+/* 抬头 */
+.cardback .cb-head{text-align:center;padding-bottom:2.2cqi;
+  border-bottom:1px solid color-mix(in srgb,var(--tc1) 50%,transparent)}
+.cardback .cb-team{font-size:4.4cqi;font-weight:800;color:var(--tc1);
+  letter-spacing:.2em;text-transform:uppercase}
+.cardback .cb-name{font-size:11.4cqi;font-weight:900;color:#fff;margin-top:1.1cqi;line-height:1.05;
+  text-shadow:0 .3cqi .8cqi rgba(0,0,0,.9)}
+.cardback .cb-en{font-size:4cqi;font-weight:700;color:#8492ad;letter-spacing:.12em;
+  text-transform:uppercase;margin-top:.6cqi}
+
+/* 数据表：8 个大类 + 评级 */
+.cardback .cb-stats{display:grid;grid-template-columns:1fr 1fr;gap:0 3.4cqi;margin-top:1.4cqi}
+.cardback .cb-row{display:flex;align-items:center;justify-content:space-between;gap:1cqi;
+  padding:.85cqi 0;border-bottom:1px solid rgba(255,255,255,.09)}
+.cardback .cb-row span{font-size:5.4cqi;color:#a8b6d2;font-weight:700}
+.cardback .cb-row b{font-size:5.8cqi;font-weight:900;font-variant-numeric:tabular-nums;
+  display:flex;align-items:baseline;gap:1cqi}
+.cardback .cb-row b i{font-style:normal;font-size:4.6cqi;opacity:.85}
+
+/* 生平 + 徽章 */
+.cardback .cb-bio{margin-top:auto;font-size:4.9cqi;color:#a3b1cc;line-height:1.8;
+  padding-top:1.6cqi;border-top:1px solid rgba(255,255,255,.12)}
+.cardback .cb-bio b{color:#dfe7f7;font-weight:800}
+.cardback .cb-badges{display:flex;flex-wrap:wrap;gap:.9cqi;margin-top:1.2cqi}
+.cardback .cb-badges i{font-style:normal;font-size:4.4cqi;line-height:1;
+  width:6cqi;height:6cqi;display:flex;align-items:center;justify-content:center;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  background:linear-gradient(160deg,var(--bc,#f5c451),rgba(0,0,0,.4));color:#fff}
+.cardback .cb-foot{display:flex;align-items:center;justify-content:space-between;
+  margin-top:1.6cqi;padding-top:1.4cqi;border-top:1px solid rgba(255,255,255,.12);
+  font-size:4.2cqi;color:#6f7c96;font-weight:700;letter-spacing:.06em}
+.cardback .cb-foot b{color:var(--tc1);font-weight:900}
+
+/* ---------- 底部操作条 ---------- */
+.cv-bar{position:relative;z-index:3;display:flex;gap:9px;align-items:center}
+.cv-bar button{
+  min-width:96px;padding:11px 18px;border-radius:12px;font-size:14px;font-weight:900;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.06));
+  border:1px solid var(--line);color:var(--ink);
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+.cv-bar button:active{transform:scale(.96)}
+.cv-bar button.primary{background:linear-gradient(180deg,#ffd977,#e8a01e);color:#2b1a00;
+  border-color:#ffe9a8}
+.cv-hint{position:relative;z-index:3;font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+
+/* 高稀有度卡面加彩虹折射（Prizm 那种） */
+.card.rare-holo::after{
+  content:'';position:absolute;inset:0;z-index:11;pointer-events:none;opacity:.16;
+  background:linear-gradient(118deg,
+    #ff5f6d 0%, #ffc371 18%, #7dffa0 36%, #4fd1ff 54%, #b06aff 72%, #ff5f6d 100%);
+  background-size:280% 280%;
+  mix-blend-mode:color-dodge;
+  animation:holoShift 7s ease-in-out infinite;
+}
+@keyframes holoShift{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+
+/* 从阵容编辑进来的详情页，多一个「选入阵容」按钮 */
+.dbtns .btn.pick{background:linear-gradient(180deg,#8df0b0,#2ea85c);color:#04220f;
+  font-weight:900;letter-spacing:.08em;
+  box-shadow:0 6px 18px rgba(46,168,92,.4), inset 0 1px 0 rgba(255,255,255,.5)}

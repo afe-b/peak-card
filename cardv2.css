@@ -1,0 +1,584 @@
+/* =============================================================
+   卡面重设计 v9.4 —— 局部发光版
+   -------------------------------------------------------------
+   这一层**必须最后加载**（index.html 里排在 platform.css 之后），
+   因为它要覆盖 cards.css 的基础卡面和 holo.css 的全息特效。
+
+   设计要点（用户确认过的 v2 稿）：
+     · 去掉全部全息镭射（.holo-foil / .holo-sparkle / .holo-lines 全部关掉，
+       .card.holo::before 的扫光也停掉）
+     · 改成五处「局部发光」：
+         ① 外框辉光   ② 人物背光   ③ 人物轮廓光
+         ④ 铭牌细线辉光   ⑤ 徽标辉光
+     · 每个档位有自己的材质（用 --t1/--t2/--t3/--tglow 现算，6 档通吃）
+     · 信息层级：左上突破徽标 / 右上六边形综合 / 下方名牌
+         （名字 → 英文名 → 档位色细线 → 位置·球风·球队 → 突破进度点）
+
+   尺寸一律用 cqi —— 卡片本身是 container-type:inline-size，
+   100cqi = 卡宽，所以从 60px 的小卡到 240px 的大卡都能等比缩放。
+   ============================================================= */
+
+/* ---------- 0. 彻底关掉全息（用户明确要求不要全息） ---------- */
+.card .holo-foil,
+.card .holo-sparkle,
+.card .holo-lines,
+.card .holo-gloss{display:none!important}
+.card::before{display:none!important}      /* 原来的斜向扫光 */
+.card.moment .holo-foil{display:none!important}
+
+/* ---------- 1. 卡面本体：档位材质 + 外框辉光 ----------
+   ★ 注意：`.card` 自己就是 container-type:inline-size 的容器，
+     而**元素自己的 cqi 不能查询自己** —— 会往外层容器解析。
+     所以下面这些「.card 自身的属性」一律用 px，
+     只有**后代元素**（.frame / .rating / .plate…）才能用 cqi。 */
+.card{
+  border-radius:10px;              /* 保持原来的圆角，别用 cqi */
+  container-type:inline-size;
+  background:
+    /* 左上柔光（各档位通用的受光面） */
+    radial-gradient(132% 78% at 26% -6%,
+      color-mix(in srgb,var(--t1) 40%,transparent) 0%,transparent 58%),
+    /* 主材质：中段厚、底部沉 */
+    linear-gradient(162deg,
+      color-mix(in srgb,var(--t2) 86%,#000 14%) 0%,
+      color-mix(in srgb,var(--t2) 70%,#000 30%) 46%,
+      color-mix(in srgb,var(--t3) 88%,#000 12%) 100%);
+  box-shadow:
+    0 6px 18px -6px rgba(0,0,0,.92),                        /* 落地阴影 */
+    0 0 14px -4px color-mix(in srgb,var(--tglow) 62%,transparent), /* 外框辉光 */
+    0 0 0 1px rgba(255,255,255,.07);
+}
+
+/* 名宿紫卡：中央一道柔和光柱（王朝感），不是全息 */
+.card[data-tier="legendPurple"]{
+  background:
+    linear-gradient(90deg,transparent 42%,rgba(255,255,255,.085) 50%,transparent 58%),
+    radial-gradient(132% 78% at 26% -6%,
+      color-mix(in srgb,var(--t1) 42%,transparent) 0%,transparent 58%),
+    linear-gradient(162deg,
+      color-mix(in srgb,var(--t2) 80%,#000 20%) 0%,
+      color-mix(in srgb,var(--t2) 62%,#000 38%) 46%,
+      color-mix(in srgb,var(--t3) 86%,#000 14%) 100%);
+}
+
+/* ---------- 2. 纹理：收敛，只留极淡的一层 ---------- */
+.card .prizm{opacity:.07}
+.card .weave{opacity:.06}
+
+/* ---------- 3. 边框：细线 + 内发光 ---------- */
+.card .frame{
+  border-radius:inherit;padding:0;
+  background:none;
+  -webkit-mask:none;mask:none;
+  border:.72cqi solid color-mix(in srgb,var(--t1) 58%,transparent);
+  box-shadow:
+    inset 0 0 0 .3cqi rgba(0,0,0,.5),
+    inset 0 0 7cqi -1.6cqi color-mix(in srgb,var(--tglow) 72%,transparent);
+  opacity:1;
+}
+/* 四角细饰：只做两个对角，避免花 */
+.card .frame::after{
+  content:'';position:absolute;right:1.6cqi;bottom:1.6cqi;
+  width:7cqi;height:7cqi;
+  border-right:.7cqi solid color-mix(in srgb,var(--t1) 78%,transparent);
+  border-bottom:.7cqi solid color-mix(in srgb,var(--t1) 78%,transparent);
+  border-radius:0 0 2.4cqi 0;
+}
+.card .bevel{display:none}
+
+/* 名宿紫卡：双线描边，显得更贵重 */
+.card[data-tier="legendPurple"] .frame{
+  border-color:color-mix(in srgb,var(--t1) 72%,transparent);
+  box-shadow:
+    inset 0 0 0 .3cqi rgba(0,0,0,.5),
+    inset 0 0 0 1.5cqi color-mix(in srgb,var(--t1) 26%,transparent),
+    inset 0 0 0 1.9cqi rgba(0,0,0,.35),
+    inset 0 0 9cqi -2cqi color-mix(in srgb,var(--tglow) 84%,transparent);
+}
+
+/* 时刻卡：边框自带一圈更亮的内发光（局部发光的强度差异） */
+.card.moment .frame{
+  border-color:color-mix(in srgb,var(--t1) 78%,transparent);
+  box-shadow:
+    inset 0 0 0 .3cqi rgba(0,0,0,.5),
+    inset 0 0 4cqi -.6cqi color-mix(in srgb,var(--tglow) 88%,transparent),
+    inset 0 0 10cqi -3cqi color-mix(in srgb,var(--tglow) 70%,transparent);
+}
+/* 呼吸光：靠「光的节奏」区分稀有度，不靠彩色 */
+@keyframes cardRimPulse{0%,100%{opacity:.62}50%{opacity:1}}
+.card.moment .frame::after{animation:cardRimPulse 2.6s ease-in-out infinite}
+
+/* ---------- 4. 球队徽记水印：淡化，别抢人 ---------- */
+.card .crest{
+  top:6%;width:54%;font-size:14cqi;opacity:.10;
+  border-width:.5cqi;box-shadow:inset 0 0 6cqi -1.5cqi var(--t1);
+}
+
+/* ---------- 5. 照片区：人物背光 + 轮廓光 ---------- */
+.card .shot{left:3%;right:3%;top:3.5%;bottom:24%}
+/* 背光：人背后一团档位色聚光 */
+.card .shot::before{
+  background:
+    radial-gradient(58% 46% at 50% 88%,
+      color-mix(in srgb,var(--tglow) 52%,transparent) 0%,
+      color-mix(in srgb,var(--tglow) 20%,transparent) 42%,
+      transparent 72%),
+    linear-gradient(180deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.04) 36%,rgba(0,0,0,.20) 100%);
+  box-shadow:inset 0 1cqi 2.2cqi -1cqi rgba(0,0,0,.45);
+}
+/* 轮廓光：贴着球员边缘的一圈亮边 */
+.card .shot img{
+  filter:
+    drop-shadow(0 0 1.6cqi color-mix(in srgb,var(--tglow) 55%,transparent))
+    drop-shadow(0 .7cqi 1.2cqi rgba(0,0,0,.55))
+    drop-shadow(0 2cqi 3.6cqi rgba(0,0,0,.42));
+}
+/* 时刻卡：轮廓光更亮一档 */
+.card.moment .shot img{
+  filter:
+    drop-shadow(0 0 2.4cqi color-mix(in srgb,var(--tglow) 82%,transparent))
+    drop-shadow(0 0 4.6cqi color-mix(in srgb,var(--tglow) 40%,transparent))
+    drop-shadow(0 .7cqi 1.2cqi rgba(0,0,0,.55))
+    drop-shadow(0 2cqi 3.6cqi rgba(0,0,0,.42));
+}
+/* 底部溶接到信息栏 */
+.card .shot .fade{
+  background:linear-gradient(180deg,transparent,
+    color-mix(in srgb,var(--t3) 78%,#000) 62%,color-mix(in srgb,var(--t3) 92%,#000));
+}
+
+/* ---------- 6. 综合：六边形宝石座（右上角，带辉光） ---------- */
+.card .rating{
+  z-index:14;right:3.6%;top:3.6%;
+  width:26cqi;aspect-ratio:1/1.11;
+  background:linear-gradient(158deg,
+    color-mix(in srgb,var(--t1) 92%,#fff) 0%,
+    var(--t2) 62%,
+    color-mix(in srgb,var(--t3) 88%,#000) 100%);
+  filter:
+    drop-shadow(0 0 2.2cqi color-mix(in srgb,var(--tglow) 66%,transparent))
+    drop-shadow(0 .8cqi 1.8cqi rgba(0,0,0,.85));
+}
+.card .rating::before{
+  background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.02));
+}
+.card .rating::after{
+  inset:.7cqi;box-shadow:inset 0 0 0 .3cqi rgba(255,255,255,.34);
+}
+.card .rating b{
+  font-size:16cqi;color:#151009;
+  text-shadow:0 .1cqi 0 rgba(255,255,255,.55);
+}
+.card .rating span{
+  font-size:5cqi;color:color-mix(in srgb,#151009 72%,transparent);
+  letter-spacing:.1em;margin-top:.2cqi;
+}
+
+/* ---------- 7. 突破徽标：左上角胶囊 ---------- */
+.card .brk-badge{
+  right:auto;left:3.6%;top:3.6%;z-index:14;
+  min-width:0;padding:.7cqi 2.1cqi .8cqi;
+  border-radius:2.4cqi;
+  font-size:6.6cqi;letter-spacing:.02em;
+  color:#06200e;
+  background:linear-gradient(135deg,#86f2a8,#2fa85a);
+  box-shadow:
+    0 .6cqi 1.8cqi -.6cqi rgba(0,0,0,.9),
+    0 0 2.4cqi -.4cqi rgba(78,224,122,.75),
+    inset 0 0 0 .18cqi rgba(255,255,255,.4);
+  text-shadow:none;
+}
+/* 1~6 阶同色系（都是「进度」），满突换成金色 */
+.card .brk-badge.lv1,.card .brk-badge.lv2,
+.card .brk-badge.lv3,.card .brk-badge.lv4,
+.card .brk-badge.lv5,.card .brk-badge.lv6,
+.card .brk-badge.lv7,.card .brk-badge.lv8{
+  color:#06200e;
+  background:linear-gradient(135deg,#86f2a8,#2fa85a);
+}
+.card .brk-badge.max{
+  color:#332000;
+  background:linear-gradient(135deg,#fff0bb,#f0a818);
+  box-shadow:
+    0 .6cqi 1.8cqi -.6cqi rgba(0,0,0,.9),
+    0 0 2.8cqi -.4cqi rgba(255,196,74,.85),
+    inset 0 0 0 .18cqi rgba(255,255,255,.45);
+}
+.card .brk-badge.max::after{display:none}   /* 去掉原来的装饰 */
+
+/* ---------- 8. 现役 / 名宿 / 赛季 角标：挪到突破徽标下方 ---------- */
+.card .corner{
+  left:3.6%;top:11.5%;right:auto;
+  font-size:4.6cqi;font-weight:900;letter-spacing:.04em;
+  padding:.6cqi 1.7cqi .7cqi;border-radius:1.6cqi;
+  background:linear-gradient(135deg,rgba(0,0,0,.72),rgba(0,0,0,.42));
+  color:#e8eefc;box-shadow:inset 0 0 0 .15cqi rgba(255,255,255,.16);
+}
+.card .corner.moment{
+  background:linear-gradient(135deg,#ff8a5c,#c0202f);
+  box-shadow:0 0 2.6cqi -1cqi #ff5a3c,inset 0 0 0 .15cqi rgba(255,255,255,.3);
+}
+/* 原来的横向「时刻」绶带不要了（角标 + 竖排烫印已经够了） */
+.card .ribbon{display:none}
+
+/* ---------- 9. MOMENT 竖排烫印：发光，但不是全息 ---------- */
+.card .moment-stamp{
+  left:3.6%;top:22%;z-index:12;
+  font-size:4.8cqi;letter-spacing:.5em;
+  color:color-mix(in srgb,var(--t1) 88%,#fff);opacity:.92;
+  text-shadow:
+    0 0 2cqi color-mix(in srgb,var(--tglow) 90%,transparent),
+    0 .2cqi .6cqi rgba(0,0,0,.9);
+}
+
+/* ---------- 10. 档位小签：右上角综合座下方 ---------- */
+/* 复用原 .plate .tag 会挤，这里不动，档位信息由六边形+边框颜色表达 */
+
+/* ---------- 11. 铭牌：重排后的信息层级 ---------- */
+.card .plate{
+  z-index:8;padding:0 5% 2.6%;
+  background:none;                    /* 压暗交给 .shot .fade 和 ::before */
+}
+/* 磨砂压暗底：让名字和球队在浅色照片上也看得清 */
+.card .plate::before{
+  content:'';position:absolute;left:0;right:0;bottom:0;top:-6cqi;z-index:-1;
+  background:linear-gradient(180deg,transparent,
+    rgba(0,0,0,.42) 26%,rgba(0,0,0,.66) 62%,rgba(0,0,0,.78));
+  pointer-events:none;
+}
+.card .plate .nm{
+  font-size:8.6cqi;font-size:calc(8.6cqi * var(--nm-scale,1));
+  text-align:left;margin-top:0;letter-spacing:.01em;line-height:1.16;
+  text-shadow:0 .25cqi .9cqi rgba(0,0,0,.95);
+}
+.card .plate .en{
+  font-size:3.9cqi;text-align:left;margin-top:.5cqi;
+  color:color-mix(in srgb,var(--t1) 74%,#fff);opacity:.82;
+  letter-spacing:.04em;text-transform:none;
+}
+/* 档位色细线（带辉光） */
+.card .plate .rule{
+  height:.35cqi;margin:1.9cqi 0 1.7cqi;
+  background:linear-gradient(90deg,var(--t1),
+    color-mix(in srgb,var(--t2) 55%,transparent));
+  box-shadow:0 0 2.2cqi -.3cqi color-mix(in srgb,var(--tglow) 85%,transparent);
+  opacity:1;
+}
+/* 一行：位置 + 球风 + 球队 */
+.card .plate .row{
+  display:flex;align-items:center;gap:1.4cqi;
+  justify-content:flex-start;
+}
+.card .plate .pos{
+  flex:0 0 auto;
+  font-size:4.3cqi;letter-spacing:.02em;color:#151009;
+  background:linear-gradient(135deg,var(--t1),var(--t2));
+  border:0;border-radius:1.4cqi;padding:.6cqi 1.5cqi .7cqi;
+  box-shadow:0 0 1.8cqi -.5cqi color-mix(in srgb,var(--tglow) 70%,transparent);
+}
+/* ★ 球风标签：描边胶囊，视觉上比位置胶囊轻一档，不抢主次 */
+.card .plate .tag{
+  flex:0 0 auto;max-width:none;
+  font-size:4.1cqi;letter-spacing:.02em;
+  color:color-mix(in srgb,var(--t1) 88%,#fff);
+  background:rgba(0,0,0,.34);
+  border:.22cqi solid color-mix(in srgb,var(--t1) 55%,transparent);
+  border-radius:1.4cqi;padding:.5cqi 1.3cqi .6cqi;
+  box-shadow:inset 0 0 1.6cqi -.6cqi color-mix(in srgb,var(--tglow) 60%,transparent);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+/* 球队名：靠右、次要色 */
+.card .plate .tm{
+  margin-left:auto;flex:0 1 auto;min-width:0;
+  font-size:4cqi;font-weight:800;color:#c9d3e6;opacity:.82;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* 突破进度点 */
+.card .brk{margin-top:1.2cqi;justify-content:flex-start}
+.card .brk .pips{gap:1.1cqi}
+.card .brk .pips i{
+  width:1.4cqi;height:1.4cqi;border-radius:.3cqi;
+  background:rgba(255,255,255,.13);
+  box-shadow:inset 0 0 0 .2cqi rgba(255,255,255,.08);
+}
+.card .brk .pips i.on{
+  background:linear-gradient(180deg,#fff6d4,#e8a01e);
+  box-shadow:0 0 1cqi color-mix(in srgb,var(--tglow) 80%,transparent),
+             inset 0 .2cqi 0 rgba(255,255,255,.8);
+}
+
+/* ---------- 12. 持有量小标：右下角，带辉光 ---------- */
+.card .hold{
+  left:auto;right:3.6%;bottom:2.4%;z-index:13;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.52));
+  border:.22cqi solid rgba(255,255,255,.24);
+  box-shadow:0 .5cqi 1.6cqi rgba(0,0,0,.7);
+}
+
+/* =============================================================
+   小卡适配：给球场上的首发卡、替补卡、图鉴小卡留出余地
+   （60px 以下时，球风标签和英文名让位，避免糊成一团）
+   ============================================================= */
+@container (max-width: 92px){
+  .card .plate .en{display:none}
+  .card .plate .tag{display:none}
+  .card .plate .rule{margin:1.4cqi 0 1.2cqi}
+  .card .plate .tm{font-size:4.6cqi}
+  .card .moment-stamp{display:none}
+  .card .corner{top:12.5%;font-size:5.6cqi}
+}
+@container (max-width: 66px){
+  .card .plate .tm{display:none}
+  .card .plate .pos{font-size:5.4cqi;padding:.5cqi 1.2cqi .6cqi}
+  .card .brk{display:none}
+  .card .hold{display:none}
+  .card .plate{padding:0 5% 3.5%}
+  .card .plate .nm{font-size:10cqi}
+}
+
+/* =============================================================
+   13. 修正：压掉 holo.css 里优先级更高的「时刻卡专属」规则
+   -------------------------------------------------------------
+   踩过的坑：holo.css 用的是 `.card.moment .frame`（3 个类），
+   而本文件前面写的是 `.card .frame`（2 个类）——
+   **优先级低，覆盖不掉**，于是时刻卡边框仍然是那圈流动彩虹，
+   看起来像卡面坏了（粉绿渐变 + 大圆圈）。
+
+   这里用**同等优先级 + 本文件最后加载**来保证生效。
+   ============================================================= */
+
+/* 时刻卡边框：不要流动彩虹，只要一圈稳定的内发光 */
+.card.moment .frame{
+  background:none;
+  animation:none;
+  opacity:1;
+  padding:0;
+  border:.72cqi solid color-mix(in srgb,var(--t1) 78%,transparent);
+  box-shadow:
+    inset 0 0 0 .3cqi rgba(0,0,0,.5),
+    inset 0 0 4cqi -.6cqi color-mix(in srgb,var(--tglow) 88%,transparent),
+    inset 0 0 10cqi -3cqi color-mix(in srgb,var(--tglow) 70%,transparent);
+}
+
+/* 时刻卡的铭牌不要再往右让位了（本设计的信息栏是左对齐的） */
+.card.moment .plate{padding-right:5%}
+.card.moment .plate .row{max-width:100%}
+
+/* ★ MOMENT 竖排烫印：holo.css 设了 right/bottom，
+   本文件前面又设了 left/top —— 四个方向同时存在会把元素**撑满整张卡**。
+   必须把 right/bottom 显式关掉。 */
+.card .moment-stamp{
+  right:auto;
+  bottom:auto;
+  left:3.6%;
+  top:22%;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+
+/* 时刻卡的球员轮廓光：只保留本设计的发光，不要 holo.css 的饱和度加成 */
+.card.moment .shot img{
+  filter:
+    drop-shadow(0 0 2.4cqi color-mix(in srgb,var(--tglow) 82%,transparent))
+    drop-shadow(0 0 4.6cqi color-mix(in srgb,var(--tglow) 40%,transparent))
+    drop-shadow(0 .7cqi 1.2cqi rgba(0,0,0,.55))
+    drop-shadow(0 2cqi 3.6cqi rgba(0,0,0,.42));
+}
+
+/* 时刻卡的外圈柔光：沿用 holo.css 的思路，但强度按本设计来 */
+.card.moment{
+  box-shadow:
+    0 6px 18px -6px rgba(0,0,0,.92),
+    0 0 17px -3px color-mix(in srgb,var(--tglow) 78%,transparent),
+    0 0 0 1px rgba(255,255,255,.07);
+}
+
+/* =============================================================
+   14. 修正 2：MOMENT 烫印改用 px + 容器查询
+   -------------------------------------------------------------
+   坑：烫印是唯一带 `writing-mode:vertical-rl` 的元素，
+   它内部的 cqi 解析异常（实测 1cqi ≈ 6.2px，而不是卡宽的 1%=1.86px），
+   于是 `font-size:4.8cqi` 算出来是 29.76px —— 烫印大得铺满整张卡，
+   还把球员名字盖住了。
+
+   这种「竖排 + cqi」的组合不可靠，干脆改成 px + 容器查询：
+   卡宽档位是有限的几种（球场小卡 / 图鉴小卡 / 详情大卡），
+   用几个断点覆盖就够了，而且结果完全可预测。
+   ============================================================= */
+.card .moment-stamp{
+  font-size:7px;
+  letter-spacing:1.6px;
+  line-height:1;
+  max-height:56%;
+  overflow:hidden;
+}
+@container (max-width:170px){
+  .card .moment-stamp{font-size:6px;letter-spacing:1.3px}
+}
+@container (max-width:120px){
+  .card .moment-stamp{font-size:5px;letter-spacing:1px}
+}
+@container (max-width:92px){
+  .card .moment-stamp{display:none}
+}
+
+/* =============================================================
+   15. 修正 3：球风标签太挤 + 名宿紫缺 LEGEND 饰带
+   ============================================================= */
+
+/* 一行里塞了「位置 + 球风 + 球队」，窄卡上会把球队挤没。
+   让球队优先缩，球风标签保底显示。 */
+.card .plate .row{gap:1.1cqi}
+.card .plate .pos{flex:0 0 auto}
+.card .plate .tag{flex:0 1 auto;min-width:0}
+.card .plate .tm{flex:1 1 auto;text-align:right}
+
+/* 名宿紫卡的 👑 LEGEND 冠冕饰带：
+   预览稿里是个 DOM 元素，这里用伪元素做，不用改 cardHTML */
+.card[data-tier="legendPurple"] .plate::after{
+  content:'👑 LEGEND';
+  position:absolute;right:0;top:-3.2cqi;
+  font-size:3.4cqi;font-weight:900;letter-spacing:.18em;
+  color:#f2e4ff;
+  padding:.5cqi 1.6cqi .6cqi;border-radius:1.4cqi;
+  background:linear-gradient(180deg,rgba(178,104,255,.92),rgba(76,20,150,.9));
+  box-shadow:0 .6cqi 1.8cqi -.6cqi rgba(0,0,0,.95),
+             inset 0 -.15cqi 0 rgba(255,255,255,.3);
+  text-shadow:0 0 1.6cqi rgba(220,170,255,.9);
+  pointer-events:none;
+}
+@container (max-width:120px){
+  .card[data-tier="legendPurple"] .plate::after{display:none}
+}
+
+/* =============================================================
+   16. 球队管理页卡片：轻度统一（v9.5）
+   -------------------------------------------------------------
+   用户要求：「轻度统一，拖拽也要顺畅」。
+
+   所以这里**只换材质和辉光**，信息结构一个字不动
+   （照片 + Lv.50 + 突破徽标 + 综合 + 名字条），
+   因为那页的卡只有 100px 宽，塞不下「位置 + 球风 + 球队」。
+
+   ⚠️ 性能红线（v8.5 辛苦调出来的拖拽手感，不能毁在这）：
+     ✗ 不用 filter:drop-shadow —— 一页 12 张，每张都算滤镜太贵
+     ✗ 不用动画化的 box-shadow —— 非合成属性，每帧主线程重绘
+     ✗ 不用 backdrop-filter —— 手机 GPU 吃不消
+     ✓ 只用「静态渐变 + 静态 box-shadow」，合成器友好
+     ✓ touch-action:none 保持不动（这是拖拽能用的前提）
+   ============================================================= */
+
+/* 材质底：跟主卡面同一套思路，但更扁平（小卡不需要那么多层次） */
+.tmc{
+  border-radius:4px;
+  border-width:1px;
+  background:
+    radial-gradient(120% 72% at 26% -6%,
+      color-mix(in srgb,var(--tk1,#8b95ab) 30%,transparent) 0%,transparent 62%),
+    linear-gradient(162deg,
+      color-mix(in srgb,var(--tk2,#39404e) 78%,#000 22%),
+      color-mix(in srgb,var(--tk3,#1d222c) 88%,#000 12%));
+  border-color:color-mix(in srgb,var(--tk1,#cfd8e8) 52%,transparent);
+  /* 一圈档位色外发光（静态，不是动画） */
+  box-shadow:
+    0 5px 16px -6px rgba(0,0,0,.95),
+    0 0 10px -3px color-mix(in srgb,var(--tk1,#cfd8e8) 55%,transparent);
+}
+/* 六个档位各自的颜色变量（和主卡面同源） */
+.tmc[data-tier="silver"]      {--tk1:#eef2fa;--tk2:#6b7686;--tk3:#2b3140}
+.tmc[data-tier="gold"]        {--tk1:#ffe7a0;--tk2:#a06a10;--tk3:#3d2500}
+.tmc[data-tier="purple"]      {--tk1:#dcb0ff;--tk2:#6a20a8;--tk3:#210a3d}
+.tmc[data-tier="legendPurple"]{--tk1:#b878ff;--tk2:#4a1588;--tk3:#1b0733}
+.tmc[data-tier="momentGold"]  {--tk1:#fff3bd;--tk2:#b57c0c;--tk3:#3a1c00}
+.tmc[data-tier="momentPurple"]{--tk1:#ffdcff;--tk2:#8a2fd0;--tk3:#1c0640}
+
+/* 时刻卡：内发光更亮一档（靠亮度区分稀有度，不用彩虹） */
+.tmc[data-tier="momentGold"],
+.tmc[data-tier="momentPurple"]{
+  box-shadow:
+    0 5px 16px -6px rgba(0,0,0,.95),
+    0 0 13px -2px color-mix(in srgb,var(--tk1) 72%,transparent);
+}
+/* 名宿紫：双线描边，和主卡面呼应 */
+.tmc[data-tier="legendPurple"]{
+  border-color:color-mix(in srgb,var(--tk1) 68%,transparent);
+  box-shadow:
+    0 5px 16px -6px rgba(0,0,0,.95),
+    0 0 12px -2px color-mix(in srgb,var(--tk1) 62%,transparent),
+    inset 0 0 0 1px color-mix(in srgb,var(--tk1) 22%,transparent);
+}
+
+/* 照片区：底部渐隐改成档位色，和主卡面一致 */
+.tmc-img{background:linear-gradient(180deg,rgba(0,0,0,.30),rgba(0,0,0,.42))}
+.tmc-bar{
+  background:linear-gradient(100deg,
+    color-mix(in srgb,var(--tk1) 88%,#fff),
+    color-mix(in srgb,var(--tk2) 92%,#000)) !important;
+}
+
+/* 突破徽标：跟主卡面统一成「绿色胶囊 / 满突金色」 */
+.tmc-brk,.tmc-max{
+  border-radius:5px;
+  color:#06200e;
+  background:linear-gradient(135deg,#86f2a8,#2fa85a);
+  box-shadow:0 2px 7px -2px rgba(0,0,0,.9),
+             inset 0 0 0 .5px rgba(255,255,255,.4);
+}
+.tmc-max{
+  color:#332000;
+  background:linear-gradient(135deg,#fff0bb,#f0a818);
+  box-shadow:0 2px 7px -2px rgba(0,0,0,.9),
+             inset 0 0 0 .5px rgba(255,255,255,.45);
+}
+/* 综合分：跟着档位色走，别再是死白色 */
+.tmc-ovr{
+  color:#151009;
+  background:linear-gradient(135deg,
+    color-mix(in srgb,var(--tk1) 92%,#fff),
+    color-mix(in srgb,var(--tk2) 88%,#000));
+  text-shadow:0 .5px 0 rgba(255,255,255,.5);
+}
+/* 队伍缩写小签 */
+.tmc-team{color:#151009 !important}
+
+/* 空位：也用同一套边框逻辑，别显得像另一个游戏 */
+.tmc.empty{
+  border-style:dashed;
+  border-color:color-mix(in srgb,#8b95ab 40%,transparent);
+  background:rgba(255,255,255,.05);
+  box-shadow:none;
+}
+
+/* =============================================================
+   17. 修正 4：持有量小标别压住球队名
+   -------------------------------------------------------------
+   原本放在右下角，正好和铭牌那一行「位置 · 球风 · 球队」重叠，
+   截图上会出现「俄克拉荷马 ×1」这种叠字。
+   挪到右上（综合六边形正下方），那里是空的，也不挡人。
+   ============================================================= */
+.card .hold{
+  left:auto;right:3.6%;
+  bottom:auto;top:32%;
+}
+@container (max-width:120px){
+  .card .hold{top:auto;bottom:27%}
+}
+
+/* =============================================================
+   18. 时刻卡铭牌：把球队也显示出来（v9.9）
+   -------------------------------------------------------------
+   上一版时刻卡的铭牌只显示赛季（如「2012-13」），球队名根本看不见 ——
+   而「时刻」的含义正是"某名球员在某支球队的某个时期"，
+   所以铭牌要写成「赛季 · 球队」，例如「2012-13 · 纽约尼克斯」。
+   宽度不够时球队名会缩略（下面给了更小的字号和更紧的字距）。
+   ============================================================= */
+.card .plate .tm{font-size:3.7cqi;letter-spacing:-.01em}
+.card.moment .plate .tm{font-size:3.5cqi;opacity:.9}
+@container (max-width:150px){
+  .card .plate .tm{font-size:4cqi}
+  .card.moment .plate .tm{font-size:3.8cqi}
+}

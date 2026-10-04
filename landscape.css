@@ -1,0 +1,896 @@
+/* =============================================================
+   横版设计（游戏的主设计）
+   ---------------------------------------------------------------
+   判定：视口宽 > 高就一律启用横版。
+   不用 orientation 是因为：
+     · 桌面浏览器窗口通常是"宽>高"，但也该看到横版；
+     · orientation 在部分安卓浏览器上不可靠。
+   用 min-aspect-ratio: 1/1 只要求"宽比高长"，手机横过来、
+   桌面窗口、平板横放都会命中。
+
+   竖屏（宽<高）时不再降级成另一套布局，而是显示"请横屏"提示页 ——
+   这是横屏手游的标准做法。
+   ============================================================= */
+@media (min-aspect-ratio: 1/1) {
+
+  /* ================= 外壳：左导航 + 右内容 ================= */
+  #app{
+    display:grid;
+    grid-template-columns:78px minmax(0,1fr);
+    grid-template-rows:auto minmax(0,1fr);
+    max-width:none;width:100%;min-height:0;height:100vh;
+    padding-left:env(safe-area-inset-left, 0px);
+    padding-right:env(safe-area-inset-right, 0px);
+  }
+
+  /* ---------- 左侧竖排导航 ---------- */
+  #tabbar{
+    grid-row:1 / 3;grid-column:1;
+    position:static;left:auto;bottom:auto;transform:none;
+    width:78px;max-width:78px;flex:0 0 78px;
+    flex-direction:column;justify-content:center;gap:2px;
+    padding:10px 7px;
+    background:linear-gradient(90deg,rgba(5,7,15,.99),rgba(7,10,20,.92));
+    border-top:0;border-right:1px solid var(--line);
+    backdrop-filter:blur(14px);z-index:40;
+  }
+  #tabbar button{
+    flex:0 0 auto;width:100%;padding:9px 2px;border-radius:11px;
+    font-size:9.5px;letter-spacing:.02em;
+  }
+  #tabbar button b{display:block;font-size:21px;margin-bottom:2px;line-height:1}
+  #tabbar button.on{
+    background:linear-gradient(90deg,rgba(245,196,81,.22),rgba(245,196,81,.05));
+    box-shadow:inset 2.5px 0 0 var(--gold)}
+
+  /* ---------- 顶栏 ---------- */
+  #topbar{
+    grid-row:1;grid-column:2;
+    padding:6px 14px calc(6px + var(--safe-t)) 14px;
+    position:static;
+  }
+  #topbar .logo{font-size:13px}
+  .cur{padding:4px 10px;font-size:12px}
+  .ic{width:13px;height:13px;flex-basis:13px}
+
+  /* ---------- 内容区 ---------- */
+  main{
+    grid-row:2;grid-column:2;
+    flex:1;min-height:0;min-width:0;
+    padding:0;overflow:hidden;display:flex;flex-direction:column;
+  }
+  .screen{display:none}
+  .screen.active{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .pad{padding:12px 16px 16px;overflow-y:auto}
+  .sec-title{font-size:11.5px;margin:0 0 7px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important;gap:9px}
+
+  /* =============================================================
+     招募页：左（主视觉 + 卡池信息）/ 右（招募按钮）
+     ============================================================= */
+  #scr-home.active{
+    display:grid;
+    grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+    grid-template-rows:auto minmax(0,1fr);
+    overflow:hidden;
+  }
+  /* hero 原本是 352px 高、文字绝对定位 bottom:80px，横版只有 156px，
+     所以把文字改成垂直居中，卡面固定在右上角 */
+  #scr-home .hero{
+    grid-column:1;grid-row:1;
+    margin:12px 8px 0 14px;height:150px;min-height:0;overflow:hidden;
+  }
+  #scr-home .hero-art{position:absolute;right:-3%;bottom:0;top:auto;height:94%;opacity:.8}
+  #scr-home .hero-art img{height:100%;width:auto;max-width:230px;object-fit:contain}
+  #scr-home .hero-txt{
+    position:absolute;left:14px;top:50%;bottom:auto;transform:translateY(-50%);
+    max-width:54%;padding:0;
+  }
+  #scr-home .hero-txt h2{font-size:22px;line-height:1.05}
+  #scr-home .hero-txt .sub{font-size:9.5px;letter-spacing:.2em;margin-top:3px}
+  #scr-home .pity{font-size:10px;margin-top:8px;padding:5px 10px}
+  #scr-home .pity b{font-size:13px}
+  #scr-home .hero-card{position:absolute;right:10px;top:6px;width:100px;margin:0}
+  /* 让 home-side 的子元素直接参与外层网格 */
+  #scr-home .home-side{display:contents}
+  #scr-home .home-scroll{
+    grid-column:1;grid-row:2;overflow-y:auto;min-height:0;
+    padding:11px 8px 12px 14px;
+  }
+  #scr-home .home-fixed{
+    grid-column:2;grid-row:1 / 3;
+    display:flex;flex-direction:column;justify-content:center;gap:10px;
+    padding:12px 14px 12px 8px;overflow-y:auto;
+  }
+  #scr-home .recruit-bar{flex-direction:column;gap:10px}
+  #scr-home .rb{padding:18px 14px}
+  #scr-home .rb b{font-size:17px}
+  #scr-home .rb span{font-size:12px}
+  .pooltabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px}
+  .pooltab{padding:9px 6px}
+  .pooltab b{font-size:11.5px}
+  .pooltab span{font-size:9px}
+  .poolinfo{padding:11px 12px;margin-bottom:9px}
+  .poolinfo .desc{font-size:11px;margin-bottom:8px}
+  #scr-home .rates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .rc{font-size:10.5px;padding:4px 8px}
+  .supply{padding:10px 12px;margin-bottom:9px}
+  .supply .t1{font-size:12.5px}
+  .supply .t2{font-size:10.5px}
+  .supply button{padding:9px 16px;font-size:12.5px}
+  .skip{font-size:11px;padding:0 0 8px}
+  .stats-line{font-size:11px;padding:0 0 4px}
+
+  /* =============================================================
+     图鉴 / 我的：多列网格
+     ============================================================= */
+  #scr-dex .pad,#scr-mine .pad{padding:11px 14px 14px}
+  #dex-grid,#mine-grid{
+    grid-template-columns:repeat(auto-fill,minmax(76px,1fr))!important;gap:8px;
+  }
+
+  /* =============================================================
+     球队管理：左球场 / 右备用名单
+     ============================================================= */
+  #scr-team.active{
+    position:static;left:auto;transform:none;
+    width:100%;max-width:none;min-width:0;align-self:stretch;
+    top:auto;bottom:auto;background:transparent;
+  }
+  #scr-team .tm{height:100%;display:flex;flex-direction:column}
+  /* 头部和标签页压到最薄，把高度让给球场 */
+  .tm-head{padding:5px 14px 4px;gap:8px;min-height:0}
+  .tm-head-l{gap:1px}
+  .tm-head-l b{font-size:13.5px}
+  .tm-head-l span{font-size:9.5px}
+  .tm-head button{padding:6px 10px;font-size:10.5px}
+  .tm-tabs{padding:3px 14px 0}
+  .tm-tabs button{padding:4px 0 5px;font-size:11px;border-bottom-width:2px}
+  .tm-body{flex:1;min-height:0;position:relative}
+  .tm-pane{display:none}
+  .tm-pane.on{display:block;height:100%;overflow:hidden}
+
+  /* 阵容页（按参考图）：左 = 备用名单，右 = 球场
+     —— 之前球场在左、名单在右，跟参考图是反的 */
+  .tm-pane[data-pane="lineup"].on{
+    /* 球场这一栏给多一点（0.68 : 1.32）—— 替补席 7 张才排得开 */
+    display:grid;grid-template-columns:minmax(0,0.68fr) minmax(0,1.32fr);
+    grid-template-rows:auto minmax(150px,1fr) auto;
+  }
+  /* 备用名单：左栏 */
+  /* 标题行压成一行：筛选按钮横向滚动，不换行占高度 */
+  .tm-pane[data-pane="lineup"] .tm-benchbar{
+    grid-column:1;grid-row:1;padding:5px 12px 4px;gap:6px;
+    flex-wrap:nowrap;overflow:hidden;
+  }
+  .tm-bench-t{font-size:11px;flex:0 0 auto}
+  .tm-sort{display:none}
+  .tm-filter{
+    margin-left:auto;flex:1 1 auto;min-width:0;
+    flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+  }
+  .tm-filter::-webkit-scrollbar{display:none}
+  .tm-filter button{padding:4px 9px;font-size:10px;flex:0 0 auto}
+  /* 一页 6 人：列数由 JS 按可用空间挑（--pcols），卡面尺寸 --pcw */
+  .tm-pane[data-pane="lineup"] .tm-pool{
+    grid-column:1;grid-row:2;padding:0 12px 4px;
+    grid-template-columns:repeat(var(--pcols,2),var(--pcw,72px));
+    grid-template-rows:auto;
+    justify-content:center;align-content:center;
+    gap:9px;overflow:hidden;
+  }
+  .tm-pane[data-pane="lineup"] .tm-pcard{
+    width:var(--pcw,72px);height:auto;aspect-ratio:5/6.4;min-height:0;
+  }
+  .tm-pane[data-pane="lineup"] .tm-pool .bt-none{grid-column:1 / -1}
+  .tm-pane[data-pane="lineup"] .tm-pager{
+    grid-column:1;grid-row:3;padding:3px 10px 4px;gap:8px;
+  }
+  .tm-pager button{height:30px;flex-basis:42px;font-size:12px}
+  .tm-pageinfo b{font-size:11px}
+  .tm-pageinfo span{font-size:8.5px;margin-top:0}
+  .tm-pane[data-pane="lineup"] .tm-tip{display:none}
+
+  /* 球场：右栏，带木地板背景 */
+  .tm-pane[data-pane="lineup"] .tm-court{
+    grid-column:2;grid-row:1 / -1;
+    margin:6px 12px 6px 4px;padding:8px 12px;
+    min-height:0;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;
+    border-radius:14px;border:1px solid rgba(255,255,255,.12);
+    background:
+      /* 中圈 */
+      radial-gradient(closest-side at 50% 52%,
+        transparent 0 13.5%, rgba(255,240,220,.28) 13.5% 14.4%, transparent 14.4%),
+      /* 罚球区 */
+      linear-gradient(180deg, transparent 0 62%, rgba(255,240,220,.16) 62% 62.6%,
+        rgba(210,180,140,.14) 62.6% 100%),
+      /* 木地板竖纹 */
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,.10) 0 1px, transparent 1px 34px),
+      linear-gradient(180deg,#8a5a2e 0%,#7a4e26 46%,#6b4320 100%);
+    box-shadow:inset 0 0 60px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.12);
+  }
+  .tm-court-bg{
+    display:block;position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background:
+      /* 三分弧 */
+      radial-gradient(closest-side at 50% 108%,
+        transparent 0 52%, rgba(255,240,220,.22) 52% 52.8%, transparent 52.8%),
+      /* 边线 */
+      linear-gradient(90deg, rgba(255,240,220,.18) 0 1px, transparent 1px calc(100% - 1px),
+        rgba(255,240,220,.18) calc(100% - 1px));
+  }
+  .tm-row{position:relative;z-index:2}
+  .tm-row.top{margin-bottom:9px;gap:11px}
+  .tm-row.bot{gap:11px}
+  .tm-slot{flex:0 0 auto;width:var(--slot-w,62px);max-width:var(--slot-w,62px)}
+  .tm-slot-face{position:relative}
+  .tm-slot-face .card{width:100%}
+  /* 位置角标：卡片内右上角，缩写 + 中文两行 —— 永远在卡片里，不会被裁 */
+  .tm-slot-pos{
+    position:absolute;left:0;top:0;z-index:14;   /* 右上角留给突破徽章 */
+    display:flex;flex-direction:column;align-items:center;
+    padding:3px 8px 4px;border-radius:9px 0 9px 0;
+    background:linear-gradient(135deg,#ffd977,#d89000);
+    box-shadow:0 2px 9px rgba(0,0,0,.8), inset 0 0 0 1px rgba(255,255,255,.42);
+    line-height:1.06;pointer-events:none;
+  }
+  .tm-slot-pos b{font-size:11px;font-weight:900;color:#3a2400;letter-spacing:.04em}
+  .tm-slot-pos i{font-style:normal;font-size:8.5px;font-weight:900;color:#5a3d00;
+    letter-spacing:.01em;white-space:nowrap}
+  /* 突破等级：卡片内左下角 */
+  /* 突破角标放右下角，别压住居中的名字 */
+  .tm-slot-brk{
+    position:absolute;right:0;bottom:0;z-index:14;
+    font-size:8.5px;font-weight:900;color:#2b1a00;padding:2px 6px 3px;
+    border-radius:8px 0 8px 0;
+    background:linear-gradient(135deg,#ffd977,#e8a01e);
+    box-shadow:0 2px 6px rgba(0,0,0,.75);pointer-events:none;
+  }
+  .tm-benchline{
+    position:relative;z-index:2;margin-top:6px;padding-top:5px;
+    border-top:1px solid rgba(255,240,220,.22);
+  }
+  /* 标题做成左上角的小标签，不再单独占一行 */
+  .tm-benchline-t{
+    position:absolute;left:2px;top:-8px;z-index:3;
+    font-size:8.5px;font-weight:900;color:#f0dfc4;letter-spacing:.1em;
+    background:rgba(20,14,8,.92);padding:1px 7px;border-radius:999px;
+    border:1px solid rgba(255,240,220,.22);
+  }
+  .tm-bench-row{display:flex;justify-content:center;gap:9px}
+  .tm-bench-row.top{margin-bottom:8px}
+  .tm-bslot{
+    position:relative;
+    width:var(--bslot-w,48px);height:calc(var(--bslot-w,48px) * 1.18);
+    border-radius:8px;overflow:hidden;
+  }
+  .tm-bslot-face{position:relative;width:100%;height:100%}
+  .tm-bslot-face .card{width:100%;height:100%;aspect-ratio:auto}
+  .tm-bslot-brk{
+    position:absolute;right:0;bottom:0;z-index:14;
+    font-size:8px;font-weight:900;color:#2b1a00;padding:1px 5px 2px;
+    border-radius:7px 0 7px 0;
+    background:linear-gradient(135deg,#ffd977,#e8a01e);
+    box-shadow:0 2px 6px rgba(0,0,0,.75);pointer-events:none;
+  }
+  .tm-bslot.empty{
+    border:1px dashed rgba(255,255,255,.3);background:rgba(255,255,255,.04);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tm-bslot.empty .add{font-size:14px;color:#7f8ca8}
+  .tm-bslot.active{box-shadow:0 0 0 2px var(--gold), 0 0 16px -2px var(--gold);
+    transform:scale(1.05)}
+  .tm-bslot.over{box-shadow:0 0 0 2.5px var(--gold), 0 0 22px -2px var(--gold);
+    transform:scale(1.09);animation:none;z-index:9}
+  .tm-bslot.over::after{content:'';position:absolute;inset:0;z-index:20;
+    border-radius:inherit;background:rgba(245,196,81,.3);pointer-events:none}
+
+  /* 战术页：两列并排 */
+  .tm-pane[data-pane="tactic"].on{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;
+    padding:12px 14px;overflow-y:auto;align-content:start;
+  }
+  .tm-pane[data-pane="tactic"] .sec-title:first-child{margin-top:0}
+  .bt-tac{padding:9px 11px}
+  .bt-tac b{font-size:12px}
+  .bt-tac i{font-size:10px}
+
+  /* 球队页：左总览 / 右名单 */
+  .tm-info{
+    padding:12px 14px;display:grid;
+    grid-template-columns:minmax(0,300px) minmax(0,1fr);
+    gap:14px;align-content:start;
+  }
+  .tm-info-hero{padding:14px}
+  .tm-info-ovr{font-size:36px}
+  .tm-info-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .tm-info-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .tm-info-tip{margin-top:0}
+
+  /* ---------- 对战设置页：左（我的球队）/ 右（选对手 + 开赛） ---------- */
+  #scr-battle .pad{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:12px 18px;align-content:start;overflow-y:auto;padding:12px 16px 16px;
+  }
+  #scr-battle .pad > .sec-title{display:none}      /* "选择对手"标题省掉，卡片自己会说话 */
+  #scr-battle .pad > .bt-myteam{grid-column:1;grid-row:1 / 3}
+  #scr-battle .pad > .bt-tacbar{grid-column:1;grid-row:3}
+  /* 右列：上 = 30 队网格，中 = 选中对手的信息，下 = 对阵条 */
+  #scr-battle .pad > .bt-opp-grid{grid-column:2;grid-row:1;
+    max-height:none;align-content:start;overflow-y:auto}
+  #scr-battle .pad > .bt-opp-info{grid-column:2;grid-row:2;margin:0}
+  #scr-battle .pad > .bt-vs{grid-column:2;grid-row:3;margin:0}
+  /* 开赛按钮吸在底部，滚动时始终能看到 */
+  #scr-battle .pad > .bt-startrow{
+    grid-column:1 / -1;grid-row:4;max-width:560px;margin:0 auto;width:100%;
+    position:sticky;bottom:-2px;padding:10px 0 4px;z-index:5;
+    background:linear-gradient(180deg,transparent,var(--bg0) 34%);
+  }
+  #scr-battle .pad > .bt-tip{grid-column:1 / -1;grid-row:5}
+  #scr-battle .pad > .bt-rule{grid-column:1 / -1;grid-row:6;margin-top:0}
+  .bt-myteam{padding:11px}
+  .bt-lineup{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .bt-chip>b{font-size:13px}
+  .bt-chip>i{font-size:8.5px}
+  .bt-bench-row{margin-top:8px}
+  .bt-bchip{width:38px;height:47px}
+  .bt-opp{padding:9px 11px}
+  .bt-opp b{font-size:12.5px}
+  .bt-opp i{font-size:10px;margin-top:2px}
+  .bt-opp span{font-size:10px;margin-top:3px}
+  .bt-start{padding:14px 10px;font-size:14.5px}
+  .bt-tip{display:none}                             /* 横版空间宝贵，说明文字省掉 */
+
+  /* =============================================================
+     对战进行中：上（对手）/ 中（解说）/ 下（我方）
+     ============================================================= */
+  #scr-battle.active{
+    position:static;left:auto;transform:none;
+    width:100%;max-width:none;min-width:0;align-self:stretch;
+    top:auto;bottom:auto;background:transparent;
+  }
+  .bt-stage{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .bt-scorebar{padding:6px 18px;gap:14px}
+  .bt-sb-score{font-size:27px}
+  .bt-sb-name{font-size:11px}
+  .bt-sb-clock{padding:0 14px;gap:7px}
+  .bt-sb-clock b{font-size:20px}
+  .bt-sb-clock span{font-size:11px;padding:2px 7px}
+  .bt-qdots u{width:12px;height:3px}
+
+  /* 三栏 → 三行 */
+  .bt-cols{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr) auto;
+    gap:7px;padding:8px 14px 4px;
+  }
+  .bt-col{flex-direction:row;align-items:center;gap:11px;min-height:0}
+  .bt-cols{grid-template-rows:min-content minmax(56px,1fr) min-content!important}
+  .bt-middle{min-height:56px}
+  .bt-col-head{
+    flex:0 0 86px;text-align:left;padding:7px 9px;
+    border-bottom:0;border-radius:10px;background:rgba(255,255,255,.06);
+  }
+  .bt-col-name{font-size:11px;text-align:left}
+  .bt-col-tac{font-size:8.5px;text-align:left}
+  /* 竖排时卡片高度来自 grid-template-rows:repeat(5,1fr)，
+     横版改成横排后必须自己给高度，否则卡片会塌成一条线 */
+  /* 必须给显式宽度：grid 的列是 minmax(0,1fr)，没有内在宽度，
+     配合 flex:0 1 auto 会直接塌成 0 宽 */
+  .bt-col-cards{
+    flex:1 1 auto;width:auto;min-width:0;max-width:430px;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    grid-template-rows:auto!important;        /* 竖屏是 repeat(5,1fr)，必须显式覆盖 */
+    grid-auto-rows:min-content!important;
+    gap:7px;align-items:start;
+  }
+
+  .bt-col.my .bt-col-cards{margin-left:auto}
+  .bt-pc{aspect-ratio:5/6.4;height:auto;min-height:0;border-radius:8px}
+  .bt-pc-ovr{font-size:11.5px;padding:2px 5px 3px}
+  .bt-pc-info{padding:7px 5px 3px;bottom:4px}
+  .bt-pc-nm{font-size:9px}
+  .bt-pc-pts{font-size:13px}
+  .bt-pc-hot{font-size:10px}
+
+  .bt-middle{padding:7px 11px;border-radius:11px}
+  .bt-feed{gap:5px}
+  .bt-line{padding:6px 10px}
+  .bt-line-txt{font-size:11.5px}
+  .bt-quote{font-size:10px;margin-top:3px}
+
+  .bt-actions{padding:6px 14px calc(6px + var(--safe-b));gap:9px}
+  .bt-step{padding:11px;font-size:14px}
+  .bt-resume{flex:0 0 50px;padding:11px 0}
+  .bt-sp{width:44px;padding:11px 0}
+  .bt-quit{flex:0 0 94px;padding:11px 0}
+
+  /* 气泡 / 连击横幅 */
+  .bt-say{max-width:42%}
+  .bt-say-txt{font-size:12.5px}
+  .bt-say.t2 .bt-say-txt{font-size:13.5px}
+  .bt-say.t3 .bt-say-txt{font-size:15px}
+  .bt-streak{width:min(60vw,560px)}
+
+  /* ---------- 赛后 ---------- */
+  #scr-battle .pad{padding:12px 16px}
+  .bt-result{padding:12px 16px;margin-bottom:10px}
+  .bt-result>b{font-size:22px;letter-spacing:.24em}
+  .bt-final{font-size:32px;margin:5px 0 3px}
+  .bt-qrow{padding:7px 12px;font-size:12px}
+  .bt-stats th,.bt-stats td{padding:7px 6px}
+  .bt-mvp{padding:10px 12px}
+  .bt-actions2{max-width:460px}
+
+  /* =============================================================
+     详情页：左卡面 / 右信息
+     ============================================================= */
+  /* 详情页新版式：单列（上=球员卡+信息栏，下=页签+内容）
+     这里**不能**再用两列网格，否则会把新版式挤坏。
+     同时留出刘海/灵动岛的安全区。 */
+  #detailLayer .dwrap{
+    max-width:none;width:100%;height:100vh;margin:0;border-radius:0;
+    display:flex;flex-direction:column;
+    padding-left:calc(12px + env(safe-area-inset-left, 0px));
+    padding-right:calc(12px + env(safe-area-inset-right, 0px));
+    padding-top:calc(7px + env(safe-area-inset-top, 0px));
+    padding-bottom:calc(7px + env(safe-area-inset-bottom, 0px));
+    overflow:hidden;
+  }
+  #detailLayer .dside{
+    padding:14px 10px 14px 16px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:8px;
+    border-right:1px solid var(--line);overflow:hidden;
+  }
+  #detailLayer .dhead-card{width:min(100%,210px)}
+  #detailLayer .dside-hint{font-size:9.5px}
+  #detailLayer .dmain{padding:14px 16px;overflow-y:auto;min-height:0}
+  #detailLayer .dhead-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #detailLayer .ab-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+  #detailLayer .bd-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #detailLayer .dbtns{max-width:none}
+  #detailLayer .dupsell{margin:10px 0}
+
+  /* 卡片查看器 */
+  #cardViewer .cv-wrap{width:min(40vh,250px)}
+  #cardViewer .cv-bar{flex-direction:row}
+
+  /* 抽卡 / 结算弹层 */
+  #pullLayer .pull-box,#finaleLayer .fin-box{
+    max-width:min(620px,70vw);max-height:94dvh;overflow-y:auto;
+  }
+  /* 注意：这里不能再写 !important 改列数 —— 会盖掉 JS 设的行内居中样式。
+     横版只是把卡面放大一点，居中交给上面的 flex 规则。 */
+  #pullGrid{max-width:780px;gap:11px}
+  #pullGrid .card{width:min(142px, calc((100% - 44px) / 5))}
+  #pullGrid.single .card{width:min(220px, 24vw)}
+
+  /* 阵容编辑 / 暂停面板铺满 */
+  #rosterLayer,#pickLayer,#subLayer{max-width:none;width:100%}
+  .bt-sub-body,.bt-rl-body{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 18px;
+    align-content:start;
+  }
+  .bt-pk-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+}
+
+/* =============================================================
+   更矮的横屏（状态栏占位更多的机型）
+   ============================================================= */
+@media (min-aspect-ratio: 1/1) and (max-height: 400px) {
+  #app{grid-template-columns:70px minmax(0,1fr)}
+  #tabbar{width:70px;max-width:70px;flex-basis:70px}
+  #tabbar button b{font-size:18px}
+  #tabbar button{font-size:8.5px;padding:7px 2px}
+
+  .bt-sb-score{font-size:23px}
+  .bt-sb-clock b{font-size:17px}
+  .bt-sb-clock span{font-size:10px;padding:2px 6px}
+  .bt-col-head{flex-basis:74px;padding:6px 8px}
+  .bt-col-cards{max-width:340px;gap:6px}
+  .bt-pc-pts{font-size:12px}
+  .bt-pc-nm{font-size:8.5px}
+  .bt-line-txt{font-size:10.5px}
+  .bt-actions{padding:5px 12px calc(5px + var(--safe-b))}
+  .bt-step{padding:9px;font-size:13px}
+  .bt-sp{width:40px;padding:9px 0}
+  .bt-quit{flex:0 0 84px;padding:9px 0}
+  #scr-home .hero-txt h2{font-size:19px}
+  #scr-home .hero-card{width:96px}
+  #scr-home .rb{padding:13px 12px}
+  #scr-home .rb b{font-size:15px}
+  /* 窄屏（横屏手机）下的详情页：保持单列，只压缩内部间距 */
+  #detailLayer .dwrap{padding-left:calc(9px + env(safe-area-inset-left, 0px));
+    padding-right:calc(9px + env(safe-area-inset-right, 0px))}
+  /* 徽章页需要把高度撑满，否则第 5 个分类会被截掉 */
+  html[data-platform="mobile"] #detailLayer .dmain{display:flex;flex-direction:column;
+    min-height:0;overflow:hidden}
+  html[data-platform="mobile"] #detailLayer .dpanel{flex:1 1 auto;min-height:0;
+    overflow:hidden;display:flex;flex-direction:column}
+  /* 徽章页在横屏下竖向空间最紧张：
+     把「身高/体重/球风」那栏收起来（总况页还能看到），全部让给徽章。 */
+  html[data-platform="mobile"] #detailLayer .dhead-grid{display:none}
+  html[data-platform="mobile"] #detailLayer .dhead{padding:5px 14px 4px}
+  html[data-platform="mobile"] #detailLayer .dhead-en{display:none}
+  /* 徽章区允许独立滚动，避免内容撑破容器互相压盖 */
+  html[data-platform="mobile"] .bd-side{overflow:hidden}
+  html[data-platform="mobile"] .bd-main{overflow-y:auto;overflow-x:hidden}
+}
+
+/* =============================================================
+   竖屏怎么办：不再弹「请横屏游玩」，而是把整个画面旋转 90°
+   ---------------------------------------------------------------
+   原因：iPhone 躺着玩时手机一翻转，orientation 就变成 portrait。
+   如果这时弹提示页，游戏就被打断了；而且 iOS Safari 不支持
+   screen.orientation.lock()。
+   所以干脆**永远保持横屏视野**：竖屏时用 CSS 把 #app 转 90° 铺满，
+   用户就能放心开系统级的「竖排方向锁定」，躺着怎么翻都不影响。
+   （支持的浏览器仍会尝试原生 lock，见 app.js 的 lockLandscape。）
+   ============================================================= */
+#rotateTip{display:none!important}
+
+@media (max-aspect-ratio: 1/1) {
+  /* 竖屏：把整个应用转 90°，看起来还是横屏 */
+  html,body{
+    overflow:hidden!important;height:100%;
+    overscroll-behavior:none;
+  }
+  /* 这里只做 JS 生效前的兜底，JS(applyOrientation) 会用实测像素精确覆盖 */
+  html.rot #app{display:block}
+}
+
+/* =============================================================
+   横屏提示页（样式保留，但已不再显示）
+   ============================================================= */
+
+#rotateTip .rt-phone{
+  width:74px;height:124px;border-radius:13px;
+  border:3px solid var(--gold);position:relative;
+  box-shadow:0 0 34px -6px var(--gold);
+  animation:rtSpin 2.4s ease-in-out infinite;
+}
+#rotateTip .rt-phone::before{
+  content:'';position:absolute;left:50%;top:7px;transform:translateX(-50%);
+  width:18px;height:3px;border-radius:2px;background:var(--gold);opacity:.75;
+}
+@keyframes rtSpin{
+  0%,18%{transform:rotate(0deg)}
+  46%,72%{transform:rotate(90deg)}
+  100%{transform:rotate(90deg)}
+}
+#rotateTip .rt-title{font-size:21px;font-weight:900;letter-spacing:.16em;color:#fff}
+#rotateTip .rt-sub{font-size:13px;color:var(--muted);line-height:1.8}
+#rotateTip .rt-sub b{color:var(--gold)}
+#rotateTip .rt-go{
+  margin-top:6px;font-size:14px;font-weight:900;padding:13px 26px;border-radius:12px;
+  color:#2b1a00;background:linear-gradient(180deg,#ffd977,#e8a01e);
+  box-shadow:0 8px 24px rgba(232,160,30,.4)
+}
+#rotateTip .rt-note{font-size:11px;color:#6f7c96;line-height:1.7;max-width:300px}
+
+/* 超宽屏（桌面大显示器）下把内容收在一个舒服的宽度里，
+   否则卡面会被拉得很散 */
+/* =============================================================
+   电脑版大屏（1920×1080 这类）
+   ---------------------------------------------------------------
+   目标就是"铺满整个屏幕"：去掉所有限宽，让网格自由分配，
+   卡片尺寸本来由 JS 按可用空间算，会自动跟着放大。
+   ============================================================= */
+@media (min-aspect-ratio: 1/1) and (min-width: 1500px) {
+  html[data-platform="desktop"] .screen.active,
+  html[data-platform="desktop"] #topbar,
+  html[data-platform="desktop"] .tm-pane,
+  html[data-platform="desktop"] .pad{
+    max-width:none;width:100%;margin-left:0;margin-right:0;
+  }
+  /* 大屏下球场和列表再宽一点，别挤在中间 */
+  html[data-platform="desktop"] .tm-pane[data-pane="lineup"].on{
+    grid-template-columns:minmax(0,0.62fr) minmax(0,1.38fr);
+  }
+  /* 对战直播：两边卡列放宽 */
+  html[data-platform="desktop"] .bt-col-cards{max-width:760px}
+  html[data-platform="desktop"] .bt-col-head{flex-basis:120px}
+  /* 弹层在 1920 上收窄一点，不然太散 */
+  html[data-platform="desktop"] #pullLayer .pull-box,
+  html[data-platform="desktop"] #finaleLayer .fin-box{
+    max-width:min(900px,52vw);
+  }
+  html[data-platform="desktop"] #detailLayer .dwrap{
+    grid-template-columns:minmax(0,420px) minmax(0,1fr);
+  }
+  html[data-platform="desktop"] #detailLayer .dhead-card{width:min(100%,320px)}
+  html[data-platform="desktop"] #detailLayer .bd-list{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  /* 卡片网格：大屏多排几列 */
+  html[data-platform="desktop"] #dex-grid,
+  html[data-platform="desktop"] #mine-grid{
+    grid-template-columns:repeat(auto-fill,minmax(118px,1fr))!important;gap:14px;
+  }
+}
+
+/* 位置角标占了卡片右上角，把评分宝石往下挪一点，避免叠在一起 */
+.tm-slot-face .card .rating{top:31%}
+/* 球队页的卡片上不显示"现役/名宿"角标（左上角让给别的东西也不挤） */
+.tm-slot .card .corner{font-size:6.4cqi;padding:1.4cqi 3cqi}
+/* 底部名字给位置角标留出视觉空间 */
+.tm-slot .card .plate .nm{font-size:calc(11.4cqi * var(--nm-scale, 1))}
+
+/* 球场卡用略扁的比例（JS 里按 5:5.9 算宽度），这里让高度跟随 */
+.tm-pane[data-pane="lineup"] .tm-slot{aspect-ratio:5/5.9}
+.tm-pane[data-pane="lineup"] .tm-slot-face .card{aspect-ratio:5/5.9}
+/* 替补卡也同步，且名字用姓氏保证在小卡上完整显示 */
+.tm-pane[data-pane="lineup"] .tm-bslot{aspect-ratio:5/5.9}
+
+/* 标签页在标题行里：靠右、无边框、选中项金色下划线 */
+#scr-team .tm-tabs{
+  margin-left:auto;flex:0 0 auto;display:flex;gap:11px;
+  padding:0;border:0;
+}
+#scr-team .tm-tabs button{
+  padding:2px 0 3px;font-size:10.5px;letter-spacing:.04em;
+  background:transparent;color:#6f7c96;border-radius:0;
+  border-bottom:2px solid transparent;
+}
+#scr-team .tm-tabs button.on{
+  background:transparent;color:var(--gold);border-bottom-color:var(--gold);
+}
+
+/* 电脑版：数据格放底部信息条下面 */
+html[data-platform="desktop"] .bt-pc-stats{
+  position:absolute;left:0;right:0;bottom:0;z-index:4;
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  align-items:center;
+  background:rgba(4,6,12,.92);border-top:1px solid rgba(255,255,255,.08);
+}
+html[data-platform="desktop"] .bt-pc-stats .bt-st{
+  display:flex;flex-direction:column;align-items:center;line-height:1;
+}
+html[data-platform="desktop"] .bt-pc-stats .bt-st i{
+  font-style:normal;font-size:8px;font-weight:800;color:#5f6c88;
+}
+html[data-platform="desktop"] .bt-pc-stats .bt-st b{
+  font-size:11px;font-weight:900;color:#69769a;font-variant-numeric:tabular-nums;
+}
+html[data-platform="desktop"] .bt-pc-stats .bt-st.has b{color:#e8eefc}
+html[data-platform="desktop"] .bt-pc-stats .bt-st.main.has b{color:var(--gold)}
+html[data-platform="desktop"] .bt-pc-info{bottom:26px}
+
+/* =============================================================
+   手机版对战界面：上下布局（和电脑版一致）
+   ---------------------------------------------------------------
+   上面是对方球队、下面是我的球队、中间是解说。
+   气泡按上下位置贴边：上方球队的气泡挂卡牌**下方**，
+   下方球队的气泡挂卡牌**上方**，两边都朝中间伸。
+   ---------------------------------------------------------------
+   纵向预算是死的（440px 高）：
+     顶栏 40 + 记分条 40 + 操作条 46 = 126，剩 314 给球场
+     两排卡各 90px（180）+ 中间解说 134px（约 6 行）
+   ============================================================= */
+html[data-platform="mobile"] .bt-cols{
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+  gap:5px;padding:5px 12px 3px;
+}
+html[data-platform="mobile"] .bt-col.foe{grid-column:1;grid-row:1}
+html[data-platform="mobile"] .bt-middle{grid-column:1;grid-row:2;min-height:0}
+html[data-platform="mobile"] .bt-col.my{grid-column:1;grid-row:3}
+html[data-platform="mobile"] .bt-col{
+  width:auto;min-width:0;max-width:none;
+  flex:0 0 auto;gap:0;
+  flex-direction:row;align-items:center;
+}
+/* 队名信息做成左边的小标签，不占整行 */
+html[data-platform="mobile"] .bt-col-head{
+  display:flex;flex:0 0 auto;width:64px;
+  flex-direction:column;align-items:flex-start;
+  padding:5px 7px;border-radius:8px;background:rgba(255,255,255,.06);
+}
+html[data-platform="mobile"] .bt-col-name{font-size:10px;text-align:left}
+html[data-platform="mobile"] .bt-col-tac{font-size:8px;text-align:left}
+
+/* 一排 5 张卡 */
+html[data-platform="mobile"] .bt-col-cards{
+  flex:1 1 auto;min-width:0;min-height:0;
+  width:auto;max-width:none;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  grid-template-rows:72px!important;      /* 刻意压扁：解说区要多露几行 */
+  gap:5px;align-items:stretch;justify-items:stretch;
+}
+html[data-platform="mobile"] .bt-pc{
+  display:flex;flex-direction:column;align-items:stretch;
+  gap:0;padding:0;border-radius:8px;overflow:hidden;
+  aspect-ratio:auto;height:100%;min-height:0;width:100%;
+}
+html[data-platform="mobile"] .bt-pc-img{
+  position:relative;inset:auto;flex:0 0 54%;width:100%;height:auto;
+  display:flex;align-items:flex-end;justify-content:center;
+  overflow:hidden;
+  background:radial-gradient(120% 100% at 50% 100%,
+    color-mix(in srgb, var(--tglow) 48%, transparent) 0%, transparent 78%);
+}
+html[data-platform="mobile"] .bt-pc-img img{
+  width:100%;height:100%;max-width:none;
+  object-fit:contain;object-position:bottom center;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.9));
+}
+/* =============================================================
+   📛 比赛卡姓名**真正居中**（v9.41 用户要求）
+   -------------------------------------------------------------
+   用户反馈：「球员卡牌下的命名不是居中的」。
+
+   原来（flex）的问题：姓名元素是 `flex:1 1 auto`，
+   右侧有 OVR 徽章占位 → 姓名的可用宽度被挤窄，
+   虽然文字在自己元素里居中，但**元素本身偏左**，
+   视觉上就"没居中"（实测偏差 -9~-10px）。
+
+   改成 **grid 三栏对称布局**：
+     [左空栏] [姓名居中栏] [OVR 右栏]
+     三栏等宽 → 姓名栏的正中心就是整条的中线。
+   左栏虽然没有内容，但它保证了对称性 ——
+   这是让"文字在整条里居中"的标准做法。
+   ============================================================= */
+html[data-platform="mobile"] .bt-pc-info{
+  position:relative;inset:auto;order:2;flex:0 0 auto;width:100%;
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  gap:2px;padding:1px 4px;bottom:auto;
+  background:linear-gradient(180deg,rgba(8,12,24,.5),rgba(5,8,16,.95));
+}
+html[data-platform="mobile"] .bt-pc-nm{
+  grid-column:2;min-width:0;text-align:center;
+  font-size:10.5px;font-weight:800;color:#fff;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-shadow:0 1px 3px rgba(0,0,0,.95);
+}
+html[data-platform="mobile"] .bt-pc-ovr{
+  grid-column:3;justify-self:end;position:static;inset:auto;
+  font-size:11px;font-weight:900;color:var(--gold);
+  padding:0;background:none;line-height:1;
+  font-variant-numeric:tabular-nums;text-shadow:0 1px 3px rgba(0,0,0,.95);
+}
+html[data-platform="mobile"] .bt-pc-pts{display:none}
+html[data-platform="mobile"] .bt-pc-hot{
+  position:absolute;left:3px;top:3px;z-index:4;font-size:11px;
+}
+/* 五项数据压成一行小字，省高度给照片 */
+html[data-platform="mobile"] .bt-pc-stats{
+  order:3;flex:0 0 auto;width:100%;
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  align-items:center;gap:0;
+  background:rgba(4,6,12,.96);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+html[data-platform="mobile"] .bt-pc-stats .bt-st{
+  display:flex;flex-direction:row;align-items:center;justify-content:center;
+  gap:1px;line-height:1;min-width:0;
+}
+html[data-platform="mobile"] .bt-pc-stats .bt-st i{
+  font-style:normal;font-size:7px;font-weight:800;color:#5f6c88;
+}
+html[data-platform="mobile"] .bt-pc-stats .bt-st b{
+  font-size:9.5px;font-weight:900;color:#69769a;
+  font-variant-numeric:tabular-nums;line-height:1;
+}
+html[data-platform="mobile"] .bt-pc-stats .bt-st.has b{color:#e8eefc}
+html[data-platform="mobile"] .bt-col.my .bt-pc-stats .bt-st.main.has b{color:#8df0b0}
+html[data-platform="mobile"] .bt-col.foe .bt-pc-stats .bt-st.main.has b{color:#ffb0bd}
+html[data-platform="mobile"] .bt-pc-sta{
+  position:absolute;left:0;right:0;bottom:0;z-index:6;
+  height:2px;border-radius:0;background:rgba(0,0,0,.6);
+}
+html[data-platform="mobile"] .bt-pc.acting{
+  transform:none;box-shadow:0 0 0 2px var(--gold), 0 0 14px -2px var(--gold);
+}
+html[data-platform="mobile"] .bt-pc.acting .bt-pc-nm{color:var(--gold)}
+
+/* 记分条 / 操作条 / 解说 */
+/* 记分条：压到最扁，把高度全让给解说 */
+html[data-platform="mobile"] .bt-sb-tac{display:block;margin-top:0;font-size:7.5px;line-height:1.1}
+html[data-platform="mobile"] .bt-scorebar{padding:2px 14px 3px;min-height:0}
+html[data-platform="mobile"] .bt-sb-name{font-size:10px;line-height:1.1}
+html[data-platform="mobile"] .bt-sb-score{font-size:18px;line-height:1.05}
+html[data-platform="mobile"] .bt-sb-clock b{font-size:14px;line-height:1.1}
+html[data-platform="mobile"] .bt-sb-clock{gap:5px;padding:0 8px}
+html[data-platform="mobile"] .bt-sb-clock span{
+  font-size:9.5px;padding:1.5px 5px;border-radius:5px;line-height:1.15}
+html[data-platform="mobile"] .bt-qdots{margin-top:1px}
+html[data-platform="mobile"] .bt-qdots u{width:8px;height:2px}
+/* 操作条也压一压 */
+html[data-platform="mobile"] .bt-actions{padding:3px 12px calc(3px + var(--safe-b));gap:6px}
+html[data-platform="mobile"] .bt-step{padding:6px;font-size:12px}
+html[data-platform="mobile"] .bt-resume{flex:0 0 36px;padding:6px 0}
+html[data-platform="mobile"] .bt-sp{width:33px;padding:6px 0;font-size:10.5px}
+html[data-platform="mobile"] .bt-quit{flex:0 0 72px;padding:6px 0;font-size:9.5px}
+/* 解说区：行距收紧但不挤，尽量多露几行 */
+html[data-platform="mobile"] .bt-middle{padding:5px 9px;border-radius:10px}
+html[data-platform="mobile"] .bt-feed{gap:3px}
+html[data-platform="mobile"] .bt-line{padding:4px 9px;border-left-width:3px}
+html[data-platform="mobile"] .bt-line-txt{font-size:12px;line-height:1.3}
+html[data-platform="mobile"] .bt-pts{font-size:11.5px}
+html[data-platform="mobile"] .bt-quote{font-size:10px;margin-top:1px}
+html[data-platform="mobile"] .bt-clutch{font-size:9px;padding:0 5px}
+html[data-platform="mobile"] .bt-line-tac{font-size:10px}
+html[data-platform="mobile"] .bt-line.bt-qend b{font-size:13px}
+
+/* =============================================================
+   卸下球员按钮
+   ---------------------------------------------------------------
+   首发和替补卡的左上角一个小 ✕，点一下把人拿掉、回到可用球员池。
+   平时半透明不抢眼，鼠标悬停或点按时才变红。
+   ============================================================= */
+.tm-unload{
+  position:absolute;left:0;bottom:0;z-index:18;
+  width:18px;height:18px;padding:0;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:0 8px 0 8px;border:0;
+  background:rgba(10,14,24,.82);color:#8e9cb8;
+  font-size:11px;font-weight:900;
+  opacity:.62;transition:all .15s;
+}
+.tm-unload:hover,.tm-unload:active{
+  background:#e0233f;color:#fff;opacity:1;transform:scale(1.08);
+}
+/* 手机端稍微大一点，手指好点 */
+@media (min-aspect-ratio: 1/1){
+  html[data-platform="mobile"] .tm-unload{width:20px;height:20px;font-size:12px}
+}
+
+/* 球员锁定 */
+.tm-pcard-lock{
+  position:absolute;left:4px;top:4px;z-index:12;font-style:normal;
+  font-size:13px;line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,.9));
+}
+.lockbtn{
+  position:absolute;right:4px;bottom:4px;z-index:12;
+  width:22px;height:22px;padding:0;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;border:1px solid rgba(255,255,255,.18);
+  background:rgba(10,14,24,.82);font-size:11px;
+  opacity:.7;transition:all .15s;
+}
+.lockbtn:hover{opacity:1;transform:scale(1.08)}
+.lockbtn.on{background:rgba(245,196,81,.9);border-color:#fff;opacity:1;
+  box-shadow:0 0 10px -2px var(--gold)}
+.lg-mk-lock{color:#f5c451;font-weight:900;font-size:9.5px}
+@media (min-aspect-ratio: 1/1){
+  html[data-platform="mobile"] .lockbtn{width:20px;height:20px;font-size:10px}
+}
+
+/* 招募「跳过动画」按钮 */
+#btnSkipAnim{
+  border-color:rgba(245,196,81,.55);color:var(--gold);
+  font-weight:900;letter-spacing:.02em;
+}
+#btnSkipAnim:hover:not(:disabled){background:rgba(245,196,81,.16)}
+#btnSkipAnim:disabled{opacity:.4;cursor:not-allowed}
+
+/* =============================================================
+   🎯 位置徽章在移动端（iPhone 横屏）的位置修正（v9.32）
+   -------------------------------------------------------------
+   移动端的 .bt-pc-info 是「相对定位的横向条」（order:2），
+   所以徽章不能用桌面那套 bottom:30px —— 会被信息条压住。
+   这里改成贴着信息条上沿，left 对齐，不遮脸、不遮姓名。
+   ============================================================= */
+html[data-platform="mobile"] .bt-pc-pos{
+  bottom:auto;top:auto;
+  left:3px;
+  /* 信息条高度约 15px + 数据条约 13px，徽章贴在它俩上面 */
+  margin-bottom:0;
+  transform:translateY(0);
+}
+html[data-platform="mobile"] .bt-pc{
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+html[data-platform="mobile"] .bt-pc-img{ position:relative;order:1;flex:1 1 auto;min-height:0 }
+html[data-platform="mobile"] .bt-pc-pos{
+  position:absolute;left:3px;
+  bottom:calc(15px + 13px + 1px);   /* 信息条 + 数据条的高度 */
+}
+@media (max-height: 560px){
+  html[data-platform="mobile"] .bt-pc-pos{
+    bottom:calc(14px + 12px + 1px);
+    font-size:8px;padding:0 3px;
+  }
+}

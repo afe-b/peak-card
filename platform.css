@@ -1,0 +1,1100 @@
+/* =============================================================
+   平台差异：电脑端 / 手机端
+   ---------------------------------------------------------------
+   同一个代码库，两份构建产物，靠 <html data-platform="..."> 区分：
+     手机端：紧凑、大点击区、刘海安全区、无 hover
+     电脑端：宽松、更大的字号和卡面、有 hover、内容居中限宽
+
+   运行时可以用 ?platform=desktop|mobile 临时覆盖，方便调试。
+   ============================================================= */
+
+/* ---------------- 公共：横屏基线 ---------------- */
+html{--ui-gap:1;--ui-pad:1;--ui-fs:1;--rail:78px}
+html[data-platform="mobile"]{--rail:74px}
+html[data-platform="desktop"]{--rail:94px;--ui-fs:1.08}
+
+/* =============================================================
+   手机端
+   ============================================================= */
+html[data-platform="mobile"]{
+  /* 手指点得准比好看更重要 */
+  --tap:44px;
+}
+html[data-platform="mobile"] #tabbar button{min-height:var(--tap)}
+html[data-platform="mobile"] .chip,
+html[data-platform="mobile"] .tm-filter button,
+html[data-platform="mobile"] .bt-opp,
+html[data-platform="mobile"] .bt-tac{min-height:36px}
+html[data-platform="mobile"] .tm-pager button{min-height:var(--tap)}
+html[data-platform="mobile"] .bt-actions button{min-height:var(--tap)}
+html[data-platform="mobile"] .sclr,
+html[data-platform="mobile"] .info{min-width:28px;min-height:28px}
+/* 触屏不需要 hover 态，避免点完一直亮着 */
+html[data-platform="mobile"] *{-webkit-tap-highlight-color:transparent}
+html[data-platform="mobile"] .bt-pc:hover,
+html[data-platform="mobile"] .tm-pcard:hover,
+html[data-platform="mobile"] .bt-slot:hover{transform:none}
+
+/* =============================================================
+   电脑端
+   ============================================================= */
+html[data-platform="desktop"]{
+  --ui-gap:1.1;
+}
+/* 内容居中限宽，超宽屏不会被拉散 */
+html[data-platform="desktop"] main > .screen.active,
+html[data-platform="desktop"] #topbar{
+  max-width:1560px;width:100%;margin:0 auto;
+}
+/* 鼠标才有 hover */
+html[data-platform="desktop"] .bt-pc:hover{
+  transform:translateY(-2px) scale(1.04);
+  box-shadow:0 0 0 1.5px var(--gold), 0 0 16px -2px var(--gold);z-index:6;
+}
+html[data-platform="desktop"] .tm-pcard:hover{
+  transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.7), 0 0 0 1.5px var(--gold);
+}
+html[data-platform="desktop"] .tm-slot:hover{transform:scale(1.05)}
+html[data-platform="desktop"] .bt-opp:hover{border-color:rgba(245,196,81,.5)}
+html[data-platform="desktop"] .rb:hover{transform:translateY(-1px);filter:brightness(1.08)}
+html[data-platform="desktop"] .btn:hover{filter:brightness(1.12)}
+html[data-platform="desktop"] .chip:hover,
+html[data-platform="desktop"] .tm-filter button:hover{border-color:var(--gold);color:var(--gold)}
+/* 更细的滚动条 */
+html[data-platform="desktop"] *{scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.22) transparent}
+html[data-platform="desktop"] ::-webkit-scrollbar{width:8px;height:8px}
+html[data-platform="desktop"] ::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.22);border-radius:4px}
+html[data-platform="desktop"] ::-webkit-scrollbar-track{background:transparent}
+
+/* 电脑端：对战界面整体放大一档 */
+html[data-platform="desktop"] .bt-sb-score{font-size:32px}
+html[data-platform="desktop"] .bt-sb-clock b{font-size:24px}
+html[data-platform="desktop"] .bt-col-cards{max-width:560px}
+html[data-platform="desktop"] .bt-line-txt{font-size:13px}
+html[data-platform="desktop"] .bt-quote{font-size:11.5px}
+html[data-platform="desktop"] .bt-step{font-size:16px;padding:13px}
+html[data-platform="desktop"] .bt-actions button{font-size:14px}
+
+/* 电脑端：球队管理 */
+html[data-platform="desktop"] .tm-head{padding:11px 18px 10px}
+html[data-platform="desktop"] .tm-head b{font-size:17px}
+html[data-platform="desktop"] .tm-tabs button{font-size:13px}
+html[data-platform="desktop"] .tm-pageinfo b{font-size:14px}
+html[data-platform="desktop"] .tm-pageinfo span{font-size:11px}
+html[data-platform="desktop"] .tm-bench-t{font-size:13px}
+html[data-platform="desktop"] .tm-slot-cn{font-size:12px;padding:3px 11px}
+html[data-platform="desktop"] .tm-benchline-t{font-size:11px}
+html[data-platform="desktop"] .tm-pcard-plate span{font-size:12.5px}
+html[data-platform="desktop"] .tm-pcard-ovr{font-size:15px}
+
+/* 电脑端：招募页 */
+html[data-platform="desktop"] #scr-home .hero-txt h2{font-size:30px}
+html[data-platform="desktop"] #scr-home .hero-txt .sub{font-size:12px}
+html[data-platform="desktop"] #scr-home .pity{font-size:12px;padding:7px 13px}
+html[data-platform="desktop"] #scr-home .rb b{font-size:20px}
+html[data-platform="desktop"] #scr-home .rb span{font-size:14px}
+html[data-platform="desktop"] .rc{font-size:12px;padding:6px 11px}
+html[data-platform="desktop"] .supply .t1{font-size:14px}
+html[data-platform="desktop"] .supply button{font-size:14px;padding:11px 20px}
+html[data-platform="desktop"] .stats-line{font-size:12.5px}
+html[data-platform="desktop"] .sec-title{font-size:13px}
+
+/* 电脑端：卡片网格更密 */
+html[data-platform="desktop"] #dex-grid,
+html[data-platform="desktop"] #mine-grid{
+  grid-template-columns:repeat(auto-fill,minmax(94px,1fr))!important;gap:11px;
+}
+
+/* 电脑端：弹层不用铺满，收窄居中更像端游 */
+html[data-platform="desktop"] #detailLayer .dwrap{
+  grid-template-columns:minmax(0,320px) minmax(0,1fr);
+}
+html[data-platform="desktop"] #pullLayer .pull-box,
+html[data-platform="desktop"] #finaleLayer .fin-box{
+  max-width:min(760px,64vw);
+}
+
+/* =============================================================
+   电脑端：鼠标滚轮滚动时的细节
+   ============================================================= */
+html[data-platform="desktop"] .bt-feed,
+html[data-platform="desktop"] .pad,
+html[data-platform="desktop"] .tm-pool{scroll-behavior:smooth}
+
+/* =============================================================
+   平台标识（设置页显示）
+   ============================================================= */
+.plat-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:900;padding:4px 11px;border-radius:999px;
+  background:rgba(255,255,255,.1);border:1px solid var(--line);color:#cfdcff;
+}
+.plat-badge b{color:var(--gold)}
+
+/* =============================================================
+   窄卡保护：卡面很小时，评分徽章和 ⓘ 不打架
+   ============================================================= */
+.tm-pcard{container-type:inline-size}
+/* 卡面宽度小于 62px 时把 ⓘ 收到右下角并缩小 */
+@container (max-width: 62px){
+  .tm-pcard .info{width:16px;height:16px;font-size:9.5px;right:2px;top:2px}
+  .tm-pcard-ovr{font-size:11px;padding:2px 5px 3px}
+  .tm-pcard-plate span{font-size:9.5px}
+  .tm-pcard-in{font-size:7px;padding:1px 5px;bottom:22px}
+}
+@container (max-width: 50px){
+  .tm-pcard .info{width:14px;height:14px;font-size:8.5px}
+  .tm-pcard-ovr{font-size:10px;padding:2px 4px}
+  .tm-pcard-plate span{font-size:8.5px}
+}
+
+/* 球场上的槽位同理：卡面窄时评分和位置角标要收缩，别互相压 */
+.tm-slot,.tm-bslot{container-type:inline-size}
+@container (max-width: 76px){
+  .tm-slot-ovr{font-size:10px;padding:2px 4px 3px;border-radius:8px 0 5px 0}
+  .tm-slot-pos{font-size:8px;padding:2px 5px 3px;border-radius:0 8px 0 5px}
+  .tm-slot-plate{padding:9px 4px 3px}
+  .tm-slot-plate span{font-size:8.5px}
+  .tm-slot-cn{font-size:8.5px;padding:1px 7px}
+}
+@container (max-width: 60px){
+  .tm-slot-ovr{font-size:9px;padding:2px 3px}
+  .tm-slot-pos{font-size:7.5px;padding:2px 4px}
+  .tm-slot-plate span{font-size:7.5px}
+  .tm-slot-cn{font-size:7.5px;padding:1px 6px}
+  .tm-bslot>b{font-size:8px;padding:1px 3px}
+  .tm-bslot>em{font-size:6.5px}
+}
+
+/* =============================================================
+   iPhone 安全区修正（platform.css 最后加载，优先级最高）
+   -------------------------------------------------------------
+   横屏时刘海 / 灵动岛在左右两侧各占约 59px，底部还有横条。
+   详情页是全屏浮层，必须自己留出这些边距，否则内容会被盖住。
+   注意：这条规则必须放在最后，因为 landscape.css 里也有 .dwrap 的
+   内边距定义，会把它覆盖掉。
+   ============================================================= */
+#detailLayer,
+#detailLayer{
+  padding:0!important;
+}
+#detailLayer .dwrap,
+#detailLayer .dwrap{
+  display:flex!important;
+  flex-direction:column!important;
+  grid-template-columns:none!important;
+  width:100%!important;
+  height:100vh!important;
+  max-width:none!important;
+  margin:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+  padding:
+    calc(6px + env(safe-area-inset-top, 0px))
+    calc(10px + env(safe-area-inset-right, 0px))
+    calc(6px + env(safe-area-inset-bottom, 0px))
+    calc(10px + env(safe-area-inset-left, 0px)) !important;
+  box-sizing:border-box!important;
+}
+/* 内容区在安全区内滚动，不会被灵动岛压住 */
+#detailLayer .dmain{
+  display:flex!important;flex-direction:column!important;
+  height:100%!important;min-height:0!important;gap:7px!important;
+}
+#detailLayer .dtop,
+#detailLayer .dtabs,
+#detailLayer .dfoot{flex:0 0 auto!important}
+#detailLayer .dpanel{
+  flex:1 1 auto!important;min-height:0!important;
+  overflow:hidden!important;display:flex!important;flex-direction:column!important;
+}
+/* 顶部的球员卡信息在刘海那侧也要留白 */
+#detailLayer .dtop{
+  gap:11px!important;
+}
+#detailLayer .dtop-name{
+  font-size:19px!important;
+}
+/* 竖屏旋转模式下（html.rot）body 被旋转了，安全区自动按旋转后的算 */
+html.rot #detailLayer .dwrap{
+  padding:
+    calc(6px + env(safe-area-inset-top, 0px))
+    calc(10px + env(safe-area-inset-bottom, 0px))
+    calc(6px + env(safe-area-inset-left, 0px))
+    calc(10px + env(safe-area-inset-top, 0px)) !important;
+}
+
+/* =============================================================
+   详情页底部（突破 / 出售说明）
+   -------------------------------------------------------------
+   这段文字加起来有 199px，在 440px 高的手机横屏上会把
+   内容区（徽章/能力）挤到只剩十几像素。所以横屏下只保留
+   一行关键信息和按钮，详细的文字挪到「总况」页签里看。
+   ============================================================= */
+@media (max-height: 560px){
+  #detailLayer .dfoot{
+    flex:0 0 auto!important;
+    gap:5px!important;
+    padding:0!important;
+  }
+  /* 时刻卡的描述、重复卡明细：横屏不显示（总况页里有） */
+  #detailLayer .dmoment,
+  #detailLayer .dupsell{
+    display:none!important;
+  }
+  /* 突破按钮压成一行矮按钮 */
+  #detailLayer .dbtns{
+    display:flex!important;flex-direction:row!important;
+    gap:6px!important;margin:0!important;
+  }
+  #detailLayer .dbtns .btn{
+    flex:1 1 auto!important;
+    padding:6px 8px!important;font-size:11.5px!important;
+    border-radius:8px!important;margin:0!important;
+  }
+  #detailLayer .dbtns .btn small{
+    display:inline!important;font-size:9px!important;margin-left:5px!important;
+    opacity:.85;
+  }
+  /* 内容区拿到空间后要撑满 */
+  #detailLayer .dpanel{
+    min-height:120px!important;
+  }
+}
+
+/* =============================================================
+   横屏最后压缩：让徽章页 5 个分类完整装进内容区
+   -------------------------------------------------------------
+   高度预算（440px）：顶部球员卡区 110 + 页签 29 + 底部按钮 59
+   → 内容区约 176px。分类栏必须压到 170px 以内，所以每项 ≈26px。
+   ============================================================= */
+@media (max-height: 560px){
+  /* 顶部再矮一点：卡片缩小 */
+  #detailLayer .dtop-card{width:78px!important}
+  #detailLayer .dtop-card .card,
+  #detailLayer .dtop-card .mini{width:78px!important}
+  #detailLayer .dtop{gap:9px!important}
+  #detailLayer .dtop-name{font-size:17px!important}
+  #detailLayer .dtop-sub{font-size:9.5px!important}
+  #detailLayer .dtop-grid{gap:0 16px!important;
+    padding-top:3px!important}
+  #detailLayer .dtop-grid .cell{padding:0!important}
+  #detailLayer .dtop-grid .cell span{font-size:9px!important}
+  #detailLayer .dtop-grid .cell b{font-size:11px!important}
+  #detailLayer .dact{width:26px!important;height:26px!important;
+    font-size:12px!important}
+  #detailLayer .dact.wide{padding:0 9px!important;
+    font-size:10px!important}
+
+  /* 徽章分类栏：压到每项 26px，并允许滚动兜底 */
+  .bd-side{gap:2px!important;overflow-y:auto!important}
+  .bd-cat{padding:1px 6px!important;border-radius:6px!important;
+    min-height:24px!important}
+  .bd-cat-hex{flex:0 0 22px!important;width:22px!important;
+    height:24px!important;font-size:10px!important}
+  .bd-cat b{font-size:11px!important}
+  .bd-next{padding:1px 5px!important;margin-top:1px!important}
+  .bd-next b{font-size:11px!important}
+  .bd-next span{font-size:7px!important}
+  .bd-wrap{grid-template-columns:126px minmax(0,1fr)!important}
+  /* 徽章卡片再紧凑 */
+  .bd-item{padding:3px 6px!important;
+    grid-template-columns:26px minmax(0,1fr)!important;gap:5px!important}
+  .bd-hex{width:26px!important;height:30px!important}
+  .bd-hex-lv{width:13px!important;height:13px!important;
+    font-size:8px!important}
+  .bd-name{font-size:10px!important}
+  .bd-desc{font-size:8.5px!important;line-height:1.2!important}
+  .bd-bar b{font-size:11px!important}
+  .bd-bar span{font-size:8.5px!important}
+}
+
+/* =============================================================
+   详情页可读性强制修正（platform.css 最后加载，优先级最高）
+   -------------------------------------------------------------
+   问题：内容区背景是浅色，但文字也是浅色，两者糊在一起看不清；
+         而且内容超出后被裁掉，没法滚动看全。
+   这里用 !important 强制统一：深色底 + 高对比文字 + 可滚动。
+   ============================================================= */
+#detailLayer{background:#080d18!important}
+
+/* 内容区：深色底 + 可滚动 */
+#detailLayer .dpanel{
+  background:#0b1220!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  border-radius:11px!important;
+  padding:10px 12px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch;
+}
+#detailLayer .dpanel::-webkit-scrollbar{width:6px}
+#detailLayer .dpanel::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.22);border-radius:3px}
+
+/* ---- 所有内容文字统一提亮 ---- */
+#detailLayer .dpanel b,
+#detailLayer .dpanel strong{color:#fff!important;font-weight:900}
+
+/* 总况页 */
+#detailLayer .ovl-row,#detailLayer .ov-row,#detailLayer .dov-row{
+  background:rgba(255,255,255,.06)!important;color:#fff!important}
+#detailLayer .overview .cell,#detailLayer .dpanel .cell{
+  background:rgba(255,255,255,.05)!important;color:#fff!important}
+
+/* 能力页：属性分组卡片改成深色 */
+#detailLayer .ab-card,#detailLayer .ability .card,
+#detailLayer .attr-card,#detailLayer .ab-group{
+  background:linear-gradient(160deg,#16203a,#0e1729)!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+}
+#detailLayer .ab-card *,#detailLayer .attr-card *{color:#e8eefc!important}
+#detailLayer .ab-cell,#detailLayer .attr-row{
+  background:rgba(255,255,255,.05)!important;color:#fff!important}
+
+/* ---- 动作增益：没有徽章的项也要看得清 ---- */
+#detailLayer .dgn-row{
+  background:linear-gradient(120deg,
+    color-mix(in srgb, var(--gc, #3a4a68) 26%, #16203a), #101a2e 80%)!important;
+  border:1.5px solid color-mix(in srgb, var(--gc, #3a4a68) 60%, transparent)!important;
+}
+#detailLayer .dgn-row.off{
+  background:rgba(255,255,255,.07)!important;
+  border:1.5px dashed rgba(255,255,255,.24)!important;
+  opacity:1!important;                       /* 原来 .5 太淡了 */
+}
+#detailLayer .dgn-name{color:#fff!important;font-size:12px!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.95)!important}
+#detailLayer .dgn-val{color:#ffd45e!important;text-shadow:0 2px 6px rgba(0,0,0,.9)!important}
+#detailLayer .dgn-note{color:#c2cde4!important;font-size:10px!important}
+#detailLayer .dgn-row.off .dgn-val{color:#9fb0cc!important}
+
+/* ---- 身价波动 ---- */
+#detailLayer .dtr-now{
+  background:linear-gradient(100deg,rgba(245,196,81,.26),rgba(245,196,81,.1))!important;
+  border:1.5px solid rgba(245,196,81,.6)!important}
+#detailLayer .dtr-now span{color:#ffe9b8!important}
+#detailLayer .dtr-now b{color:#ffd45e!important}
+#detailLayer .dtr-row{
+  background:rgba(255,255,255,.07)!important;color:#dce5f5!important}
+#detailLayer .dtr-row b{color:#fff!important}
+#detailLayer .dtr-row b.up{color:#4ee07a!important}
+#detailLayer .dtr-row b.dn{color:#ff9aa4!important}
+#detailLayer .dtr-note{color:#a8b5cc!important}
+
+/* ---- 徽章页：分类栏与徽章卡 ---- */
+#detailLayer .bd-cat{
+  background:rgba(255,255,255,.07)!important;
+  border-color:rgba(255,255,255,.16)!important}
+#detailLayer .bd-cat b{color:#fff!important}
+#detailLayer .bd-cat.on{background:rgba(255,255,255,.13)!important}
+#detailLayer .bd-next{background:rgba(255,255,255,.08)!important}
+#detailLayer .bd-next span{color:#b6c3da!important}
+#detailLayer .bd-bar span{color:#b6c3da!important}
+#detailLayer .bd-item{
+  background:linear-gradient(120deg,
+    color-mix(in srgb, var(--bc) 30%, #16203a), #101a2e 78%)!important}
+#detailLayer .bd-name{color:#fff!important}
+#detailLayer .bd-desc{color:#dbe4f4!important}
+#detailLayer .bd-none{color:#b6c3da!important;
+  border-color:rgba(255,255,255,.2)!important;background:rgba(255,255,255,.05)!important}
+#detailLayer .bd-lock-note,#detailLayer .bd-lock-chip{color:#b6c3da!important}
+
+/* ---- 总况页 / 能力页：浅色卡片改深色 ---- */
+#detailLayer .ov-wrap{color:#e8eefc!important}
+#detailLayer .ov-grid{
+  background:linear-gradient(160deg,#16203a,#0e1729)!important;
+  border:1px solid rgba(255,255,255,.14)!important;border-radius:11px!important}
+#detailLayer .ov-row{
+  background:transparent!important;border-bottom:1px dashed rgba(255,255,255,.14)!important}
+#detailLayer .ov-row span{color:#c2cde4!important;font-size:12.5px!important}
+#detailLayer .ov-row b{color:#fff!important;font-size:15px!important;font-weight:900!important}
+#detailLayer .ov-row i{color:#b6c3da!important;font-style:normal!important}
+
+#detailLayer .ab-grid{
+  background:transparent!important;border:0!important}
+#detailLayer .ab-col{
+  background:linear-gradient(170deg,#16203a,#0e1729)!important;
+  border:1px solid rgba(255,255,255,.15)!important;
+  border-radius:11px!important;overflow:hidden!important}
+#detailLayer .ab-head{
+  background:rgba(255,255,255,.09)!important;
+  border-bottom:1px solid rgba(255,255,255,.14)!important}
+#detailLayer .ab-head b,#detailLayer .ab-head span{
+  color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.9)!important}
+#detailLayer .ab-head i{color:#ffd45e!important;font-style:normal!important}
+#detailLayer .ab-rows{background:transparent!important}
+#detailLayer .ab-rows>div{
+  background:transparent!important;
+  border-bottom:1px solid rgba(255,255,255,.08)!important}
+#detailLayer .ab-rows span{color:#c2cde4!important;font-size:12px!important}
+#detailLayer .ab-rows b{font-size:13.5px!important;font-weight:900!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.9)!important}
+#detailLayer .ab-rows i{color:#4ee07a!important;font-style:normal!important;
+  font-size:10px!important}
+/* ---- 能力值配色：<80 灰 / ≥80 绿 / ≥110 紫 ----
+   这三条必须排在前面那条 color 之后，否则白色会把颜色盖掉 */
+#detailLayer .ab-rows .lv-x b{color:#8b96ad!important}
+#detailLayer .ab-rows .lv-g b{color:#3fc46a!important}
+#detailLayer .ab-rows .lv-p b{color:#c084fc!important}
+/* 列标题（投射/终结/外防/内防）的分数也按同一套配色 */
+#detailLayer .ab-col.lv-x .ab-head em,#detailLayer .ab-col.lv-x .ab-head b{
+  color:#8b96ad!important}
+#detailLayer .ab-col.lv-g .ab-head em,#detailLayer .ab-col.lv-g .ab-head b{
+  color:#3fc46a!important}
+#detailLayer .ab-col.lv-p .ab-head em,#detailLayer .ab-col.lv-p .ab-head b{
+  color:#c084fc!important}
+#detailLayer .ab-head em,#detailLayer .ab-head b{font-size:15px!important;
+  font-weight:900!important;text-shadow:0 1px 4px rgba(0,0,0,.9)!important}
+
+/* 雷达图那侧的容器也统一深色 */
+#detailLayer .ov-wrap .radar-box,#detailLayer .ov-wrap canvas{
+  background:rgba(255,255,255,.05)!important;border-radius:11px!important}
+
+/* 能力页的列标题（投射/终结/外防/内防）再亮一点 */
+#detailLayer .ab-head b{color:#fff!important;font-size:13px!important}
+#detailLayer .ab-head span,#detailLayer .ab-head em{
+  color:#ffd45e!important;font-style:normal!important;font-size:15px!important;
+  font-weight:900!important}
+#detailLayer .ab-rows i{color:#4ee07a!important;font-weight:900!important}
+
+/* 详情页里所有显示"能力数值"的地方，统一走 <80灰 / ≥80绿 / ≥110紫 */
+#detailLayer .bd-v,#detailLayer .ov-row .num{font-weight:900!important}
+#detailLayer .mini .rt,#detailLayer .mini .st{text-shadow:0 1px 4px rgba(0,0,0,.95)!important}
+/* 顶部的综合评分：保持品质色但加描边，避免与背景融合 */
+#detailLayer .dtop-name{text-shadow:0 2px 10px rgba(0,0,0,.95),
+  0 0 3px rgba(0,0,0,.9)!important}
+#detailLayer .dtop-grid .cell b{text-shadow:0 1px 4px rgba(0,0,0,.95)!important}
+#detailLayer .dtop-sub span,#detailLayer .dtop-en{
+  text-shadow:0 1px 3px rgba(0,0,0,.9)!important}
+
+/* =============================================================
+   徽章页：保证 5 个分类都能看到（可滑动）
+   -------------------------------------------------------------
+   iPhone 底部横条安全区约 21px，会把内容区高度吃掉，
+   导致第 5 个分类「体能」被挤出可视范围。
+   这里让分类栏和徽章网格都能独立滚动，往下拖就能看到体能徽章。
+   ============================================================= */
+#detailLayer .bd-side{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain;
+  scrollbar-width:none;
+  padding-right:2px;
+}
+#detailLayer .bd-side::-webkit-scrollbar{width:0;height:0;display:none}
+
+/* 徽章网格同样可滚 */
+#detailLayer .bd-main{
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain;
+}
+#detailLayer .bd-main::-webkit-scrollbar{width:4px}
+#detailLayer .bd-main::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.22);border-radius:2px}
+
+/* 分类栏底部留一点余地，滚到底时最后一项不会贴着边 */
+#detailLayer .bd-side::after{content:'';display:block;height:2px;flex:0 0 auto}
+
+/* 有滚动空间时，在分类栏底部加一条渐隐提示 */
+#detailLayer .bd-wrap{position:relative}
+#detailLayer .bd-wrap::after{
+  content:'';position:absolute;left:0;bottom:0;width:126px;height:16px;
+  pointer-events:none;border-radius:0 0 10px 10px;
+  background:linear-gradient(180deg,transparent,rgba(11,18,32,.92));
+}
+
+/* =============================================================
+   徽章页滚动修正
+   -------------------------------------------------------------
+   关键：grid/flex 子项默认 min-height:auto，会把高度撑到内容大小，
+   overflow:auto 就永远不触发。必须显式写 min-height:0 才能滚动。
+   ============================================================= */
+#detailLayer .dpanel{
+  min-height:0!important;
+  overflow:hidden!important;     /* 由内部两列各自滚，避免双滚动条 */
+  display:flex!important;flex-direction:column!important;
+}
+#detailLayer .bd-wrap{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;     /* 用 flex 撑满，别再写 100% */
+  overflow:hidden!important;
+  align-items:stretch!important;
+}
+#detailLayer .bd-side{
+  min-height:0!important;
+  height:100%!important;
+  overflow-y:auto!important;
+  display:flex!important;flex-direction:column!important;
+}
+#detailLayer .bd-main{
+  min-height:0!important;
+  height:100%!important;
+  overflow-y:auto!important;
+}
+
+/* =============================================================
+   详情页：整页上下滑动（最省心的方案）
+   -------------------------------------------------------------
+   之前是「固定头尾 + 中间内容区自己滚」，只要某个区块高一点
+   就会被裁掉。现在改成**整页自然流式布局**：
+     · 所有区块按内容自然撑高，谁也不裁谁
+     · 手指在页面上任何位置上下拖，整页一起滚
+     · 用 -webkit-overflow-scrolling 保证 iOS 有惯性滚动
+   ============================================================= */
+@media (max-height: 560px){
+  #detailLayer{
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain;
+    display:block!important;
+  }
+  #detailLayer .dwrap{
+    display:block!important;
+    height:auto!important;
+    min-height:100%!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  #detailLayer .dmain{
+    display:block!important;
+    height:auto!important;
+    min-height:0!important;
+    overflow:visible!important;
+  }
+  /* 每个区块自然高度，之间留出间距 */
+  #detailLayer .dtop,
+  #detailLayer .dtabs,
+  #detailLayer .dpanel,
+  #detailLayer .dfoot{
+    height:auto!important;
+    max-height:none!important;
+    min-height:0!important;
+    overflow:visible!important;
+    margin:0 0 8px 0!important;
+  }
+  /* 内容区不再自己滚，交给整页 */
+  #detailLayer .dpanel{
+    display:block!important;
+    padding:10px 12px!important;
+  }
+  /* 徽章页的两列也改成自然高度（宽屏并排，窄屏自动堆叠） */
+  #detailLayer .bd-wrap{
+    display:grid!important;
+    grid-template-columns:126px minmax(0,1fr)!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+    gap:8px!important;
+  }
+  #detailLayer .bd-side{
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  #detailLayer .bd-main{
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  /* 底部按钮组：跟着内容走，不再吸底 */
+  #detailLayer .dfoot{margin-bottom:calc(8px + env(safe-area-inset-bottom, 0px))!important}
+  /* 顶部在滚动时保持可见，方便随时点关闭 */
+  #detailLayer .dtabs{
+    position:sticky!important;
+    top:0!important;
+    z-index:20!important;
+    background:#0b1220!important;
+  }
+}
+
+/* =============================================================
+   详情页整页滚动：**全设备无条件生效**
+   -------------------------------------------------------------
+   上面那段只在矮屏（max-height:560px）下启用。
+   这里再去掉媒体查询限制，让总况/能力/徽章/身价波动/动作增益
+   五个页签在**任何屏幕、任何构建**上都能下拉观看。
+   ============================================================= */
+/* 注意：绝对不能再给 #detailLayer 加 display:block!important ——
+   它带 .hidden 类时靠 display:none 隐藏，被强制成 block 就会
+   在启动时盖住整个游戏。滚动照样能生效，不需要动 display。 */
+#detailLayer:not(.hidden){
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain;
+}
+#detailLayer .dwrap{
+  display:block!important;
+  height:auto!important;
+  min-height:100%!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+#detailLayer .dmain{
+  display:block!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+#detailLayer .dtop,
+#detailLayer .dtabs,
+#detailLayer .dpanel,
+#detailLayer .dfoot,
+#detailLayer .dside{
+  height:auto!important;
+  max-height:none!important;
+  min-height:0!important;
+  overflow:visible!important;
+  margin:0 0 8px 0!important;
+}
+#detailLayer .dpanel{display:block!important}
+#detailLayer .bd-wrap,
+#detailLayer .bd-side,
+#detailLayer .bd-main,
+#detailLayer .bd-grid,
+#detailLayer .dgn,
+#detailLayer .dtr,
+#detailLayer .ov-wrap,
+#detailLayer .ab-grid{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+#detailLayer .bd-wrap{
+  display:grid!important;
+  grid-template-columns:150px minmax(0,1fr)!important;
+  gap:12px!important;
+  align-items:start!important;
+}
+/* 页签吸顶，滚到哪都能切页签 */
+#detailLayer .dtabs{
+  position:sticky!important;
+  top:0!important;
+  z-index:20!important;
+  background:#0b1220!important;
+  box-shadow:0 4px 14px -6px rgba(0,0,0,.9);
+}
+/* 底部按钮留在最下面，留出安全区 */
+#detailLayer .dfoot{
+  margin-bottom:calc(10px + env(safe-area-inset-bottom, 0px))!important;
+}
+/* 滚动条（桌面端可见，手机端自动隐藏） */
+#detailLayer::-webkit-scrollbar{width:7px}
+#detailLayer::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.2);border-radius:4px}
+#detailLayer::-webkit-scrollbar-track{background:transparent}
+
+/* =============================================================
+   【关键保险】浮层的隐藏必须永远有效
+   -------------------------------------------------------------
+   .hidden{display:none!important} 是**类**选择器，
+   而 #detailLayer 是 **ID** 选择器 —— ID 优先级更高，
+   所以我之前写的 display:block!important 会把隐藏顶掉，
+   导致详情浮层在启动时就盖住整个游戏（画面全黑/全空）。
+   这里用更高优先级锁死"隐藏就是隐藏"。
+   ============================================================= */
+#detailLayer.hidden,
+#viewerLayer.hidden,
+#pullLayer.hidden,
+#finaleLayer.hidden,
+#rarBanner.hidden,
+#detailLayer.hidden .dwrap,
+.layer.hidden{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+/* 浮层默认不参与布局，避免启动时占位 */
+#detailLayer.hidden,#viewerLayer.hidden{opacity:0!important}
+
+/* 只读查看别队球员时的提示条 */
+.dview-tip{
+  padding:6px 12px;border-radius:9px;margin-bottom:6px;
+  background:rgba(74,158,255,.16);border:1px solid rgba(74,158,255,.42);
+  color:#a8ccff;font-size:11.5px;font-weight:700;text-align:center;
+}
+.dfoot.readonly .dupsell,.dfoot.readonly .dmoment{display:none!important}
+
+/* 比赛里的球员卡：提示可点击 */
+.bt-pc{cursor:pointer;transition:transform .14s,box-shadow .14s}
+.bt-pc:hover{transform:translateY(-2px);
+  box-shadow:0 6px 18px -6px rgba(90,150,255,.75)}
+.bt-pc:active{transform:scale(.97)}
+
+/* 同一球员冲突提示弹窗 */
+.spf-mask{
+  position:fixed;inset:0;z-index:900;display:flex;
+  align-items:center;justify-content:center;padding:16px;
+  background:rgba(4,7,14,.82);backdrop-filter:blur(3px);
+}
+.spf{
+  width:min(430px,92vw);border-radius:15px;padding:18px 20px 15px;
+  background:linear-gradient(165deg,#1a2440,#0d1626);
+  border:1.5px solid rgba(245,196,81,.5);
+  box-shadow:0 18px 50px -14px rgba(0,0,0,.95);
+  text-align:center;
+}
+.spf-ico{font-size:32px;line-height:1}
+.spf-title{font-size:16px;font-weight:900;color:#ffd45e;margin-top:6px}
+.spf-body{margin:12px 0 10px;display:flex;flex-direction:column;gap:6px}
+.spf-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:7px 11px;border-radius:9px;background:rgba(255,255,255,.06);
+  font-size:12px;color:#c2cde4;
+}
+.spf-row b{font-size:13px;font-weight:900}
+.spf-note{font-size:11.5px;color:#a4b1c8;line-height:1.6;margin-bottom:13px}
+.spf-btns{display:flex;gap:8px}
+.spf-btns .btn{flex:1;padding:9px 0;font-size:12.5px}
+@media (max-height: 560px){
+  .spf{padding:12px 15px 10px;width:min(400px,94vw)}
+  .spf-ico{font-size:24px}
+  .spf-title{font-size:14px}
+  .spf-body{margin:8px 0 7px;gap:4px}
+  .spf-row{padding:5px 9px;font-size:11px}
+  .spf-note{font-size:10.5px;margin-bottom:9px}
+  .spf-btns .btn{padding:7px 0;font-size:11.5px}
+}
+
+/* 池子里标出"同球员已在阵容" */
+.tm-pcard-clash{
+  position:absolute;left:3px;right:3px;bottom:20px;z-index:13;
+  font-style:normal;font-size:8.5px;font-weight:900;line-height:1.35;
+  text-align:center;padding:2px 3px;border-radius:5px;
+  background:linear-gradient(135deg,#ffb020,#e07a10);color:#2b1500;
+  box-shadow:0 2px 8px -2px rgba(255,176,32,.85);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tm-pcard.clash{filter:saturate(.55)}
+.tm-pcard.clash .tm-pcard-img::after{
+  content:'';position:absolute;inset:0;background:rgba(255,176,32,.14);
+  border:1.5px dashed rgba(255,176,32,.7);border-radius:inherit;
+}
+@media (max-height: 560px){
+  .tm-pcard-clash{font-size:7.5px;bottom:16px;padding:1px 2px}
+}
+
+/* =============================================================
+   关闭时刻卡的镭射全息特效（v6.8）
+   -------------------------------------------------------------
+   用户要求：时刻卡只保留正常卡面，不要那些闪闪发亮的效果。
+   注意：只关"全息镭射"这一层，
+        满突破的 MAX 特效、卡面配色、金边等一律不动。
+   做法：把 holo 相关的浮层全部隐藏，并在最后加载的
+        platform.css 里用 !important 压过去（不删原代码，随时可恢复）。
+   ============================================================= */
+.card.moment .holo-foil,
+.card.moment .holo-sparkle,
+.card.moment .holo-lines,
+.card.moment .holo-gloss,
+.cardback.moment .holo-foil,
+.cardback.moment .holo-sparkle,
+.cardback.moment .holo-lines,
+.cardback.moment .holo-gloss{
+  display:none!important;
+  animation:none!important;
+  opacity:0!important;
+}
+/* 卡片上的流光扫描（sheen）也一并关掉 */
+.card.holo::before,
+.card.holo::after{
+  display:none!important;
+  content:none!important;
+  animation:none!important;
+  opacity:0!important;
+}
+/* 详情页大卡的同款效果 */
+.card.rare-holo::after,
+.card.rare-holo::before{
+  display:none!important;
+  content:none!important;
+  animation:none!important;
+}
+
+/* =============================================================
+   v8.6 图鉴收集里程碑
+   ============================================================= */
+#dex-mile{margin:6px 0 8px}
+.dm-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 10px;border-radius:5px;cursor:pointer;
+  background:linear-gradient(100deg,#2a2140,#1a1730 70%);
+  border:1px solid rgba(255,217,119,.30);
+  font-size:12px;font-weight:900;color:#ffe6a8;letter-spacing:.5px;
+}
+.dm-head b{font-size:11px;color:#c9b98a;font-weight:900}
+.dm-head em{font-style:normal;color:#4ee07a}
+.dm-list{margin-top:5px;display:grid;gap:4px;
+  max-height:none;overflow:visible}
+.dm-list.folded{display:none}
+
+.dm-row{
+  display:grid;grid-template-columns:1fr 74px;grid-template-rows:auto auto;
+  gap:2px 8px;align-items:center;
+  padding:6px 9px;border-radius:4px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.10);
+}
+.dm-row.can{
+  background:linear-gradient(100deg,rgba(78,224,122,.16),rgba(78,224,122,.04));
+  border-color:rgba(78,224,122,.55);
+  box-shadow:0 0 12px -4px rgba(78,224,122,.7);
+}
+.dm-row.done{opacity:.55}
+.dm-main{display:flex;align-items:baseline;justify-content:space-between;gap:6px;
+  grid-column:1;min-width:0}
+.dm-main b{font-size:11.5px;color:#e8eefc;font-weight:900;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.dm-main span{font-size:10px;color:#9fb0d6;font-variant-numeric:tabular-nums;
+  flex:0 0 auto}
+.dm-bar{grid-column:1;height:4px;border-radius:2px;overflow:hidden;
+  background:rgba(0,0,0,.45)}
+.dm-bar i{display:block;height:100%;border-radius:2px;
+  background:linear-gradient(90deg,#5fc8ff,#2a8fd0);transition:width .25s}
+.dm-row.can .dm-bar i{background:linear-gradient(90deg,#7cf0a0,#2fa85a)}
+.dm-btn{
+  grid-column:2;grid-row:1/3;justify-self:end;
+  min-width:70px;padding:6px 8px;border-radius:4px;border:0;
+  font-family:inherit;font-size:10.5px;font-weight:900;cursor:default;
+  background:rgba(255,255,255,.07);color:#8b96ad;
+}
+.dm-btn.can{
+  cursor:pointer;color:#08210f;
+  background:linear-gradient(135deg,#7cf0a0,#2fa85a);
+  box-shadow:0 3px 10px -3px rgba(78,224,122,.9);
+  animation:dmGlow 1.4s ease-in-out infinite;
+}
+@keyframes dmGlow{
+  0%,100%{box-shadow:0 3px 10px -3px rgba(78,224,122,.75)}
+  50%    {box-shadow:0 3px 16px -2px rgba(78,224,122,1)}
+}
+.dm-btn.done{background:rgba(255,255,255,.05);color:#6f7b93}
+
+/* =============================================================
+   🎯 图鉴兑换所（v9.27 新增玩法）
+   -------------------------------------------------------------
+   放在 platform.css 末尾（最后加载），避免被 cards/holo/cardv2 盖掉。
+   ⚠️ iPhone 横屏视口只有 440px 高 —— 第一版把内容竖着堆下来，
+      实测卡片网格被 flex 压成 0 高度、底部按钮被裁掉。
+      现在改成「顶部信息一行 + 网格自适应 + 底部两栏」的紧凑布局，
+      所有横向元素都允许收缩（min-width:0），网格给固定可用高度。
+   ============================================================= */
+#dex-exchange{ margin:9px 0 2px; }
+.btn.ex-open{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:9px 10px;font-size:12.5px;font-weight:900;
+  background:linear-gradient(135deg,rgba(245,196,81,.20),rgba(120,90,220,.20));
+  border:1.5px solid rgba(245,196,81,.5);color:#ffe9a8;
+}
+.btn.ex-open em{ font-style:normal;font-size:10.5px;font-weight:700;color:#a9b6cd }
+
+/* ★ 兑换所的遮罩不能复用 .spf-mask ——
+   closeConflictDialog() 里有兜底「清掉所有 .spf-mask」，
+   复用会导致玩家一改阵容、兑换所面板就被误删。这里独立定义。 */
+.ex-mask{
+  position:fixed;inset:0;z-index:940;display:flex;
+  align-items:center;justify-content:center;padding:12px;
+  background:rgba(4,7,14,.82);backdrop-filter:blur(3px);
+}
+.ex-panel{
+  width:min(880px,96vw);max-height:94vh;
+  display:flex;flex-direction:column;gap:6px;
+  text-align:left;padding:10px 12px;
+}
+/* 顶行：标题 + 说明 + 关闭 */
+.ex-head{ position:relative;padding-right:30px;flex:0 0 auto }
+.ex-title{ font-size:14px;font-weight:900;color:#ffd45e }
+.ex-sub{ font-size:10.5px;color:#a4b1c8;margin-top:2px }
+.ex-sub b{ color:#dfe8f8 }
+.ex-sub i{ font-style:normal;color:#7cf0a0 }
+.ex-sub i.out{ color:#ff8b9c }
+.ex-x{
+  position:absolute;right:0;top:0;width:24px;height:24px;border-radius:7px;
+  border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);
+  color:#c7d2e6;font-size:11px;cursor:pointer;font-family:inherit;
+}
+/* 第二行：档位页签（左）+ 持有量（右），同一行省高度 */
+.ex-row{ display:flex;align-items:center;gap:9px;flex:0 0 auto;min-width:0 }
+.ex-tabs{ display:flex;gap:4px;flex:1 1 auto;min-width:0 }
+.ex-tab{
+  flex:1 1 0;min-width:0;padding:4px 3px;border-radius:7px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);
+  color:#c2cde4;font-family:inherit;font-size:10.5px;font-weight:800;
+  display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.25;
+}
+.ex-tab em{ font-style:normal;font-size:9px;font-weight:700;color:#8b96ad }
+.ex-tab.on{
+  border-color:var(--g);color:#fff;
+  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05));
+  box-shadow:0 0 0 1px var(--g) inset;
+}
+.ex-tab.on em{ color:#e6eefc }
+.ex-count{ flex:0 0 auto;font-size:10px;color:#93a0b8;white-space:nowrap }
+.ex-count b{ color:#ffe9a8 }
+/* 网格：给足高度，内部滚动 */
+.ex-grid{
+  flex:1 1 auto;min-height:104px;max-height:34vh;overflow-y:auto;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));
+  gap:5px;padding:5px;border-radius:8px;background:rgba(0,0,0,.24);
+}
+.ex-cell{
+  position:relative;padding:4px 3px 3px;border-radius:7px;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1.5px solid transparent;
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+}
+.ex-cell img{ height:40px;width:auto;object-fit:contain;
+  filter:drop-shadow(0 3px 5px rgba(0,0,0,.6)) }
+.ex-cell b{ font-size:9.5px;font-weight:800;color:#dfe8f8;text-align:center;line-height:1.2 }
+.ex-cell span{ font-size:9px;font-weight:900;color:#ffe9a8 }
+.ex-cell.on{ border-color:var(--g);background:rgba(255,255,255,.13) }
+.ex-none{ grid-column:1/-1;padding:16px 8px;text-align:center;font-size:11px;color:#8b96ad }
+/* 底部：左边信息、右边按钮，同一行 */
+.ex-foot{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  border-top:1px solid rgba(255,255,255,.09);padding-top:7px;min-width:0;
+}
+.ex-foot-l{ flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px }
+.ex-foot-r{ flex:0 0 auto;display:flex;flex-direction:column;gap:5px;align-items:stretch }
+.ex-sel{ font-size:10.5px;color:#a4b1c8;display:flex;align-items:center;gap:7px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
+.ex-sel b{ font-size:12px;color:#dfe8f8 }
+.ex-sel span{ font-size:10px;color:#8b96ad }
+.ex-burn{ color:#c2cde4 }
+.ex-warn{ color:#ffd45e;font-weight:900 }
+.ex-mini{ display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end }
+.ex-mini .btn{ padding:4px 7px;font-size:10px;white-space:nowrap }
+.ex-go{ padding:7px 16px;font-size:11.5px;white-space:nowrap }
+
+/* 矮屏（iPhone 横屏 440 高）进一步压缩 */
+@media (max-height: 560px){
+  .ex-panel{ padding:8px 10px;gap:5px }
+  .ex-title{ font-size:13px }
+  .ex-sub{ font-size:9.5px }
+  .ex-tab{ font-size:9.5px;padding:3px 2px }
+  .ex-tab em{ font-size:8.5px }
+  .ex-grid{ min-height:78px;max-height:30vh;
+    grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:4px }
+  .ex-cell img{ height:32px }
+  .ex-cell b{ font-size:8.5px }
+  .ex-mini .btn{ padding:3px 6px;font-size:9px }
+  .ex-go{ padding:6px 12px;font-size:11px }
+  .ex-sel{ font-size:9.5px }
+  .ex-sel b{ font-size:11px }
+}
+
+/* =============================================================
+   十连保底角标（v9.27）
+   -------------------------------------------------------------
+   用**真实 DOM 元素** `.pity-tag`，不用伪元素。两个坑：
+     ① 挂卡的 ::after 会被 v6.8 的「关闭全息特效」吃掉
+        （`.card.holo::before/::after{content:none!important}`）
+     ② 挂 `.prizm::after` 也不显示 —— .prizm 是 z-index:0，
+        而照片在 .shot 里是 z-index:2，角标被压在照片底下
+   z-index 给到 20，比卡内所有既有子元素（最高 11）都高。
+   ============================================================= */
+.pity-tag{
+  position:absolute;left:4px;top:4px;z-index:20;
+  font-size:9px;font-weight:900;line-height:1;letter-spacing:.2px;
+  padding:3px 5px;border-radius:5px;white-space:nowrap;
+  color:#1a1200;background:linear-gradient(135deg,#ffe08a,#f5a623);
+  box-shadow:0 2px 7px -2px rgba(245,166,35,.95);
+  pointer-events:none;
+}
+#pullSub.has-pity{ color:#ffd45e }
+@media (max-height: 560px){
+  .pity-tag{ font-size:8px;padding:2px 4px;left:2px;top:2px }
+}
+
+/* =============================================================
+   🏛️ 名人堂（v9.27）
+   -------------------------------------------------------------
+   复用 .ex-mask 的遮罩（独立类，不会被 closeConflictDialog 误删），
+   面板沿用 .spf 的底，内部自己排版。
+   ============================================================= */
+.hof-cell{ cursor:pointer }
+.hof-cell:hover b{ transform:scale(1.12) }
+.hs-cell.hof-cell b{ font-size:20px; line-height:1.1 }
+
+.hof-panel{
+  width:min(900px,96vw);max-height:94vh;display:flex;flex-direction:column;
+  gap:8px;text-align:left;padding:12px 14px;
+}
+.hof-head{ position:relative;padding-right:30px;flex:0 0 auto }
+.hof-title{ font-size:15px;font-weight:900;color:#ffd45e;letter-spacing:2px }
+.hof-sub{ font-size:10.5px;color:#a4b1c8;margin-top:3px }
+.hof-sub b{ color:#ffe9a8 }
+.hof-sub i{ font-style:normal;color:#7cf0a0 }
+
+.hof-grid{
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;
+  padding:2px;
+}
+.hof-card{
+  padding:8px 8px 7px;border-radius:10px;
+  background:linear-gradient(170deg,rgba(245,196,81,.13),rgba(255,255,255,.04));
+  border:1px solid rgba(245,196,81,.42);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.hof-photo{ height:74px;display:flex;align-items:flex-end }
+.hof-photo img{ height:74px;width:auto;object-fit:contain;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.7)) }
+.hof-nm{ font-size:12.5px;font-weight:900;color:#ffe9a8;text-align:center;line-height:1.2 }
+.hof-yr{ font-size:9px;color:#93a0b8 }
+.hof-line{ display:flex;gap:7px;margin-top:2px }
+/* ⚠️ 必须 nowrap —— 否则 flex 收缩时「场」字会被挤到第二行 */
+.hof-line span{ font-size:9px;color:#a4b1c8;white-space:nowrap;display:inline-flex;
+  align-items:baseline;gap:1px }
+.hof-line b{ font-size:11.5px;color:#dfe8f8;margin-right:1px }
+.hof-total{ font-size:9px;color:#8b96ad }
+.hof-feats{ display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:3px }
+.hof-feat{
+  font-style:normal;font-size:8.5px;font-weight:900;color:#1a1200;
+  padding:2px 5px;border-radius:4px;
+  background:linear-gradient(135deg,#ffe08a,#f5a623);
+}
+.hof-empty{
+  flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;font-size:12.5px;color:#c2cde4;padding:24px 10px;
+}
+.hof-empty span{ font-size:10.5px;color:#8b96ad }
+
+.hof-cand{ flex:0 0 auto;border-top:1px solid rgba(255,255,255,.09);padding-top:7px }
+.hof-cand-h{ font-size:10.5px;font-weight:900;color:#ffd45e;margin-bottom:5px }
+.hof-cand-list{ display:flex;flex-direction:column;gap:3px;max-height:18vh;overflow-y:auto }
+.hof-cand-row{
+  display:grid;grid-template-columns:1fr 2.2fr auto;align-items:center;gap:8px;
+  font-size:10.5px;color:#c2cde4;
+}
+.hof-cand-n{ overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+.hof-cand-bar{ height:5px;border-radius:3px;background:rgba(255,255,255,.10);overflow:hidden }
+.hof-cand-bar i{ display:block;height:100%;
+  background:linear-gradient(90deg,#ffe08a,#f5a623) }
+.hof-cand-v{ font-size:9.5px;color:#93a0b8;white-space:nowrap }
+@media (max-height: 560px){
+  .hof-panel{ padding:9px 11px;gap:6px }
+  .hof-title{ font-size:13px }
+  .hof-grid{ grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:6px }
+  .hof-photo, .hof-photo img{ height:54px }
+  .hof-nm{ font-size:11px }
+  .hof-cand-list{ max-height:14vh }
+}
+
+/* 兑换所：讲清「祭品 vs 卖卡」的差别（v9.29）
+   ------------------------------------------------
+   实测"卖掉净得"永远高于"祭品折算值"（手续费 20% vs 折算 30%），
+   但祭品省掉了"先卖再买"这一步、还能指定换哪张 —— 实际更好用。
+   不说明的话玩家看到数字就永远选卖，祭品机制等于白做。 */
+.ex-hint{ font-size:9.5px;color:#8fd6a8;line-height:1.45;white-space:normal }
+.ex-sub-tip{ display:block;font-style:normal;font-size:9.5px;color:#8fd6a8;margin-top:2px }
+@media (max-height: 560px){
+  .ex-hint, .ex-sub-tip{ font-size:9px }
+}

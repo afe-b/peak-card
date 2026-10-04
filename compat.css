@@ -1,0 +1,517 @@
+/*
+   ⚠️ 本文件由 tools/gen-compat.js 自动生成，不要手改。
+   
+   作用：给不支持 flex gap 的老内核（Chromium < 84，如华为 Nova 6 出厂浏览器）
+        补上等效的外边距间距。
+   
+   触发条件：<html class="nogap"> —— 由 pwa.js 实测检测后添加。
+   现代浏览器不会被匹配，所以不会出现"双倍间距"。
+
+   共 240 条规则。
+*/
+
+
+/* ---------- battle.css ---------- */
+
+/* ---------- battle.css ---------- */
+html.nogap .bt-head>div > * + * { margin-left: 8px; }
+html.nogap .bt-vs > * + * { margin-left: 10px; }
+html.nogap .bt-startrow > * + * { margin-left: 9px; }
+html.nogap .bt-speeds > * + * { margin-left: 4px; }
+html.nogap .bt-sb-side > * + * { margin-left: 2px; }
+html.nogap .bt-sb-clock > * + * { margin-left: 9px; }
+html.nogap .bt-qdots > * + * { margin-left: 3px; }
+html.nogap .bt-col > * + * { margin-left: 6px; }
+html.nogap .bt-feed > * + * { margin-left: 7px; }
+html.nogap .bt-actions > * + * { margin-left: 8px; }
+html.nogap .bt-step > * + * { margin-left: 7px; }
+html.nogap .bt-speeds > * + * { margin-left: 4px; }
+html.nogap .bt-actions2 > * + * { margin-left: 9px; }
+html.nogap .bt-tacs > * + * { margin-left: 6px; }
+html.nogap .bt-tac span > * + * { margin-left: 4px; }
+html.nogap .bt-streak-top > * + * { margin-left: 8px; }
+html.nogap .bt-rl-head > * + *, html.nogap .bt-pk-head > * + *, html.nogap .bt-sub-head > * + * { margin-left: 9px; }
+html.nogap .bt-pk-list > * + * { margin-left: 7px; }
+html.nogap .bt-pk-item > * + * { margin-left: 11px; }
+html.nogap .bt-sub-list > * + * { margin-left: 7px; }
+html.nogap .bt-sub-row > * + * { margin-left: 11px; }
+html.nogap .bt-bench-row > * + * { margin-left: 8px; }
+html.nogap .bt-bench-cards > * + * { margin-left: 5px; }
+html.nogap .bt-tacbar > * + * { margin-left: 10px; }
+html.nogap .bt-tacbar-l > * + * { margin-left: 4px; }
+html.nogap .bt-stat-head > * + * { margin-left: 10px; }
+html.nogap .bt-stat-tabs > * + * { margin-left: 5px; }
+html.nogap .bt-slot.empty > * + * { margin-left: 7px; }
+html.nogap .bt-pk-bar > * + * { margin-left: 6px; }
+html.nogap .bt-pk-clear > * + * { margin-left: 9px; }
+html.nogap .bt-pk-bar > * + * { margin-left: 6px; }
+html.nogap .tm-head > * + * { margin-left: 8px; }
+html.nogap .tm-tabs > * + * { margin-left: 6px; }
+html.nogap .tm-row > * + * { margin-left: 10px; }
+html.nogap .tm-slot-plate > * + * { margin-left: 3px; }
+html.nogap .tm-benchbar > * + * { margin-left: 9px; }
+html.nogap .tm-filter > * + * { margin-left: 4px; }
+html.nogap .tm-pcard-plate > * + * { margin-left: 2px; }
+html.nogap .tm-pager > * + * { margin-left: 16px; }
+html.nogap .tm-head-l > * + * { margin-left: 3px; }
+html.nogap .tm-head-l > * + * { margin-left: 3px; }
+html.nogap .tm-info-cell > * + * { margin-left: 4px; }
+html.nogap .tm-info-list > * + * { margin-left: 7px; }
+html.nogap .tm-info-row > * + * { margin-left: 10px; }
+html.nogap .tm-pager > * + * { margin-left: 12px; }
+html.nogap .bt-livetac > * + * { margin-left: 5px; }
+html.nogap .bt-taunt > * + * { margin-left: 2px; }
+html.nogap .bt-line.bt-timeout .bt-line-txt > * + * { margin-left: 8px; }
+html.nogap .bt-line.bt-sub .bt-line-txt > * + * { margin-left: 8px; }
+html.nogap .bt-sub-cd > * + * { margin-left: 4px; }
+html.nogap .bt-pc-pos > * + * { margin-left: 2px; }
+
+/* ---------- cards.css ---------- */
+html.nogap .switch > * + * { margin-left: 7px; }
+html.nogap .bd-side > * + * { margin-left: 6px; }
+html.nogap .bd-cat > * + * { margin-left: 9px; }
+html.nogap .bd-main > * + * { margin-left: 8px; }
+html.nogap .bd-bar > * + * { margin-left: 10px; }
+html.nogap .bd-name > * + * { margin-left: 6px; }
+html.nogap .bd-locked-row > * + * { margin-left: 6px; }
+html.nogap .bd-lock-chip > * + * { margin-left: 5px; }
+html.nogap .dmain > * + * { margin-left: 8px; }
+html.nogap .dtop-info > * + * { margin-left: 5px; }
+html.nogap .dtop-line > * + * { margin-left: 12px; }
+html.nogap .dtop-acts > * + * { margin-left: 7px; }
+html.nogap .dtop-sub > * + * { margin-left: 9px; }
+html.nogap .dtop-grid .cell > * + * { margin-left: 8px; }
+html.nogap .dtr > * + * { margin-left: 8px; }
+html.nogap .dtr-list > * + * { margin-left: 1px; }
+html.nogap .dgn-name > * + * { margin-left: 6px; }
+html.nogap .pitybar > * + * { margin-left: 6px; }
+html.nogap .ptop > * + * { margin-left: 4px; }
+
+/* ---------- career.css ---------- */
+html.nogap .cr-wrap > * + * { margin-left: 9px; }
+html.nogap .cr-top > * + * { margin-left: 14px; }
+html.nogap .cr-me > * + * { margin-left: 8px; }
+html.nogap .cr-stat > * + * { margin-left: 1px; }
+html.nogap .cr-body > * + * { margin-left: 10px; }
+html.nogap .cr-cal > * + * { margin-left: 7px; }
+html.nogap .cr-cal-head > * + * { margin-left: 9px; }
+html.nogap .cr-dots > * + * { margin-left: 4px; }
+html.nogap .cr-cell > * + * { margin-left: 2px; }
+html.nogap .cr-panel > * + * { margin-left: 6px; }
+html.nogap .cr-p-team > * + * { margin-left: 10px; }
+html.nogap .cr-p-lineup > * + * { margin-left: 3px; }
+html.nogap .cr-po > * + * { margin-left: 10px; }
+html.nogap .cr-po-series > * + * { margin-left: 12px; }
+html.nogap .cr-po-t > * + * { margin-left: 5px; }
+html.nogap .cr-title > * + * { margin-left: 7px; }
+html.nogap .cr-bar > * + * { margin-left: 12px; }
+html.nogap .cr-p-team > * + * { margin-left: 10px; }
+html.nogap .cr-p-lineup > * + * { margin-left: 2px; }
+html.nogap .cr-wrap > * + * { margin-left: 5px; }
+html.nogap .cr-body > * + * { margin-left: 7px; }
+html.nogap .cr-cal > * + * { margin-left: 4px; }
+html.nogap .cr-cell > * + * { margin-left: 1px; }
+html.nogap .cr-p-sub > * + * { margin-left: 6px; }
+html.nogap .cr-tabs > * + * { margin-left: 4px; }
+html.nogap .mine-tools > * + * { margin-left: 8px; }
+html.nogap .mine-tool > * + * { margin-left: 2px; }
+html.nogap .bk-t > * + * { margin-left: 7px; }
+html.nogap .bk-aw-list > * + * { margin-left: 3px; }
+html.nogap .rc-wrap > * + * { margin-left: 10px; }
+html.nogap .rc-prog > * + * { margin-left: 9px; }
+html.nogap .rc-t > * + * { margin-left: 6px; }
+html.nogap .rc-table > * + * { margin-left: 2px; }
+html.nogap .rc-th > * + * { margin-left: 7px; }
+html.nogap .cr-acts > * + * { margin-left: 6px; }
+
+/* ---------- landscape.css ---------- */
+html.nogap #scr-home .home-fixed > * + * { margin-left: 10px; }
+html.nogap .tm-bench-row > * + * { margin-left: 9px; }
+html.nogap #detailLayer .dside > * + * { margin-left: 8px; }
+html.nogap #scr-team .tm-tabs > * + * { margin-left: 11px; }
+html.nogap html[data-platform="mobile"] .bt-pc-stats .bt-st > * + * { margin-left: 1px; }
+
+/* ---------- league.css ---------- */
+html.nogap .lg-head > * + * { margin-left: 14px; }
+html.nogap .lg-head-l > * + * { margin-left: 2px; }
+html.nogap .lg-tabs > * + * { margin-left: 6px; }
+html.nogap .lg-list > * + * { margin-left: 7px; }
+html.nogap .lg-news > * + * { margin-left: 9px; }
+html.nogap .lg-mk-head > * + * { margin-left: 12px; }
+html.nogap .lg-mk-card > * + * { margin-left: 11px; }
+html.nogap .lg-mk-info > * + * { margin-left: 3px; }
+html.nogap .lg-mk-meta > * + * { margin-left: 6px; }
+html.nogap .lg-pager > * + * { margin-left: 14px; }
+html.nogap .lg-rank-tabs > * + * { margin-left: 7px; }
+html.nogap .lg-rank > * + * { margin-left: 3px; }
+html.nogap .lg-rk-t > * + * { margin-left: 8px; }
+html.nogap .bt-opp > * + * { margin-left: 7px; }
+html.nogap .bt-opp-t > * + * { margin-left: 1px; }
+html.nogap .bt-opp-info > * + * { margin-left: 12px; }
+html.nogap .bt-opp-info-l > * + * { margin-left: 2px; }
+html.nogap .bt-opp-roster > * + * { margin-left: 5px; }
+html.nogap .bt-opp-chip > * + * { margin-left: 2px; }
+html.nogap .lg-aw > * + * { margin-left: 11px; }
+html.nogap .lg-aw-body > * + * { margin-left: 2px; }
+html.nogap .lg-aw-h > * + * { margin-left: 7px; }
+html.nogap .lg-aw-note > * + * { margin-left: 6px; }
+html.nogap .lg-aw-players > * + * { margin-left: 7px; }
+html.nogap .lg-aw-p > * + * { margin-left: 6px; }
+html.nogap .lg-po-conf > * + * { margin-left: 3px; }
+html.nogap .lg-po-seed > * + * { margin-left: 8px; }
+html.nogap .lg-po-round > * + * { margin-left: 6px; }
+html.nogap .lg-po-series > * + * { margin-left: 3px; }
+html.nogap .lg-po-team > * + * { margin-left: 7px; }
+html.nogap .lg-po-reward > * + * { margin-left: 9px; }
+html.nogap .lg-mk-switch > * + * { margin-left: 8px; }
+html.nogap .lg-mks > * + * { margin-left: 6px; }
+html.nogap .lg-bulk > * + * { margin-left: 9px; }
+html.nogap .lg-bulkbtn > * + * { margin-left: 2px; }
+html.nogap .lg-search > * + * { margin-left: 8px; }
+html.nogap .lg-tierchips > * + * { margin-left: 6px; }
+html.nogap .lg-history-list > * + * { margin-left: 4px; }
+html.nogap .lg-hi > * + * { margin-left: 8px; }
+html.nogap .lg-buybox > * + * { margin-left: 4px; }
+html.nogap .qs-wrap > * + * { margin-left: 12px; }
+html.nogap .qs-head > * + * { margin-left: 10px; }
+html.nogap .qs-sec > * + * { margin-left: 5px; }
+html.nogap .qs-sec-t > * + * { margin-left: 8px; }
+html.nogap .qs-row > * + * { margin-left: 10px; }
+html.nogap .qs-prog > * + * { margin-left: 7px; }
+html.nogap .tut-dots > * + * { margin-left: 5px; }
+html.nogap .tut-btns > * + * { margin-left: 9px; }
+html.nogap .ps-bar > * + * { margin-left: 7px; }
+html.nogap .ps-slot > * + * { margin-left: 3px; }
+html.nogap .ps-use > * + * { margin-left: 1px; }
+html.nogap .cmp-body > * + * { margin-left: 9px; }
+html.nogap .cmp-group > * + * { margin-left: 2px; }
+html.nogap .hs-wrap > * + * { margin-left: 12px; }
+html.nogap .dtop-skill > * + * { margin-left: 8px; }
+html.nogap .as-wrap > * + * { margin-left: 10px; }
+html.nogap .as-list > * + * { margin-left: 5px; }
+html.nogap .sc-wrap > * + * { margin-left: 10px; }
+html.nogap .sc-list > * + * { margin-left: 4px; }
+html.nogap .op-list > * + * { margin-left: 4px; }
+html.nogap .op-btns > * + * { margin-left: 8px; }
+html.nogap .bk-wrap > * + * { margin-left: 10px; }
+html.nogap .bk-seeds > * + * { margin-left: 3px; }
+html.nogap .bk-rounds > * + * { margin-left: 12px; }
+html.nogap .bk-round > * + * { margin-left: 5px; }
+html.nogap .sc-next-btns > * + * { margin-left: 7px; }
+html.nogap .cfm-btns > * + * { margin-left: 9px; }
+html.nogap .dv-wrap > * + * { margin-left: 10px; }
+html.nogap .dv-head > * + * { margin-left: 10px; }
+html.nogap .dv-legend > * + * { margin-left: 9px; }
+html.nogap .dv-group > * + * { margin-left: 6px; }
+html.nogap .dv-gt > * + * { margin-left: 8px; }
+html.nogap .dv-card > * + * { margin-left: 4px; }
+html.nogap .dv-changes > * + * { margin-left: 3px; }
+html.nogap .dv-foot > * + * { margin-left: 5px; }
+html.nogap .dv-price > * + * { margin-left: 4px; }
+html.nogap .dv-rank > * + * { margin-left: 5px; }
+html.nogap .dv-rank-row > * + * { margin-left: 6px; }
+html.nogap .dv-chip > * + * { margin-left: 5px; }
+html.nogap .dv-modes > * + * { margin-left: 6px; }
+html.nogap .dv-ref-body > * + * { margin-left: 1px; }
+html.nogap .of-btns > * + * { margin-left: 5px; }
+html.nogap .as-vote-c > * + * { margin-left: 2px; }
+
+/* ---------- platform.css ---------- */
+html.nogap .plat-badge > * + * { margin-left: 6px; }
+html.nogap #detailLayer .dmain > * + * { margin-left: 7px; }
+html.nogap #detailLayer .dbtns > * + * { margin-left: 6px; }
+html.nogap .spf-body > * + * { margin-left: 6px; }
+html.nogap .spf-row > * + * { margin-left: 10px; }
+html.nogap .spf-btns > * + * { margin-left: 8px; }
+html.nogap .dm-main > * + * { margin-left: 6px; }
+html.nogap .btn.ex-open > * + * { margin-left: 9px; }
+html.nogap .ex-panel > * + * { margin-left: 6px; }
+html.nogap .ex-row > * + * { margin-left: 9px; }
+html.nogap .ex-tabs > * + * { margin-left: 4px; }
+html.nogap .ex-cell > * + * { margin-left: 1px; }
+html.nogap .ex-foot > * + * { margin-left: 10px; }
+html.nogap .ex-foot-l > * + * { margin-left: 3px; }
+html.nogap .ex-foot-r > * + * { margin-left: 5px; }
+html.nogap .ex-sel > * + * { margin-left: 7px; }
+html.nogap .ex-mini > * + * { margin-left: 4px; }
+html.nogap .hof-panel > * + * { margin-left: 8px; }
+html.nogap .hof-card > * + * { margin-left: 3px; }
+html.nogap .hof-line > * + * { margin-left: 7px; }
+html.nogap .hof-line span > * + * { margin-left: 1px; }
+html.nogap .hof-feats > * + * { margin-left: 3px; }
+html.nogap .hof-empty > * + * { margin-left: 5px; }
+html.nogap .hof-cand-list > * + * { margin-left: 3px; }
+
+/* ---------- pwa.css ---------- */
+html.nogap #updateBar > * + * { margin-left: 8px; }
+
+/* ---------- teamui.css ---------- */
+html.nogap .tmwrap > * + * { margin-left: 6px; }
+html.nogap .tmt-title > * + * { margin-left: 7px; }
+html.nogap .tmt-right > * + * { margin-left: 8px; }
+html.nogap .tmt-cap > * + * { margin-left: 5px; }
+html.nogap .tmbody > * + * { margin-left: 8px; }
+html.nogap .tms > * + * { margin-left: 5px; }
+html.nogap .tmcourt > * + * { margin-left: 2px; }
+html.nogap .tmcourt-row > * + * { margin-left: clamp(8px,3.2vw,42px); }
+html.nogap .tmc.empty > * + * { margin-left: 3px; }
+html.nogap .tmbench > * + * { margin-left: clamp(3px,.85vw,9px); }
+html.nogap .tmwrap > * + * { margin-left: 6px; }
+html.nogap .tmp-filter > * + * { margin-left: 7px; }
+html.nogap .tmp-fchips > * + * { margin-left: 4px; }
+html.nogap .tmp-list .tmc-bar > * + * { margin-left: 2px; }
+html.nogap .tmp-list .tmc-bar > * + * { margin-left: clamp(1px,.5vh,4px); }
+html.nogap .tmp-head > * + * { margin-left: clamp(8px,2vw,18px); }
+html.nogap .wg-sum > * + * { margin-left: 10px; }
+html.nogap .wg-sum-l > * + * { margin-left: 4px; }
+html.nogap .tmt-quota > * + * { margin-left: 5px; }
+html.nogap .wg-q-head > * + * { margin-left: 2px; }
+
+/* ---------- viewer.css ---------- */
+html.nogap #cardViewer > * + * { margin-left: 16px; }
+html.nogap .cv-bar > * + * { margin-left: 9px; }
+
+/* ---------- cards.css ---------- */
+html.nogap .switch > * + * { margin-left: 7px; }
+html.nogap .bd-side > * + * { margin-left: 6px; }
+html.nogap .bd-cat > * + * { margin-left: 9px; }
+html.nogap .bd-main > * + * { margin-left: 8px; }
+html.nogap .bd-bar > * + * { margin-left: 10px; }
+html.nogap .bd-name > * + * { margin-left: 6px; }
+html.nogap .bd-locked-row > * + * { margin-left: 6px; }
+html.nogap .bd-lock-chip > * + * { margin-left: 5px; }
+html.nogap .dmain > * + * { margin-left: 8px; }
+html.nogap .dtop-info > * + * { margin-left: 5px; }
+html.nogap .dtop-line > * + * { margin-left: 12px; }
+html.nogap .dtop-acts > * + * { margin-left: 7px; }
+html.nogap .dtop-sub > * + * { margin-left: 9px; }
+html.nogap .dtop-grid .cell > * + * { margin-left: 8px; }
+html.nogap .dtr > * + * { margin-left: 8px; }
+html.nogap .dtr-list > * + * { margin-left: 1px; }
+html.nogap .dgn-name > * + * { margin-left: 6px; }
+html.nogap .pitybar > * + * { margin-left: 6px; }
+html.nogap .ptop > * + * { margin-left: 4px; }
+
+/* ---------- career.css ---------- */
+html.nogap .cr-wrap > * + * { margin-left: 9px; }
+html.nogap .cr-top > * + * { margin-left: 14px; }
+html.nogap .cr-me > * + * { margin-left: 8px; }
+html.nogap .cr-stat > * + * { margin-left: 1px; }
+html.nogap .cr-body > * + * { margin-left: 10px; }
+html.nogap .cr-cal > * + * { margin-left: 7px; }
+html.nogap .cr-cal-head > * + * { margin-left: 9px; }
+html.nogap .cr-dots > * + * { margin-left: 4px; }
+html.nogap .cr-cell > * + * { margin-left: 2px; }
+html.nogap .cr-panel > * + * { margin-left: 6px; }
+html.nogap .cr-p-team > * + * { margin-left: 10px; }
+html.nogap .cr-p-lineup > * + * { margin-left: 3px; }
+html.nogap .cr-po > * + * { margin-left: 10px; }
+html.nogap .cr-po-series > * + * { margin-left: 12px; }
+html.nogap .cr-po-t > * + * { margin-left: 5px; }
+html.nogap .cr-title > * + * { margin-left: 7px; }
+html.nogap .cr-bar > * + * { margin-left: 12px; }
+html.nogap .cr-p-team > * + * { margin-left: 10px; }
+html.nogap .cr-p-lineup > * + * { margin-left: 2px; }
+html.nogap .cr-wrap > * + * { margin-left: 5px; }
+html.nogap .cr-body > * + * { margin-left: 7px; }
+html.nogap .cr-cal > * + * { margin-left: 4px; }
+html.nogap .cr-cell > * + * { margin-left: 1px; }
+html.nogap .cr-p-sub > * + * { margin-left: 6px; }
+html.nogap .cr-tabs > * + * { margin-left: 4px; }
+html.nogap .mine-tools > * + * { margin-left: 8px; }
+html.nogap .mine-tool > * + * { margin-left: 2px; }
+html.nogap .bk-t > * + * { margin-left: 7px; }
+html.nogap .bk-aw-list > * + * { margin-left: 3px; }
+html.nogap .rc-wrap > * + * { margin-left: 10px; }
+html.nogap .rc-prog > * + * { margin-left: 9px; }
+html.nogap .rc-t > * + * { margin-left: 6px; }
+html.nogap .rc-table > * + * { margin-left: 2px; }
+html.nogap .rc-th > * + * { margin-left: 7px; }
+html.nogap .cr-acts > * + * { margin-left: 6px; }
+
+/* ---------- landscape.css ---------- */
+html.nogap #scr-home .home-fixed > * + * { margin-left: 10px; }
+html.nogap .tm-bench-row > * + * { margin-left: 9px; }
+html.nogap #detailLayer .dside > * + * { margin-left: 8px; }
+html.nogap #scr-team .tm-tabs > * + * { margin-left: 11px; }
+html.nogap html[data-platform="mobile"] .bt-pc-stats .bt-st > * + * { margin-left: 1px; }
+
+/* ---------- league.css ---------- */
+html.nogap .lg-head > * + * { margin-left: 14px; }
+html.nogap .lg-head-l > * + * { margin-left: 2px; }
+html.nogap .lg-tabs > * + * { margin-left: 6px; }
+html.nogap .lg-list > * + * { margin-left: 7px; }
+html.nogap .lg-news > * + * { margin-left: 9px; }
+html.nogap .lg-mk-head > * + * { margin-left: 12px; }
+html.nogap .lg-mk-card > * + * { margin-left: 11px; }
+html.nogap .lg-mk-info > * + * { margin-left: 3px; }
+html.nogap .lg-mk-meta > * + * { margin-left: 6px; }
+html.nogap .lg-pager > * + * { margin-left: 14px; }
+html.nogap .lg-rank-tabs > * + * { margin-left: 7px; }
+html.nogap .lg-rank > * + * { margin-left: 3px; }
+html.nogap .lg-rk-t > * + * { margin-left: 8px; }
+html.nogap .bt-opp > * + * { margin-left: 7px; }
+html.nogap .bt-opp-t > * + * { margin-left: 1px; }
+html.nogap .bt-opp-info > * + * { margin-left: 12px; }
+html.nogap .bt-opp-info-l > * + * { margin-left: 2px; }
+html.nogap .bt-opp-roster > * + * { margin-left: 5px; }
+html.nogap .bt-opp-chip > * + * { margin-left: 2px; }
+html.nogap .lg-aw > * + * { margin-left: 11px; }
+html.nogap .lg-aw-body > * + * { margin-left: 2px; }
+html.nogap .lg-aw-h > * + * { margin-left: 7px; }
+html.nogap .lg-aw-note > * + * { margin-left: 6px; }
+html.nogap .lg-aw-players > * + * { margin-left: 7px; }
+html.nogap .lg-aw-p > * + * { margin-left: 6px; }
+html.nogap .lg-po-conf > * + * { margin-left: 3px; }
+html.nogap .lg-po-seed > * + * { margin-left: 8px; }
+html.nogap .lg-po-round > * + * { margin-left: 6px; }
+html.nogap .lg-po-series > * + * { margin-left: 3px; }
+html.nogap .lg-po-team > * + * { margin-left: 7px; }
+html.nogap .lg-po-reward > * + * { margin-left: 9px; }
+html.nogap .lg-mk-switch > * + * { margin-left: 8px; }
+html.nogap .lg-mks > * + * { margin-left: 6px; }
+html.nogap .lg-bulk > * + * { margin-left: 9px; }
+html.nogap .lg-bulkbtn > * + * { margin-left: 2px; }
+html.nogap .lg-search > * + * { margin-left: 8px; }
+html.nogap .lg-tierchips > * + * { margin-left: 6px; }
+html.nogap .lg-history-list > * + * { margin-left: 4px; }
+html.nogap .lg-hi > * + * { margin-left: 8px; }
+html.nogap .lg-buybox > * + * { margin-left: 4px; }
+html.nogap .qs-wrap > * + * { margin-left: 12px; }
+html.nogap .qs-head > * + * { margin-left: 10px; }
+html.nogap .qs-sec > * + * { margin-left: 5px; }
+html.nogap .qs-sec-t > * + * { margin-left: 8px; }
+html.nogap .qs-row > * + * { margin-left: 10px; }
+html.nogap .qs-prog > * + * { margin-left: 7px; }
+html.nogap .tut-dots > * + * { margin-left: 5px; }
+html.nogap .tut-btns > * + * { margin-left: 9px; }
+html.nogap .ps-bar > * + * { margin-left: 7px; }
+html.nogap .ps-slot > * + * { margin-left: 3px; }
+html.nogap .ps-use > * + * { margin-left: 1px; }
+html.nogap .cmp-body > * + * { margin-left: 9px; }
+html.nogap .cmp-group > * + * { margin-left: 2px; }
+html.nogap .hs-wrap > * + * { margin-left: 12px; }
+html.nogap .dtop-skill > * + * { margin-left: 8px; }
+html.nogap .as-wrap > * + * { margin-left: 10px; }
+html.nogap .as-list > * + * { margin-left: 5px; }
+html.nogap .sc-wrap > * + * { margin-left: 10px; }
+html.nogap .sc-list > * + * { margin-left: 4px; }
+html.nogap .op-list > * + * { margin-left: 4px; }
+html.nogap .op-btns > * + * { margin-left: 8px; }
+html.nogap .bk-wrap > * + * { margin-left: 10px; }
+html.nogap .bk-seeds > * + * { margin-left: 3px; }
+html.nogap .bk-rounds > * + * { margin-left: 12px; }
+html.nogap .bk-round > * + * { margin-left: 5px; }
+html.nogap .sc-next-btns > * + * { margin-left: 7px; }
+html.nogap .cfm-btns > * + * { margin-left: 9px; }
+html.nogap .dv-wrap > * + * { margin-left: 10px; }
+html.nogap .dv-head > * + * { margin-left: 10px; }
+html.nogap .dv-legend > * + * { margin-left: 9px; }
+html.nogap .dv-group > * + * { margin-left: 6px; }
+html.nogap .dv-gt > * + * { margin-left: 8px; }
+html.nogap .dv-card > * + * { margin-left: 4px; }
+html.nogap .dv-changes > * + * { margin-left: 3px; }
+html.nogap .dv-foot > * + * { margin-left: 5px; }
+html.nogap .dv-price > * + * { margin-left: 4px; }
+html.nogap .dv-rank > * + * { margin-left: 5px; }
+html.nogap .dv-rank-row > * + * { margin-left: 6px; }
+html.nogap .dv-chip > * + * { margin-left: 5px; }
+html.nogap .dv-modes > * + * { margin-left: 6px; }
+html.nogap .dv-ref-body > * + * { margin-left: 1px; }
+html.nogap .of-btns > * + * { margin-left: 5px; }
+html.nogap .as-vote-c > * + * { margin-left: 2px; }
+
+/* ---------- platform.css ---------- */
+html.nogap .plat-badge > * + * { margin-left: 6px; }
+html.nogap #detailLayer .dmain > * + * { margin-left: 7px; }
+html.nogap #detailLayer .dbtns > * + * { margin-left: 6px; }
+html.nogap .spf-body > * + * { margin-left: 6px; }
+html.nogap .spf-row > * + * { margin-left: 10px; }
+html.nogap .spf-btns > * + * { margin-left: 8px; }
+html.nogap .dm-main > * + * { margin-left: 6px; }
+html.nogap .btn.ex-open > * + * { margin-left: 9px; }
+html.nogap .ex-panel > * + * { margin-left: 6px; }
+html.nogap .ex-row > * + * { margin-left: 9px; }
+html.nogap .ex-tabs > * + * { margin-left: 4px; }
+html.nogap .ex-cell > * + * { margin-left: 1px; }
+html.nogap .ex-foot > * + * { margin-left: 10px; }
+html.nogap .ex-foot-l > * + * { margin-left: 3px; }
+html.nogap .ex-foot-r > * + * { margin-left: 5px; }
+html.nogap .ex-sel > * + * { margin-left: 7px; }
+html.nogap .ex-mini > * + * { margin-left: 4px; }
+html.nogap .hof-panel > * + * { margin-left: 8px; }
+html.nogap .hof-card > * + * { margin-left: 3px; }
+html.nogap .hof-line > * + * { margin-left: 7px; }
+html.nogap .hof-line span > * + * { margin-left: 1px; }
+html.nogap .hof-feats > * + * { margin-left: 3px; }
+html.nogap .hof-empty > * + * { margin-left: 5px; }
+html.nogap .hof-cand-list > * + * { margin-left: 3px; }
+
+/* ---------- pwa.css ---------- */
+html.nogap #updateBar > * + * { margin-left: 8px; }
+
+/* ---------- teamui.css ---------- */
+html.nogap .tmwrap > * + * { margin-left: 6px; }
+html.nogap .tmt-title > * + * { margin-left: 7px; }
+html.nogap .tmt-right > * + * { margin-left: 8px; }
+html.nogap .tmt-cap > * + * { margin-left: 5px; }
+html.nogap .tmbody > * + * { margin-left: 8px; }
+html.nogap .tms > * + * { margin-left: 5px; }
+html.nogap .tmcourt > * + * { margin-left: 2px; }
+html.nogap .tmcourt-row > * + * { margin-left: clamp(8px,3.2vw,42px); }
+html.nogap .tmc.empty > * + * { margin-left: 3px; }
+html.nogap .tmbench > * + * { margin-left: clamp(3px,.85vw,9px); }
+html.nogap .tmwrap > * + * { margin-left: 6px; }
+html.nogap .tmp-filter > * + * { margin-left: 7px; }
+html.nogap .tmp-fchips > * + * { margin-left: 4px; }
+html.nogap .tmp-list .tmc-bar > * + * { margin-left: 2px; }
+html.nogap .tmp-list .tmc-bar > * + * { margin-left: clamp(1px,.5vh,4px); }
+html.nogap .tmp-head > * + * { margin-left: clamp(8px,2vw,18px); }
+html.nogap .wg-sum > * + * { margin-left: 10px; }
+html.nogap .wg-sum-l > * + * { margin-left: 4px; }
+html.nogap .tmt-quota > * + * { margin-left: 5px; }
+html.nogap .wg-q-head > * + * { margin-left: 2px; }
+
+/* ---------- viewer.css ---------- */
+html.nogap #cardViewer > * + * { margin-left: 16px; }
+html.nogap .cv-bar > * + * { margin-left: 9px; }
+
+/* =============================================================
+   ★ aspect-ratio 兜底（老内核 Chromium < 88 不支持）
+   -------------------------------------------------------------
+   为什么必须补：
+     实测模拟发现 **卡牌高度会塌成 3px**
+     （.hero-card rect 变成 96x3，.mini 也失高）
+     → 首页推荐卡、保底条互相重叠，这就是玩家说的"界面不一样"。
+
+   原理：padding-bottom 的百分比是**相对宽度**算的，
+     所以 padding-bottom: calc(100% * 7 / 5) 等价于 aspect-ratio: 5/7。
+
+   为什么安全：这些元素的子元素**全部是 position:absolute**（实测确认），
+     它们靠 inset:0 填满父级，不会被 padding 推走。
+     .card 的 14 个子元素、.mini 的 4 个子元素全是 absolute。
+
+   ⚠️ teamui.css 里那些 `aspect-ratio:auto!important` 的规则
+     优先级更高，会盖掉这里的 padding —— 但那些元素本来就有固定高度，
+     不需要比例约束，所以不影响。
+   ============================================================= */
+/* ★ 只补**实测确认会塌**的：图鉴/列表里的卡牌缩略图。
+   ⚠️ 一开始我把这段写得太宽（.card / .cv-wrap / .hero-card 全加了），
+      结果误伤：
+        · .hero-card 本来靠父级决定宽高，加了 padding 后被撑变形
+        · 首页推荐卡变成方块、两张卡叠在一起
+      所以现在只保留 .mini（实测补前高度为 0、补后正确）。
+      .hero-card 的塌陷单独用一条更精确的规则修（见下面）。 */
+html.noar .mini,
+html.noar .dex-grid .card,
+html.noar .ex-grid .card {
+  height: 0 !important;
+  padding-bottom: 140% !important;      /* 5:7 = 7/5 = 140% */
+}
+
+/* 首页右上角的推荐卡：宽度由 landscape.css 固定为 96/100px，
+   所以给一个固定高度即可（5:7 → 96 * 1.4 ≈ 134px） */
+html.noar #scr-home .hero-card {
+  height: 134px !important;
+}
+

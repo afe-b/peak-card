@@ -1,0 +1,909 @@
+/* =============================================================
+   卡面样式 v4 —— 按"高端实体收藏卡"的思路做精致度
+   ---------------------------------------------------------------
+   精致感来自这几层，而不是花哨的特效：
+     ① 金属渐变细框（用 mask 挖出 1.1cqi 的环，随档位换金属色）
+     ② 斜切色块背景 + 发丝斜纹，模拟卡纸的印刷质感
+     ③ 照片"窗口"：抠像背后有一层更深的底 + 内侧阴影，人像坐在窗口里
+     ④ 宝石切面评分徽章：六边形 + 顶面高光 + 底部阴影 + 内描边
+     ⑤ 发丝分隔线（1px，两端渐隐）而不是整块色带
+     ⑥ 严格的光学对齐：所有水平线左右各留 6%，文字用 tabular-nums
+   字号一律 cqi（容器查询单位 = 卡宽百分比），大小卡等比缩放
+   ============================================================= */
+.card{
+  position:relative;aspect-ratio:5/7;border-radius:10px;overflow:hidden;
+  container-type:inline-size;isolation:isolate;
+  --foil1:rgba(255,255,255,.95);
+  --foil2:var(--tc1);
+  --foil3:rgba(0,0,0,.55);
+  background:
+    /* 斜切色块：左上受光、右下压暗 */
+    linear-gradient(116deg, rgba(255,255,255,.16) 0 34%, rgba(255,255,255,0) 34.3%),
+    linear-gradient(116deg, rgba(0,0,0,0) 0 63%, rgba(0,0,0,.26) 63.3%),
+    /* 主色：三段渐变，中段更厚实 */
+    radial-gradient(128% 88% at 24% 4%, rgba(255,255,255,.32) 0%, transparent 44%),
+    radial-gradient(90% 60% at 78% 96%, rgba(0,0,0,.3) 0%, transparent 60%),
+    linear-gradient(168deg, var(--t1) 0%, var(--t2) 42%, var(--t2) 62%, var(--t3) 100%);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.9),
+    0 1cqi 0 rgba(0,0,0,.3),
+    0 3cqi 7cqi -2cqi rgba(0,0,0,.7);
+}
+
+/* ① 金属细框：mask 挖环，随档位金属色渐变 */
+.card .frame{
+  position:absolute;inset:0;z-index:9;pointer-events:none;border-radius:inherit;
+  padding:1.15cqi;
+  background:linear-gradient(158deg,
+    var(--foil1) 0%, var(--foil2) 22%, var(--foil3) 48%, var(--foil2) 72%, var(--foil1) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:.9;
+}
+/* 框内再压一圈暗缝，让内容看起来"凹"进去 */
+.card .bevel{
+  position:absolute;inset:1.15cqi;z-index:8;pointer-events:none;border-radius:6px;
+  box-shadow:inset 0 0 0 .55cqi rgba(0,0,0,.42),
+             inset 0 .5cqi 1.4cqi rgba(0,0,0,.3);
+}
+/* ①b 卡纸纹理：细网格 + 一层极淡的斜向光泽
+   （之前用放射同心圆太抢眼，实体卡的底纹其实很克制） */
+.card .prizm{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(255,255,255,.55) 0 .4px, transparent .4px 5px),
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,.55) 0 .4px, transparent .4px 5px),
+    linear-gradient(112deg, rgba(255,255,255,.12) 0 30%, transparent 30.4% 66%, rgba(0,0,0,.12) 66.4%);
+  opacity:.14;
+  mix-blend-mode:soft-light;
+}
+/* ② 发丝斜纹（印刷网点感） */
+.card .weave{
+  position:absolute;inset:0;z-index:0;opacity:.13;pointer-events:none;
+  background:repeating-linear-gradient(118deg,
+    rgba(255,255,255,.9) 0 .3px, transparent .3px 3.6px);
+  mix-blend-mode:soft-light;
+}
+/* 扫光 */
+.card::before{
+  content:'';position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;
+  background:linear-gradient(112deg,
+    transparent 33%, rgba(255,255,255,.1) 43%,
+    rgba(255,255,255,.55) 49%, rgba(255,255,255,.1) 55%, transparent 65%);
+  transform:translateX(-135%);
+}
+.card.holo::before{opacity:1;animation:sheen 5.2s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes sheen{
+  0%{transform:translateX(-135%)} 14%{opacity:1}
+  44%{transform:translateX(135%);opacity:0} 100%{transform:translateX(135%);opacity:0}
+}
+
+/* ---------- 球队徽记水印 ---------- */
+.crest{
+  position:absolute;z-index:1;left:50%;top:8.5%;transform:translateX(-50%);
+  width:62%;aspect-ratio:1;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:17cqi;letter-spacing:-.04em;line-height:.94;text-align:center;
+  color:var(--tc1);opacity:.17;
+  border:.7cqi solid var(--tc1);
+  box-shadow:inset 0 0 8cqi -1.5cqi var(--tc1);
+}
+
+/* ---------- ③ 照片窗口 ---------- */
+.shot{
+  position:absolute;left:2.6%;right:2.6%;top:4.2%;bottom:25.5%;z-index:2;
+  display:flex;align-items:flex-end;justify-content:center;
+  pointer-events:none;overflow:hidden;
+}
+/* 窗口底：比卡面更深的一层，让抠像"坐"在里面 */
+.shot::before{
+  content:'';position:absolute;inset:0;z-index:0;border-radius:4px;
+  background:
+    radial-gradient(120% 78% at 50% 96%, color-mix(in srgb, var(--tglow) 34%, transparent) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,.06) 34%, rgba(0,0,0,.24) 100%);
+  box-shadow:inset 0 1.2cqi 2.6cqi -1cqi rgba(0,0,0,.55);
+}
+.shot img{
+  position:relative;z-index:1;
+  /* 用 100% 而不是溢出，否则特写照片的头顶会被裁掉；
+     底部溢出的部分本来也会被信息栏盖住 */
+  height:97%;width:auto;max-width:112%;display:block;
+  filter:drop-shadow(0 .8cqi 1.4cqi rgba(0,0,0,.55))
+         drop-shadow(0 2.4cqi 4.4cqi rgba(0,0,0,.4))
+         saturate(1.05) contrast(1.04);
+}
+/* 底部溶接到信息栏 */
+.shot .fade{
+  position:absolute;left:0;right:0;bottom:0;height:26%;z-index:3;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(7,11,21,.72) 66%,rgba(6,9,18,.98));
+}
+.shot.noimg img{display:none}
+.shot.noimg .fade{display:none}
+.shot.noimg::after{
+  content:attr(data-ini);position:absolute;inset:0;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  font-size:40cqi;font-weight:900;color:rgba(255,255,255,.14);
+}
+
+/* ---------- ④ 宝石切面评分徽章 ---------- */
+.rating{
+  position:absolute;z-index:5;right:3.4%;top:27%;
+  width:29.5%;aspect-ratio:1/1.12;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  background:linear-gradient(176deg,#ffffff 0%,#f2f5fa 30%,#ccd5e4 58%,#9aa7bf 82%,#7c8aa4 100%);
+  filter:drop-shadow(0 .7cqi 1cqi rgba(0,0,0,.62));
+}
+/* 顶部受光的切面 */
+.rating::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:52%;
+  clip-path:polygon(50% 0,100% 25%,100% 100%,0 100%,0 25%);
+  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.1));
+}
+/* 内描边 */
+.rating::after{
+  content:'';position:absolute;inset:.75cqi;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  box-shadow:inset 0 0 0 .35cqi rgba(255,255,255,.7);
+}
+.rating b{
+  position:relative;z-index:2;font-size:18.5cqi;font-weight:900;line-height:1;color:#131a29;
+  font-variant-numeric:tabular-nums;letter-spacing:-.06em;
+  text-shadow:0 .1cqi 0 rgba(255,255,255,.9), 0 -.1cqi .2cqi rgba(0,0,0,.25);
+}
+.rating span{
+  position:relative;z-index:2;font-size:5.8cqi;font-weight:900;color:#5a6883;
+  margin-top:.3cqi;letter-spacing:.14em;
+}
+
+/* ---------- 角标 / 绶带 ---------- */
+.corner{
+  position:absolute;z-index:6;left:0;top:0;
+  font-size:6.2cqi;font-weight:900;letter-spacing:.08em;
+  padding:1.4cqi 3cqi 1.4cqi 2.2cqi;border-radius:10px 0 3cqi 0;
+  background:linear-gradient(135deg,rgba(0,0,0,.88),rgba(0,0,0,.44));
+  color:#fff;box-shadow:inset 0 -1px 0 rgba(255,255,255,.16);
+}
+.corner.moment{
+  background:linear-gradient(135deg,#ff7048,#a80f26);
+  box-shadow:0 0 3.4cqi -1cqi #ff5a3c, inset 0 -1px 0 rgba(255,255,255,.32);
+}
+.ribbon{
+  position:absolute;z-index:6;left:0;top:21%;
+  font-size:5.6cqi;font-weight:900;letter-spacing:.18em;
+  padding:1.1cqi 2.6cqi 1.1cqi 2cqi;border-radius:0 999px 999px 0;
+  background:linear-gradient(90deg,#ffd97a,#f0a018 62%,#c07c00);
+  color:#3a1c00;
+  box-shadow:0 .8cqi 2.2cqi rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.6);
+}
+.ribbon.p{background:linear-gradient(90deg,#eeaeff,#9a3cff 62%,#6a1fd0);color:#fff}
+.brk-tag{
+  position:absolute;z-index:6;left:0;top:21%;font-size:5.6cqi;font-weight:900;
+  letter-spacing:.1em;padding:1.1cqi 2.4cqi 1.1cqi 1.9cqi;border-radius:0 999px 999px 0;
+  background:linear-gradient(90deg,#fff3c4,#e8a01e 64%,#b87a08);color:#3a2400;
+  box-shadow:0 .8cqi 2.2cqi rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.55);
+}
+.card.moment .brk-tag{top:31.5%}
+
+/* ---------- 信息栏 ---------- */
+.plate{
+  position:absolute;left:0;right:0;bottom:0;z-index:4;
+  background:linear-gradient(180deg,
+    rgba(8,12,22,0) 0%, rgba(8,12,22,.62) 14%, rgba(7,10,19,.97) 38%, rgba(6,9,17,1) 100%);
+  padding:6.4cqi 3.4cqi 1.6cqi;
+}
+.plate .team{
+  font-size:4.4cqi;font-weight:800;color:var(--tc1);letter-spacing:.22em;
+  text-align:center;text-transform:uppercase;opacity:.92;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.plate .nm{
+  font-size:11.4cqi;font-weight:900;line-height:1.05;color:#fff;
+  /* 名字长的自动缩字号，避免像「卡里姆·阿卜杜勒-贾巴尔」被截成省略号 */
+  font-size:calc(11.4cqi * var(--nm-scale, 1));
+  letter-spacing:.008em;text-align:center;margin-top:.9cqi;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-shadow:0 .25cqi .8cqi rgba(0,0,0,.92);
+}
+.plate .en{
+  font-size:4.2cqi;font-weight:700;color:#6f7c96;letter-spacing:.14em;
+  text-align:center;margin-top:.6cqi;text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* 发丝分隔线（两端渐隐） */
+.plate .rule{
+  height:1px;margin:1.7cqi 6% 1.6cqi;
+  background:linear-gradient(90deg,transparent,var(--tc1) 26%,var(--tc1) 74%,transparent);
+  opacity:.5;
+}
+.plate .row{
+  display:flex;align-items:center;justify-content:space-between;gap:1.5cqi;
+}
+.plate .pos{
+  font-size:6cqi;font-weight:900;color:var(--t1);letter-spacing:.06em;
+  background:linear-gradient(180deg,rgba(255,255,255,.15),rgba(255,255,255,.04));
+  border:.5px solid rgba(255,255,255,.2);
+  border-radius:1.4cqi;padding:.7cqi 1.8cqi;white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16);
+}
+.plate .tag{
+  font-size:5cqi;font-weight:900;color:#0a0f1c;letter-spacing:.02em;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--tc1) 80%,#fff),var(--tc1));
+  border-radius:1.3cqi;padding:.7cqi 1.6cqi;white-space:nowrap;
+  max-width:58%;overflow:hidden;text-overflow:ellipsis;
+  box-shadow:0 .3cqi 1cqi rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.55);
+}
+.plate .bar{
+  margin-top:1.6cqi;padding-top:1.2cqi;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:4.8cqi;color:#7f8ca8;font-weight:700;letter-spacing:.02em;
+}
+.plate .bar b{
+  color:#dde5f5;font-weight:900;font-variant-numeric:tabular-nums;
+  max-width:64%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.plate .bar .season{color:var(--tc1)}
+.brk{display:flex;justify-content:center;margin-top:1.3cqi}
+.card .brk .pips{gap:1.4cqi}
+.card .brk .pips i{width:1.55cqi;height:1.55cqi;border-radius:.35cqi;
+  background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 .25cqi rgba(255,255,255,.1)}
+.card .brk .pips i.on{
+  background:linear-gradient(180deg,#fff6d4,#e8a01e);
+  box-shadow:0 0 1.1cqi rgba(245,196,81,.95), inset 0 .2cqi 0 rgba(255,255,255,.8);
+}
+
+/* ---------- 持有量小标（右下角）---------- */
+.hold{
+  position:absolute;z-index:7;left:3.4%;bottom:2.6%;
+  display:flex;align-items:center;gap:1.2cqi;
+  padding:.8cqi 1.8cqi;border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(0,0,0,.5));
+  border:.5px solid rgba(255,255,255,.26);
+  box-shadow:0 .4cqi 1.4cqi rgba(0,0,0,.6);
+  backdrop-filter:blur(2px);
+}
+.hold b{font-size:6.4cqi;font-weight:900;color:rgba(255,255,255,.62);
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1}
+/* 只有一张时低调处理，让攒了多张的卡一眼跳出来 */
+.hold.multi b{color:#fff}
+.hold.multi{border-color:rgba(255,255,255,.42)}
+.hold i{font-style:normal;font-size:4.6cqi;font-weight:900;color:#2a1c00;
+  background:linear-gradient(180deg,#fff3c4,#e8a01e);
+  padding:.35cqi 1.1cqi;border-radius:999px;white-space:nowrap}
+/* 攒够 8 张 → 整块变金并轻微呼吸，一眼看出哪些能突破 */
+.hold.ready{
+  background:linear-gradient(180deg,#ffe9a3,#e0a010);
+  border-color:#fff0b8;
+  box-shadow:0 0 3.4cqi rgba(245,196,81,.9), 0 .4cqi 1.4cqi rgba(0,0,0,.55);
+  animation:holdPulse 1.9s ease-in-out infinite;
+}
+.hold.ready b{color:#3a2400}
+.hold.ready i{background:rgba(58,36,0,.82);color:#ffe9a3}
+@keyframes holdPulse{
+  0%,100%{box-shadow:0 0 2.6cqi rgba(245,196,81,.7), 0 .4cqi 1.4cqi rgba(0,0,0,.55)}
+  50%{box-shadow:0 0 5.4cqi rgba(245,196,81,1), 0 .4cqi 1.4cqi rgba(0,0,0,.55)}
+}
+/* 小卡上的持有量：只留数字，省地方 */
+.mini .hold{left:auto;right:4%;bottom:3.2%;padding:.6cqi 1.4cqi;gap:.9cqi}
+.mini .hold b{font-size:7.4cqi}
+.mini .hold i{font-size:5.4cqi;padding:.3cqi 1cqi}
+.mini .nm2{padding-right:22%}
+
+.newtag{
+  position:absolute;z-index:11;right:0;top:0;border-radius:0 10px 0 3cqi;
+  background:linear-gradient(135deg,#ff8095,#c00f36);color:#fff;
+  font-size:6cqi;font-weight:900;letter-spacing:.08em;padding:1.4cqi 2.8cqi;
+  box-shadow:-.5cqi .5cqi 1.4cqi rgba(0,0,0,.55);
+}
+
+/* =============================================================
+   图鉴 / 我的 里的小卡（等比缩小版，保留同样的层次）
+   ============================================================= */
+.mini{
+  position:relative;aspect-ratio:5/7;border-radius:8px;overflow:hidden;
+  container-type:inline-size;isolation:isolate;
+  background:
+    linear-gradient(116deg, rgba(255,255,255,.15) 0 34%, transparent 34.3%),
+    linear-gradient(116deg, transparent 0 63%, rgba(0,0,0,.26) 63.3%),
+    radial-gradient(128% 88% at 24% 4%, rgba(255,255,255,.28) 0%, transparent 44%),
+    linear-gradient(168deg, var(--t1), var(--t2) 46%, var(--t3));
+  box-shadow:0 0 0 1px rgba(0,0,0,.85), 0 2px 6px rgba(0,0,0,.55);
+}
+.mini .frame{
+  position:absolute;inset:0;z-index:9;pointer-events:none;border-radius:inherit;
+  padding:.9cqi;
+  background:linear-gradient(158deg,
+    rgba(255,255,255,.95) 0%, var(--tc1) 24%, rgba(0,0,0,.5) 50%,
+    var(--tc1) 74%, rgba(255,255,255,.9) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:.85;
+}
+.mini .prizm{
+  position:absolute;inset:0;opacity:.13;pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.55) 0 .35px, transparent .35px 4px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.55) 0 .35px, transparent .35px 4px),
+    linear-gradient(112deg, rgba(255,255,255,.12) 0 30%, transparent 30.4% 66%, rgba(0,0,0,.12) 66.4%);
+  mix-blend-mode:soft-light;
+}
+.mini .weave{position:absolute;inset:0;opacity:.12;
+  background:repeating-linear-gradient(118deg,rgba(255,255,255,.9) 0 .25px,transparent .25px 3.2px)}
+.mini .shot{left:3%;right:3%;top:4%;bottom:20.5%;overflow:hidden}
+.mini .shot .fade{height:30%}
+.mini .crest{width:56%;top:9%;font-size:15cqi;opacity:.15;border-width:.6cqi}
+.mini .rt{
+  position:absolute;z-index:5;right:5%;top:4%;font-size:9.2cqi;font-weight:900;color:#fff;
+  font-variant-numeric:tabular-nums;letter-spacing:-.05em;
+  text-shadow:0 .4cqi 1cqi rgba(0,0,0,.95), 0 0 2.6cqi var(--tglow);
+}
+.mini .nm2{
+  position:absolute;left:0;right:0;bottom:0;z-index:4;font-weight:900;
+  font-size:7.8cqi;color:#fff;letter-spacing:.01em;
+  /* 左对齐 + 右边留出持有量角标的位置，避免名字被压在角标下面 */
+  text-align:left;padding:13cqi 26% 2.2cqi 4cqi;
+  background:linear-gradient(180deg,transparent,rgba(6,10,20,.97) 62%);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.mini .st{
+  position:absolute;left:0;top:0;z-index:5;font-size:5.8cqi;font-weight:900;letter-spacing:.06em;
+  padding:.8cqi 1.8cqi;border-radius:8px 0 2cqi 0;
+  background:linear-gradient(135deg,rgba(0,0,0,.88),rgba(0,0,0,.44));color:#fff;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.14);
+}
+.mini.locked{filter:grayscale(1) brightness(.4)}
+.mini.locked .shot img,.mini.locked .crest{display:none}
+.mini.locked .shot::after{
+  content:'?';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:34cqi;font-weight:900;color:#4e5872;
+}
+.mini.locked .nm2{color:#5f6a86;background:none}
+.mini.locked .frame{background:linear-gradient(158deg,#4a5470,#2b3247 50%,#4a5470);opacity:.5}
+
+/* =============================================================
+   卡面渐进式自适应
+   ---------------------------------------------------------------
+   卡面在项目里出现的尺寸从 46px 到 300px+ 不等。
+   小尺寸下把所有信息都塞进去必然糊成一团，所以按"重要性"逐级舍弃：
+
+     照片 > 综合评分 > 名字 > 位置 > 球队 > 其余
+
+   `.card` / `.mini` 自身就是容器（container-type:inline-size），
+   所以这里可以直接按自己的宽度做媒体查询。
+   ============================================================= */
+
+/* ---------- 128px 以下：先去掉英文名 ---------- */
+@container (max-width: 127px){
+  .card .plate .en{display:none}
+  .card .moment-stamp{display:none}          /* 竖排烫印太占地方 */
+  .card .plate{padding:8px 5% 6px}
+}
+
+/* ---------- 104px 以下：去掉分隔线，球队名缩小 ---------- */
+@container (max-width: 103px){
+  .card .plate .rule{display:none}
+  .card .plate .team{font-size:6.4cqi;opacity:.9}
+  .card .plate .nm{font-size:13cqi}
+  .card .brk-tag{display:none}               /* 突破标签改成进度点表示 */
+  .card .hold i{display:none}
+}
+
+/* ---------- 88px 以下：去掉球队名、突破点、队徽水印 ---------- */
+@container (max-width: 87px){
+  .card .plate .team{display:none}
+  .card .plate .brk{display:none}
+  .card .crest{display:none}
+  .card .rating span{display:none}           /* 位置挪到底部行 */
+  .card .rating{width:23cqi}
+  .card .rating b{font-size:15cqi}
+  .card .plate{padding:10px 5% 5px;gap:1px}
+  .card .plate .nm{font-size:15cqi}
+  .card .plate .row .pos{font-size:7cqi}
+  .card .plate .row .tag{display:none}
+  .card .corner{font-size:6.6cqi;padding:1.4cqi 3cqi}
+}
+
+/* ---------- 72px 以下：只留照片 + 评分 + 名字 + 位置 ---------- */
+@container (max-width: 71px){
+  .card .corner{display:none}
+  .card .ribbon{font-size:7cqi;padding:1.2cqi 3cqi}
+  .card .hold{padding:.5cqi 1.6cqi}
+  .card .hold b{font-size:8cqi}
+  .card .plate{padding:11px 4% 4px}
+  .card .plate .nm{font-size:16cqi;line-height:1.1}
+  .card .plate .row{justify-content:center}
+  .card .plate .row .pos{font-size:8cqi;font-weight:900}
+  .card .shot{bottom:26%}
+}
+
+/* ---------- 58px 以下：只剩照片 + 评分 + 名字 ---------- */
+@container (max-width: 57px){
+  .card .rating{width:26cqi;border-width:.9cqi}
+  .card .rating b{font-size:17cqi}
+  .card .plate{padding:12px 3% 4px}
+  .card .plate .nm{font-size:17cqi}
+  .card .plate .row{display:none}
+  .card .shot{bottom:30%}
+}
+
+/* =============================================================
+   .mini（图鉴 / 我的 网格卡）同样处理
+   ============================================================= */
+@container (max-width: 92px){
+  .mini .st{display:none}                    /* 档位文字省掉，颜色已经说明了 */
+  .mini .crest{opacity:.10}
+}
+@container (max-width: 74px){
+  .mini .crest{display:none}
+  .mini .rt{font-size:17cqi}
+  .mini .nm2{font-size:11cqi;padding:3px 4%}
+  .mini .hold i{display:none}
+}
+@container (max-width: 58px){
+  .mini .nm2{font-size:13cqi;padding:3px 3%}
+  .mini .rt{font-size:20cqi}
+  .mini .hold{padding:.5cqi 1.4cqi}
+  .mini .hold b{font-size:8cqi}
+}
+@container (max-width: 46px){
+  .mini .nm2{font-size:15cqi}
+  .mini .rt{font-size:24cqi}
+}
+
+/* ---------- 设置页：自动保存开关 ---------- */
+.srow.auto{align-items:center}
+.switch{
+  display:flex;align-items:center;gap:7px;cursor:pointer;
+  padding:4px 10px 4px 4px;border-radius:999px;
+  background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.14);
+  transition:background .18s,border-color .18s;
+}
+.switch i{
+  width:20px;height:20px;border-radius:50%;background:#6a7791;
+  transition:background .18s,transform .18s;
+}
+.switch b{font-size:11.5px;font-weight:900;color:#8794ad}
+.switch.on{background:rgba(63,196,106,.18);border-color:#3fc46a}
+.switch.on i{background:#3fc46a;transform:translateX(0)}
+.switch.on b{color:#3fc46a}
+.switch:active{transform:scale(.97)}
+
+/* 竖屏旋转生效时（html.rot）禁掉页面滚动，避免转动后能拖出白边 */
+html.rot,html.rot body{
+  overflow:hidden!important;
+  height:100%;
+  overscroll-behavior:none;
+  background:#05070f;
+}
+html.rot #rotateTip{display:none!important}
+
+/* 支票余额变动时弹一下，立刻能看到 */
+@keyframes coinBump{
+  0%{transform:scale(1)}
+  30%{transform:scale(1.18)}
+  100%{transform:scale(1)}
+}
+.cur.coin-bump{animation:coinBump .5s cubic-bezier(.3,1.5,.5,1)}
+.cur.coin-bump span{color:var(--gold);text-shadow:0 0 10px rgba(245,196,81,.8)}
+
+/* 详情页锁定按钮 */
+.dbtns .btn.lock{border-color:rgba(245,196,81,.5);color:#f5c451}
+.dbtns .btn.lock.on{background:linear-gradient(135deg,#ffd977,#e8a01e);
+  color:#2b1a00;border-color:#fff}
+.dbtns .btn.lock small{display:block;font-size:9.5px;font-weight:400;
+  opacity:.8;margin-top:2px}
+/* 我的页卡片上的锁定角标 */
+.mini-lock{
+  position:absolute;left:4px;top:4px;z-index:14;font-size:13px;
+  font-weight:400;line-height:1;font-style:normal;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.95));
+}
+
+/* =============================================================
+   徽章页（参考 2K 的排版）
+   左边五大分类竖排，右边该分类下的徽章卡片双列
+   ============================================================= */
+.bd-wrap{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;
+  height:100%;min-height:0}
+.bd-side{display:flex;flex-direction:column;gap:6px;min-height:0}
+.bd-cat{
+  display:flex;align-items:center;gap:9px;cursor:pointer;text-align:left;
+  padding:7px 10px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:#c8d3e8;font-family:inherit;
+  transition:all .15s;min-width:0;
+}
+.bd-cat:hover{background:rgba(255,255,255,.08)}
+.bd-cat.on{
+  border-color:var(--cc);background:linear-gradient(100deg,
+    color-mix(in srgb, var(--cc) 22%, transparent), transparent 70%);
+  color:#fff;box-shadow:0 0 14px -4px var(--cc);
+}
+.bd-cat.zero{opacity:.45}
+.bd-cat-hex{
+  flex:0 0 38px;width:38px;height:42px;display:flex;align-items:center;
+  justify-content:center;font-size:14px;font-weight:900;color:#fff;
+  font-variant-numeric:tabular-nums;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--cc) 70%, #000) 0%,
+    color-mix(in srgb, var(--cc2) 80%, #000) 100%);
+}
+.bd-cat b{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:900;
+  line-height:1.15;color:#fff;white-space:nowrap;
+  text-shadow:0 1px 2px rgba(0,0,0,.85)}
+.bd-cat em{font-style:normal;font-size:8.5px;opacity:.72;letter-spacing:.04em;
+  color:#c3cee2;white-space:nowrap}
+
+.bd-next{margin-top:auto;padding:8px 10px;border-radius:10px;
+  background:rgba(255,255,255,.05);text-align:center}
+.bd-next b{font-size:19px;font-weight:900;color:var(--gold)}
+.bd-next b i{font-style:normal;font-size:11px;opacity:.6;font-weight:400}
+.bd-next span{display:block;font-size:9px;color:#7c8aa5;margin-top:1px}
+
+.bd-main{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto}
+.bd-main::-webkit-scrollbar{width:5px}
+.bd-main::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+.bd-bar{display:flex;align-items:baseline;gap:10px;padding:0 2px}
+.bd-bar b{font-size:14px;font-weight:900;
+  text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.bd-bar span{font-size:10.5px;color:#a4b1c8}
+
+.bd-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+/* 徽章卡片：深色底 + 亮边框，文字用高对比白色（参考 2K 的可读性） */
+.bd-item{
+  display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;
+  align-items:center;padding:8px 11px;border-radius:11px;
+  border:1.5px solid color-mix(in srgb, var(--bc) 62%, transparent);
+  background:linear-gradient(120deg,
+    color-mix(in srgb, var(--bc) 26%, #0d1424), #101828 78%);
+  box-shadow:inset 0 1px 0 color-mix(in srgb, var(--bc) 30%, transparent),
+    0 2px 10px -5px color-mix(in srgb, var(--bc) 70%, transparent);
+}
+.bd-hex{position:relative;width:42px;height:48px;flex:0 0 auto}
+.bd-hex svg{width:100%;height:100%;display:block;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.65))}
+/* 右下角品质角标：金/银/铜 数字 */
+.bd-hex-lv{
+  position:absolute;right:-2px;bottom:-1px;z-index:2;
+  width:16px;height:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-style:normal;font-size:9.5px;font-weight:900;line-height:1;
+  color:#1a1200;background:var(--hc);
+  border:1.5px solid #0d1424;
+  box-shadow:0 0 7px -1px var(--hc);
+}
+.bd-body{min-width:0}
+/* 名称：纯白 + 深色描边，任何底色上都清楚 */
+.bd-name{
+  font-size:13px;font-weight:900;color:#fff;line-height:1.2;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  text-shadow:0 1px 2px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.6);
+  letter-spacing:.01em;
+}
+/* 品质标签：实心底 + 深色字，对比拉满 */
+.bd-tier{
+  font-style:normal;font-size:9px;font-weight:900;padding:1.5px 6px;
+  border-radius:5px;color:#140d00;background:var(--bc);
+  text-shadow:none;box-shadow:0 1px 4px -1px rgba(0,0,0,.8);
+}
+/* 说明：亮灰，比原来亮一档 */
+.bd-desc{
+  font-size:11px;color:#d3dcec;line-height:1.35;margin-top:3px;
+  text-shadow:0 1px 2px rgba(0,0,0,.8);
+}
+
+.bd-none{grid-column:1/-1;padding:26px 16px;text-align:center;color:#7c8aa5;
+  font-size:11.5px;line-height:1.7;border-radius:12px;
+  border:1.5px dashed rgba(255,255,255,.13);background:rgba(255,255,255,.02)}
+.bd-none-ico{font-size:30px;opacity:.4;margin-bottom:8px}
+.bd-none em{font-style:normal;font-size:10px;opacity:.7}
+
+.bd-locked-row{display:flex;flex-wrap:wrap;gap:6px;padding-top:2px}
+.bd-lock-chip{display:flex;align-items:center;gap:5px;padding:5px 9px;
+  border-radius:8px;background:rgba(255,255,255,.045);
+  border:1px dashed rgba(255,255,255,.16);font-size:10px;color:#8b98b0}
+.bd-lock-chip i{font-style:normal;font-size:11px}
+.bd-lock-chip b{color:#c8d3e8}
+.bd-lock-chip em{font-style:normal;font-size:9px;opacity:.75}
+.bd-lock-chip.more{opacity:.6}
+
+/* =============================================================
+   手机横屏（956×440）紧凑排版
+   -------------------------------------------------------------
+   可用高度只有约 240px，必须塞下 5 个分类 + 徽章网格 + 锁定槽位，
+   所以分类做成"横条"（六边形和文字并排），整体压到 30px 出头。
+   ============================================================= */
+@media (min-aspect-ratio: 1/1){
+  html[data-platform="mobile"] .bd-wrap{
+    grid-template-columns:134px minmax(0,1fr);gap:8px;height:100%;overflow:hidden}
+  html[data-platform="mobile"] .bd-side{gap:4px;overflow:hidden}
+  /* 分类条：六边形 + 名称横排；名称不换行，否则中文会被挤成竖排 */
+  html[data-platform="mobile"] .bd-cat{
+    padding:3px 8px;gap:7px;border-radius:8px;align-items:center}
+  html[data-platform="mobile"] .bd-cat-hex{flex:0 0 28px;width:28px;height:31px;
+    font-size:12px}
+  html[data-platform="mobile"] .bd-cat b{font-size:12px;line-height:1.1;
+    white-space:nowrap}
+  /* 横屏空间紧张，英文名藏掉，中文足够辨识 */
+  html[data-platform="mobile"] .bd-cat em{display:none}
+  html[data-platform="mobile"] .bd-next{padding:3px 6px;margin-top:2px}
+  html[data-platform="mobile"] .bd-next b{font-size:13px}
+  html[data-platform="mobile"] .bd-next span{font-size:8px}
+  html[data-platform="mobile"] .bd-main{gap:5px}
+  html[data-platform="mobile"] .bd-bar b{font-size:11.5px}
+  html[data-platform="mobile"] .bd-bar span{font-size:9px}
+  html[data-platform="mobile"] .bd-grid{gap:5px}
+  html[data-platform="mobile"] .bd-item{
+    padding:4px 7px;grid-template-columns:30px minmax(0,1fr);gap:6px;border-radius:9px}
+  html[data-platform="mobile"] .bd-hex{width:30px;height:34px}
+  html[data-platform="mobile"] .bd-hex i{font-size:10.5px}
+  html[data-platform="mobile"] .bd-name{font-size:10.5px;gap:4px}
+  html[data-platform="mobile"] .bd-tier{font-size:7.5px;padding:0 4px}
+  html[data-platform="mobile"] .bd-desc{font-size:9px;margin-top:1px;line-height:1.25}
+  html[data-platform="mobile"] .bd-locked-row{gap:4px}
+  html[data-platform="mobile"] .bd-lock-chip{padding:3px 7px;font-size:9px;gap:4px}
+  html[data-platform="mobile"] .bd-lock-chip em{font-size:8px}
+  html[data-platform="mobile"] .bd-none{padding:14px 12px;font-size:10.5px}
+  html[data-platform="mobile"] .bd-none-ico{font-size:22px;margin-bottom:4px}
+}
+
+/* 徽章页需要更多竖向空间：横屏下把详情页头部压扁 */
+@media (min-aspect-ratio: 1/1){
+  html[data-platform="mobile"] #detailLayer .dhead{padding:6px 14px 5px}
+  html[data-platform="mobile"] #detailLayer .dhead-name{font-size:19px;line-height:1.1}
+  html[data-platform="mobile"] #detailLayer .dhead-tags{margin-top:3px}
+  html[data-platform="mobile"] #detailLayer .dhead-en{font-size:9px;margin-top:2px}
+  html[data-platform="mobile"] #detailLayer .dhead-grid{
+    margin-top:5px;gap:1px 14px;grid-template-columns:repeat(3,minmax(0,1fr))}
+  html[data-platform="mobile"] #detailLayer .dhead-grid .cell{
+    padding:1px 0;font-size:9px}
+  html[data-platform="mobile"] #detailLayer .dhead-grid .cell b{font-size:10.5px}
+  html[data-platform="mobile"] #detailLayer .dtabs{margin-top:5px}
+  html[data-platform="mobile"] #detailLayer .dtabs button{padding:5px 0;font-size:12px}
+  html[data-platform="mobile"] #detailLayer .dpanel{padding:7px 12px}
+  html[data-platform="mobile"] #detailLayer .dwrap{padding:8px}
+  /* 锁定的槽位在横屏下太占地方，收成一行小字 */
+  html[data-platform="mobile"] .bd-locked-row{display:none}
+  html[data-platform="mobile"] .bd-lock-note{
+    display:block;font-size:9px;color:#7c8aa5;padding-top:2px}
+}
+.bd-lock-note{display:none}
+
+
+/* =============================================================
+   球员详情页（复刻参考图）
+   -------------------------------------------------------------
+   顶部：左边斜置球员卡 + 右边大名字 / 右上角功能图标 / 3×2 信息栏
+   下面：5 个页签（选中态红色）+ 内容区
+   ============================================================= */
+.dwrap{display:block!important;padding:10px 14px;height:100%;overflow:hidden}
+.dmain{display:flex;flex-direction:column;height:100%;min-height:0;gap:8px}
+
+.dtop{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;
+  align-items:center;flex:0 0 auto}
+.dtop-card{
+  width:112px;cursor:pointer;flex:0 0 auto;
+  transform:rotate(-4deg);transition:transform .2s;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.75));
+}
+.dtop-card:hover{transform:rotate(0deg) scale(1.04)}
+.dtop-card .card,.dtop-card .mini{width:112px!important;height:auto!important}
+
+.dtop-info{min-width:0;display:flex;flex-direction:column;gap:5px}
+.dtop-line{display:flex;align-items:center;gap:12px}
+.dtop-name{
+  flex:1 1 auto;min-width:0;font-size:27px;font-weight:900;color:#fff;
+  letter-spacing:.02em;line-height:1.05;
+  text-shadow:0 2px 8px rgba(0,0,0,.85),0 0 26px rgba(90,140,255,.3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.dtop-acts{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+.dact{
+  width:34px;height:34px;flex:0 0 auto;cursor:pointer;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-family:inherit;
+  background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.2);
+  color:#c8d3e8;transition:all .15s;
+}
+.dact:hover{background:rgba(255,255,255,.18);transform:scale(1.07)}
+.dact.on{background:linear-gradient(135deg,#ffd977,#e8a01e);color:#2b1a00;
+  border-color:#fff}
+.dact.star.on{background:linear-gradient(135deg,#ffe08a,#f5c451);color:#7a4a00}
+.dact.wide{
+  width:auto;padding:0 14px;border-radius:17px;font-size:12px;font-weight:900;
+  background:linear-gradient(100deg,#1f5fd0,#2b7cf0);border-color:#5b9bff;color:#fff;
+  white-space:nowrap;
+}
+.dact.wide:hover{background:linear-gradient(100deg,#2b7cf0,#4a94ff)}
+
+.dtop-sub{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:11px}
+.dtop-pos{padding:2px 9px;border-radius:6px;font-weight:900;color:#0d1424;
+  background:linear-gradient(135deg,#ffd977,#e8a01e)}
+.dtop-tier{font-weight:900}
+.dtop-en{color:#8b98b0;font-size:10px;letter-spacing:.03em}
+
+.dtop-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-auto-rows:minmax(0,auto);gap:2px 26px;margin-top:2px;
+  border-top:1px solid rgba(255,255,255,.09);padding-top:6px;
+}
+.dtop-grid .cell{
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding:3px 0;border-bottom:1px dashed rgba(255,255,255,.07);
+}
+.dtop-grid .cell span{font-size:10.5px;color:#93a1ba;white-space:nowrap}
+.dtop-grid .cell b{font-size:13px;font-weight:900;color:#fff;white-space:nowrap;
+  text-shadow:0 1px 3px rgba(0,0,0,.8)}
+
+/* ---- 页签：选中态红色（复刻参考图） ---- */
+.dtabs{
+  display:grid;grid-auto-flow:column;grid-auto-columns:1fr;
+  flex:0 0 auto;border-radius:9px;overflow:hidden;
+  background:linear-gradient(180deg,#1a2butt,#131c30);
+  background:linear-gradient(180deg,#1b2540,#111a2c);
+  border:1px solid rgba(255,255,255,.1);
+}
+.dtabs button{
+  padding:8px 4px;cursor:pointer;font-family:inherit;
+  font-size:13px;font-weight:900;letter-spacing:.04em;
+  background:transparent;border:0;color:#c8d3e8;
+  border-right:1px solid rgba(255,255,255,.08);transition:all .15s;
+}
+.dtabs button:last-child{border-right:0}
+.dtabs button:hover{background:rgba(255,255,255,.07);color:#fff}
+.dtabs button.on{
+  background:linear-gradient(180deg,#e8342f,#c0161c);
+  color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
+}
+
+/* ---- 身价波动 ---- */
+.dtr{display:flex;flex-direction:column;gap:8px;height:100%}
+.dtr-now{display:flex;align-items:baseline;justify-content:space-between;
+  padding:10px 14px;border-radius:10px;
+  background:linear-gradient(100deg,rgba(245,196,81,.2),rgba(245,196,81,.05));
+  border:1.5px solid rgba(245,196,81,.4)}
+.dtr-now span{font-size:12px;color:#e8d9a8}
+.dtr-now b{font-size:23px;font-weight:900;color:var(--gold)}
+.dtr-list{display:flex;flex-direction:column;gap:1px}
+.dtr-row{display:flex;align-items:center;justify-content:space-between;
+  padding:7px 12px;border-radius:8px;background:rgba(255,255,255,.04);
+  font-size:12px;color:#c8d3e8}
+.dtr-row b{font-weight:900;color:#fff}
+.dtr-row b.up{color:#3fc46a}
+.dtr-row b.dn{color:#ff8a95}
+.dtr-note{font-size:10.5px;color:#7c8aa5;text-align:center;padding-top:2px}
+
+/* ---- 动作增益 ---- */
+.dgn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;
+  align-content:start;height:100%;overflow:auto}
+.dgn-row{
+  padding:8px 11px;border-radius:10px;position:relative;
+  background:linear-gradient(120deg,
+    color-mix(in srgb, var(--gc, #4a5a78) 22%, #0d1424), #101828 80%);
+  border:1.5px solid color-mix(in srgb, var(--gc, #33405c) 55%, transparent);
+}
+.dgn-row.off{opacity:.5;background:rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.12)}
+.dgn-name{font-size:11.5px;font-weight:900;color:#fff;display:flex;
+  align-items:center;gap:6px;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+.dgn-name em{font-style:normal;font-size:8.5px;font-weight:900;padding:1px 5px;
+  border-radius:4px;color:#140d00}
+.dgn-val{font-size:21px;font-weight:900;color:var(--gold);line-height:1.1;
+  margin-top:2px;text-shadow:0 2px 6px rgba(0,0,0,.75)}
+.dgn-val i{font-style:normal;font-size:11px;opacity:.8;margin-left:1px}
+.dgn-note{font-size:9.5px;color:#a4b1c8;margin-top:2px;line-height:1.3}
+
+@media (min-aspect-ratio: 1/1){
+  html[data-platform="mobile"] .dwrap{padding:7px 12px}
+  html[data-platform="mobile"] .dmain{gap:6px}
+  html[data-platform="mobile"] .dtop{gap:12px}
+  html[data-platform="mobile"] .dtop-card{width:88px}
+  html[data-platform="mobile"] .dtop-card .card,
+  html[data-platform="mobile"] .dtop-card .mini{width:88px!important}
+  html[data-platform="mobile"] .dtop-name{font-size:21px}
+  html[data-platform="mobile"] .dact{width:29px;height:29px;font-size:13px}
+  html[data-platform="mobile"] .dact.wide{padding:0 11px;font-size:11px}
+  html[data-platform="mobile"] .dtop-grid{gap:0 20px;padding-top:4px}
+  html[data-platform="mobile"] .dtop-grid .cell{padding:1px 0}
+  html[data-platform="mobile"] .dtop-grid .cell span{font-size:9.5px}
+  html[data-platform="mobile"] .dtop-grid .cell b{font-size:11.5px}
+  html[data-platform="mobile"] .dtabs button{padding:6px 3px;font-size:12px}
+  html[data-platform="mobile"] .dgn-row{padding:6px 9px}
+  html[data-platform="mobile"] .dgn-val{font-size:17px}
+  html[data-platform="mobile"] .dgn-note{font-size:9px}
+  html[data-platform="mobile"] .dtr-now{padding:6px 11px}
+  html[data-platform="mobile"] .dtr-now b{font-size:19px}
+  html[data-platform="mobile"] .dtr-row{padding:5px 10px;font-size:11px}
+}
+
+
+/* 顶部卡片里旧的突破/MAX 角标在新版式下会溢出，收进卡内 */
+.dtop-card{position:relative}
+.dtop-card .brkbadge{
+  position:absolute!important;left:3px;top:3px!important;right:auto!important;
+  bottom:auto!important;font-size:9px!important;padding:1px 6px!important;
+  z-index:20;
+}
+.dtop-card .maxbadge{
+  position:absolute!important;right:3px;top:3px!important;left:auto!important;
+  bottom:auto!important;font-size:9px!important;padding:1px 6px!important;
+  z-index:20;
+}
+/* 徽章分类栏再压一点，保证第 5 项「体能」完整可见 */
+@media (min-aspect-ratio: 1/1){
+  html[data-platform="mobile"] .bd-cat{padding:2px 7px;border-radius:7px}
+  html[data-platform="mobile"] .bd-cat-hex{flex:0 0 26px;width:26px;height:29px;
+    font-size:11px}
+  html[data-platform="mobile"] .bd-cat b{font-size:11.5px}
+  html[data-platform="mobile"] .bd-side{gap:3px}
+  html[data-platform="mobile"] .bd-next{padding:2px 6px}
+  html[data-platform="mobile"] .bd-next b{font-size:12px}
+  html[data-platform="mobile"] .bd-next span{font-size:7.5px}
+  /* 顶部卡片再大一点，更像参考图 */
+  html[data-platform="mobile"] .dtop-card{width:96px}
+  html[data-platform="mobile"] .dtop-card .card,
+  html[data-platform="mobile"] .dtop-card .mini{width:96px!important}
+}
+
+
+/* =============================================================
+   iPhone 安全区（刘海 / 灵动岛 / 底部横条）
+   -------------------------------------------------------------
+   横屏时刘海在左右两侧，各占约 59px。如果内容顶到最边上，
+   就会被灵动岛盖住 —— 之前只在 #app 上加了左右内边距，
+   但详情页是全屏浮层，必须单独处理。
+   ============================================================= */
+#detailLayer{padding:0!important}
+#detailLayer .dwrap{
+  padding-left:calc(12px + env(safe-area-inset-left, 0px));
+  padding-right:calc(12px + env(safe-area-inset-right, 0px));
+  padding-top:calc(7px + env(safe-area-inset-top, 0px));
+  padding-bottom:calc(7px + env(safe-area-inset-bottom, 0px));
+}
+
+/* =============================================================
+   保底进度条（三条实时倒计时）
+   ============================================================= */
+.pitybar{
+  display:flex;gap:6px;padding:0 10px 6px;flex-wrap:wrap;
+}
+.ptrack{
+  flex:1 1 0;min-width:96px;
+  padding:4px 7px 5px;border-radius:6px;
+  background:rgba(0,0,0,.32);
+  border:1px solid rgba(255,255,255,.12);
+  transition:border-color .2s,background .2s;
+}
+.ptrack.near{
+  border-color:rgba(255,217,119,.75);
+  background:rgba(245,196,81,.14);
+  animation:ptPulse 1.3s ease-in-out infinite;
+}
+@keyframes ptPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(245,196,81,.0)}
+  50%{box-shadow:0 0 10px -2px rgba(245,196,81,.9)}
+}
+.ptop{display:flex;align-items:baseline;justify-content:space-between;
+  gap:4px;margin-bottom:3px}
+.pname{font-size:9.5px;font-weight:900;letter-spacing:.5px;white-space:nowrap}
+.pnum{font-size:9.5px;color:#a4b1c8;white-space:nowrap}
+.pnum b{
+  font-size:13px;font-weight:900;color:#fff;
+  font-variant-numeric:tabular-nums;margin-right:1px;
+}
+.ptrack.near .pnum b{color:#ffd977}
+.pbar{height:3px;border-radius:2px;background:rgba(255,255,255,.14);
+  overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:2px;
+  transition:width .35s cubic-bezier(.2,.8,.3,1)}
+
+@media (max-height: 470px){
+  .pitybar{gap:4px;padding:0 7px 4px}
+  .ptrack{min-width:78px;padding:3px 5px 4px}
+  .pname{font-size:8.5px}
+  .pnum{font-size:8.5px}
+  .pnum b{font-size:11.5px}
+}
